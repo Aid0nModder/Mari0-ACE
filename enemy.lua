@@ -484,6 +484,12 @@ function enemy:init(x, y, t, a, properties)
 	self.outtable = {}
 end
 
+function enemy:dosupersize()
+	if self.supersizescript then
+		self:script(self.supersizescript, "supersize")
+	end
+end
+
 function enemy:update(dt)
 	--Just spawned
 	if self.justspawned then
@@ -2281,11 +2287,35 @@ function enemy:updatecustomdelay()
 	end
 end
 
+function enemy:script(list, cause, a)
+	for i = 1, #list do
+		if cause == "supersize" then
+			self[list[i][1]] = list[i][2]
+		elseif cause == "collide" then
+			if type(list[i][1]) == "table" then
+				for t = 1, #list[i][1] do
+					if list[i][1][t] == a or list[i][1][t] == "all" or (list[i][1][t] == "enemies" and tablecontains(enemies, a)) then
+						self[list[i][2]] = list[i][3]
+					end
+				end
+			else
+				if list[i][1] == a or list[i][1] == "all" or (list[i][1] == "enemies" and tablecontains(enemies, a)) then
+					self[list[i][2]] = list[i][3]
+				end
+			end
+		end
+	end
+end
+
 function enemy:func(i) -- 0-1 in please
 	return (-math.cos(i*math.pi*2)+1)/2
 end
 
 function enemy:globalcollide(a, b, c, d, dir)
+	if self.globalcollidescript then
+		self:script(self.globalcollidescript, "collide", a)
+	end
+
 	if a == "tile" then
 		if not self.resistsspikes then
 			dir = twistdirection(self.gravitydirection, dir)
@@ -2554,6 +2584,10 @@ function enemy:globalcollide(a, b, c, d, dir)
 end
 
 function enemy:leftcollide(a, b, c, d)
+	if self.leftcollidescript then
+		self:script(self.leftcollidescript, "collide", a)
+	end
+
 	if self:globalcollide(a, b, c, d, "left") then
 		return false
 	end
@@ -2681,6 +2715,10 @@ function enemy:leftcollide(a, b, c, d)
 end
 
 function enemy:rightcollide(a, b, c, d)
+	if self.rightcollidescript then
+		self:script(self.rightcollidescript, "collide", a)
+	end
+
 	if self:globalcollide(a, b, c, d, "right") then
 		return false
 	end
@@ -2809,6 +2847,10 @@ function enemy:rightcollide(a, b, c, d)
 end
 
 function enemy:ceilcollide(a, b, c, d)
+	if self.ceilcollidescript then
+		self:script(self.ceilcollidescript, "collide", a)
+	end
+
 	if self:globalcollide(a, b, c, d, "ceil") then
 		return false
 	end
@@ -2887,6 +2929,10 @@ function enemy:ceilcollide(a, b, c, d)
 end
 
 function enemy:floorcollide(a, b, c, d)
+	if self.floorcollidescript then
+		self:script(self.floorcollidescript, "collide", a)
+	end
+
 	if self:globalcollide(a, b, c, d, "floor") then
 		return false
 	end
@@ -3639,6 +3685,10 @@ end
 
 function enemy:dotrack()
 	self.track = true
+	
+	if self.trackedscript then
+		self:script(self.trackedscript, "supersize")
+	end
 end
 
 function enemy:applygel(side, x, y)
@@ -3800,13 +3850,35 @@ function enemy:addtile(x, y, id)
 end
 
 function enemy:ifstatement(first, symbol, second, action, arg)
-    --["speedx","==","speedy",["set","speedy"],10]
-    if self[first] then
-        first = self[first]
-    end
-    if self[second] then
-        second = self[second]
-    end
+	--["speedx","==","speedy",["set","speedy"],10]
+	local f
+	if string.sub(first, 0, 6) == "player" then
+		f = string.sub(first, 6, string.len(first))
+		local player = tonumber(string.sub(f, 0, 1))
+		f = string.sub(f, 1, string.len(f))
+		if objects["player"][player][f] then
+			first = objects["player"][player][f]
+		end
+	else
+		if self[first] then
+			first = self[first]
+		end	
+	end
+
+	local s
+	if string.sub(second, 0, 6) == "player" then
+		s = string.sub(second, 6, string.len(second))
+		local player = tonumber(string.sub(s, 0, 1))
+		s = string.sub(f, 1, string.len(s))
+		if objects["player"][player][s] then
+			second = objects["player"][player][s]
+		end
+	else
+		if self[second] then
+			second = self[second]
+		end	
+	end
+
     if type(second) == "boolean" then
         if second == true then
             if first then

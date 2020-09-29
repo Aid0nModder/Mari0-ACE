@@ -12,7 +12,7 @@ function mario:init(x, y, i, animation, size, t, properties)
 		self.size = size or 1
 	end
 	self.t = t or "portal"
-	
+
 	--custom character
 	self.character = mariocharacter[self.playernumber]
 	self.characterdata = characters.data[mariocharacter[self.playernumber]]
@@ -459,6 +459,8 @@ function mario:init(x, y, i, animation, size, t, properties)
 	end
 	
 	self:setquad()
+
+	updateplayerproperties()
 end
 
 function mario:update(dt)
@@ -2814,7 +2816,6 @@ function mario:movement(dt)
 		end
 	end
 	
-	
 	if self.controlsenabled and self.shoe == "cloud" then
 		if upkey(self.playernumber) and self.y > -4 then
 			self.speedy = math.max(-cloudspeed, self.speedy - cloudacceleration*dt)
@@ -3804,6 +3805,13 @@ function mario:downkey()
 	if not self.controlsenabled then
 		return
 	end
+
+	if (self.jumping or self.falling) and self.shoe == "drybonesshell" then
+		self.speedx = 0
+		self.speedy = 18
+		self.controlsenabled = false
+		self.drybonespound = true
+	end
 end
 
 function mario:grow(update)
@@ -3926,7 +3934,7 @@ end
 
 function mario:shrink()
 	raccoonplanesound:stop() --stops raccoon flying sound
-	
+
 	if not self.keepstatsonshrink and self.characterdata.changedstats then
         for k,v in pairs(self.characterdata.changedstats) do
             print(k,v[1],v[1][1])
@@ -4321,6 +4329,26 @@ function mario:floorcollide(a, b)
 	
 	if self:globalcollide(a, b) then
 		return false
+	end
+
+	--ground pound in dry bones shell
+	--dry bones for smash
+	if self.drybonespound then
+		local yes = true
+		if a == "tile" then
+			local x, y = b.cox, b.coy
+			if tilequads[map[x][y][1]].glass and tilequads[map[x][y][1]].breakable then
+				yes = false
+			end
+			hitblock(x, y, false)
+		elseif a == "flipblock" or a == "powblock" or a == "rouletteblock" then
+			b:hit()
+		end
+		if yes then
+			self.drybonespound = false
+			self.controlsenabled = true
+			self:drybonesduck(true)
+		end
 	end
 	
 	if a == "spring" then
@@ -6169,6 +6197,7 @@ function mario:globalcollide(a, b)
 			else
 				self:grow()
 			end
+
 			if b.makesmarioshoot and self.size == 3 then
 				if not (self.fireenemy == b.makesmarioshoot) then
 					self.fireenemy = b.makesmarioshoot
@@ -6181,51 +6210,52 @@ function mario:globalcollide(a, b)
 					end
 				end
 			end
-		if b.changestats then
-			self.keepstatsongrow = b.keepstatsongrow
-			self.keepstatsonshrink = b.keepstatsonshrink
-			if not self.changedstats then
-				self.changedstats = {}
-				self.characterdata.changedstats = {}
-			end
 
-			--"changestats": [["mario","stat",value]]
-			for k,v in pairs(b.changestats) do
-			if not self.changestats then
-				self.changestats = {}
-				self.characterdata.changestats = {}
-			else
-				self.changestats[v[2]] = {}
-				table.insert(self.changestats[v[2]], b.changestats[v[1]])
-				table.insert(self.changestats[v[2]], b.changestats[v[3]])
-				self.characterdata.changestats[v[2]] = {}
-				table.insert(self.characterdata.changestats[v[2]],self.changestats[v[2]])
-			end
-				print(k,v,v[1],v[2],v[3])
-				print(self.characterdata[v[2]])
-				if v[1] == "mario" then
-					if not self.changedstats[v[2]] or type(self.changedstats[v[2]]) ~= "table" then
-						self.changedstats[v[2]] = {}
-						self.characterdata.changedstats[v[2]] = {}
-						table.insert(self.changedstats[v[2]], v[1])
-						table.insert(self.changedstats[v[2]], self[v[2]])
-						table.insert(self.characterdata.changedstats[v[2]],self.changedstats[v[2]])
+			if b.changestats then
+				self.keepstatsongrow = b.keepstatsongrow
+				self.keepstatsonshrink = b.keepstatsonshrink
+				if not self.changedstats then
+					self.changedstats = {}
+					self.characterdata.changedstats = {}
+				end
+
+				--"changestats": [["mario","stat",value]]
+				for k,v in pairs(b.changestats) do
+					if not self.changestats then
+						self.changestats = {}
+						self.characterdata.changestats = {}
+					else
+						self.changestats[v[2]] = {}
+						table.insert(self.changestats[v[2]], b.changestats[v[1]])
+						table.insert(self.changestats[v[2]], b.changestats[v[3]])
+						self.characterdata.changestats[v[2]] = {}
+						table.insert(self.characterdata.changestats[v[2]],self.changestats[v[2]])
 					end
-					print(self.changedstats[v[2]][2])
-					self[v[2]] = v[3]
-				elseif v[1] == "character" then
-					if not self.changedstats[v[2]] then
-						self.changedstats[v[2]] = {}
-						self.characterdata.changedstats[v[2]] = {}
-						table.insert(self.changedstats[v[2]], v[1])
-						table.insert(self.changedstats[v[2]], self.characterdata[v[2]])
-						table.insert(self.characterdata.changedstats[v[2]],self.changedstats[v[2]])
+					print(k,v,v[1],v[2],v[3])
+					print(self.characterdata[v[2]])
+					if v[1] == "mario" then
+						if not self.changedstats[v[2]] or type(self.changedstats[v[2]]) ~= "table" then
+							self.changedstats[v[2]] = {}
+							self.characterdata.changedstats[v[2]] = {}
+							table.insert(self.changedstats[v[2]], v[1])
+							table.insert(self.changedstats[v[2]], self[v[2]])
+							table.insert(self.characterdata.changedstats[v[2]],self.changedstats[v[2]])
+						end
+						print(self.changedstats[v[2]][2])
+						self[v[2]] = v[3]
+					elseif v[1] == "character" then
+						if not self.changedstats[v[2]] then
+							self.changedstats[v[2]] = {}
+							self.characterdata.changedstats[v[2]] = {}
+							table.insert(self.changedstats[v[2]], v[1])
+							table.insert(self.changedstats[v[2]], self.characterdata[v[2]])
+							table.insert(self.characterdata.changedstats[v[2]],self.changedstats[v[2]])
+						end
+						print(self.changedstats[v[2]][2])
+						self.characterdata[v[2]] = v[3]
 					end
-					print(self.changedstats[v[2]][2])
-					self.characterdata[v[2]] = v[3]
 				end
 			end
-		end
 			return true
 		end
 			
@@ -6233,6 +6263,7 @@ function mario:globalcollide(a, b)
 			givelive(self.playernumber, b)
 			return true
 		end
+
 		if b.makesmariostar then
 			self:star()
 			if b.makesmariostarduration then
@@ -6240,17 +6271,20 @@ function mario:globalcollide(a, b)
 			end
 			return true
 		end
+
 		if b.dontstopmario then
 			return true
 		end
+
 		if b.makesmarioinvincible then
 			self.invincible = true
 			self.animationtimer = 0
 			self.animation = "invincible"
 		end
-		--[[if b.givesmariohelmet then
+
+		if b.givesmariohelmet then
 			if b.givesmariohelmet == "beetle" then
-				self:helmeted("bettle")
+				self:helmeted("beetle")
 			elseif b.givesmariohelmet == "spiny" then
 				self:helmeted("spikey")
 			elseif b.givesmariohelmet == "propeller" then
@@ -6261,17 +6295,18 @@ function mario:globalcollide(a, b)
 				self:helmeted(false)
 			end
 		end
+
 		if b.givesmarioshoe then
 			if b.givesmarioshoe == "goombashoe" then
-				self.shoed(true)
+				self:shoed(true)
 			elseif b.givesmarioshoe == "goombaheel" then
-				self.shoed("heel")
+				self:shoed("heel")
 			elseif b.givesmarioshoe == "drybones" then
-				self.shoed("drybonesshell")
+				self:shoed("drybonesshell")
 			elseif b.givesmarioshoe == "cloud" then
-				self.shoed("cloud")
+				self:shoed("cloud")
 			elseif b.givesmarioshoe == "cloudinf" then
-				self.shoed("cloudinfinite")
+				self:shoed("cloudinfinite")
 			elseif b.givesmarioshoe == "yoshi" then
 				local obj = yoshi:new(self.x, self.y)
 				obj:ride(self)
@@ -6279,9 +6314,9 @@ function mario:globalcollide(a, b)
 				table.insert(objects["yoshi"], obj)
 				self:shoed("yoshi", true)
 			elseif b.givesmarioshoe == "none" then
-				self.shoed(false)
+				self:shoed(false)
 			end
-		end]]
+		end
 	end
 end
 
@@ -6706,6 +6741,11 @@ function portalintile(x, y)
 end
 
 function hitblock(x, y, t, v)
+	if tilequads[map[x][y][1]].glass and tilequads[map[x][y][1]].breakable then
+		destroyblock(x, y)
+		return
+	end
+
 	local size = (t and t.size) or 2
 	local dir, nospritebatch = "up", false
 	local hitsound = true
@@ -7543,6 +7583,11 @@ function mario:use()
 		return false
 	end
 	net_action(self.playernumber, "use|" .. self.pointingangle)
+
+	if self.gravitydir ~= "down" and not self.falling then
+		self.gravitydir = "down"
+	end
+
 	if self.pickup then
 		print(self.pickup)
 		if self.pickup.destroying then
@@ -7751,11 +7796,13 @@ function mario:drybonesduck(ducking)
 		self.speedy = 0
 		self.oldportalgun = self.portalgun
 		self.portalgun = false
+		self.mask[6] = true
 	else
 		self.ducking = ducking
 		self.invincible = booboobaby or false
 		self.portalgun = self.oldportalgun
 		self.oldportalgun = false
+		self.mask[6] = false
 	end
 end
 
@@ -8824,6 +8871,11 @@ function mario:dive(water)
 			self.floattimer = 0
 			self.float = false
 		end
+		if self.drybonespound then
+			self.drybonespound = false
+			self.controlsenabled = true
+			self:drybonesduck(true)
+		end
 	else
 		self.gravity = self.characterdata.yacceleration
 		self.water = false
@@ -8879,7 +8931,7 @@ function mario:freeze() --ice ball
 	end
 end
 
-function mario:shoed(shoe, initial, drop) --get in shoe (type, make sound?, drop shoe?)
+function mario:shoed(shoe, initial, drop) --get in shoe (type, make sound?, drop shoe?)]
 	if shoe then
 		self.shoeoffsetY = 0
 		if self.ducking then
@@ -9050,5 +9102,12 @@ function mario:setbasecolors(color)
 		end
 	else
 		self.basecolors = _G[color]
+	end
+end
+
+function mario:portaled()
+	if self.drybonespound then
+		self.drybonespound = false
+		self.controlsenabled = true
 	end
 end
