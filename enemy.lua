@@ -178,6 +178,10 @@ function enemy:init(x, y, t, a, properties)
 		end
 	end
 
+	self.runtimer = false
+	self.runtimerstage = 1
+	self.runtimerruntimer = 0
+
 	--Decide on a random movement if it's random..
 	if self.movementrandoms then
 		self.movement = self.movementrandoms[math.random(#self.movementrandoms)]
@@ -1874,7 +1878,7 @@ function enemy:update(dt)
 		end
 	end
 
-	if self.customtimer then
+	if self.customtimer and not self.runtimer then
 		self.customtimertimer = self.customtimertimer + dt
 		while self.customtimertimer > self.customtimerdelay do
 			self.customtimertimer = self.customtimertimer - self.customtimerdelay
@@ -1888,6 +1892,19 @@ function enemy:update(dt)
 				end
 			end
 			self:updatecustomdelay()
+		end
+	end
+
+	if self.runtimer then
+		self.runtimerruntimer = self.runtimerruntimer + dt
+		while self.runtimerruntimer > self[self.runtimer][self.runtimerstage][1] do
+			self.runtimerruntimer = self.runtimerruntimer - self[self.runtimer][self.runtimerstage][1]
+			self:customtimeraction(self[self.runtimer][self.runtimerstage][2], self[self.runtimer][self.runtimerstage][3], "script")
+			self.runtimerstage = self.runtimerstage + 1
+			if self.runtimerstage > #self[self.runtimer] then
+				self.runtimer = false
+				break
+			end
 		end
 	end
 
@@ -2001,6 +2018,13 @@ function enemy:update(dt)
 	end
 
 	if self.checkif then
+		for i = 1, #self.checkif do
+			self:ifstatement(self.checkif[i][1], self.checkif[i][2], self.checkif[i][3], self.checkif[i][4], self.checkif[i][5])
+		end
+	end
+	
+	--old
+	--[[if self.checkif then
         self.currentcheckifstage = 1
         self.checkiftimer = 0 + dt
         while self.checkiftimer > 0.000001 do
@@ -2011,7 +2035,7 @@ function enemy:update(dt)
                 self.currentcheckifstage = 1
             end
         end
-    end
+    end]]
 
 	self:convertallvariables(self)
 end
@@ -2148,7 +2172,7 @@ function enemy:shotted(dir, cause, high, fireball, star)
 	return true
 end
 
-function enemy:customtimeraction(action, arg)
+function enemy:customtimeraction(action, arg, t)
 	--set to a variable
 	if arg and type(arg) == "table" and arg[1] and arg[2] and arg[1] == "property" then
 		arg = self[arg[2]]
@@ -2187,7 +2211,13 @@ function enemy:customtimeraction(action, arg)
 			end
 		end
 	else --backwards compatibility
-		if action == "bounce" then
+		if action == "break" then
+			if t then
+				self.runtimerstage = #self[self.runtimer]
+			else
+				self.currentcustomtimerstage = #self.customtimer
+			end
+		elseif action == "bounce" then
 			if self.speedy == 0 then self.speedy = -(arg or 10) end
 		elseif action == "playsound" then
 			if self.sound and arg == self.t then
@@ -2200,9 +2230,9 @@ function enemy:customtimeraction(action, arg)
 				self.spawnsenemy = self.spawnsenemyrandoms[math.random(#self.spawnsenemyrandoms)]
 			end
 			self:spawnenemy(self.spawnsenemy)
-		elseif action == "startloop" then
+		elseif not t and action == "startloop" then
 			self.timerstage = self.currentcustomtimerstage
-		elseif action == "loop" then
+		elseif not t and action == "loop" then
 			--self.timerstage = start loop stage
 			--self.loopstage = end loop stage
 			--self.looparg = old loop ammount
@@ -2230,7 +2260,9 @@ function enemy:customtimeraction(action, arg)
 				self:updatecustomdelay()
 			end
 		elseif action == "if" then
-			self:ifstatement(arg[1],arg[2],arg[3],arg[4],arg[5])
+			self:ifstatement(arg[1],arg[2],arg[3],arg[4],arg[5],t)
+		elseif action == "runtimer" then
+			self:startruntimer(arg)
 		elseif string.sub(action, 0, 7) == "reverse" then
 			local parameter = string.sub(action, 8, string.len(action))
 			self[parameter] = -self[parameter]
@@ -2254,20 +2286,7 @@ function enemy:customtimeraction(action, arg)
 			local tile = arg or self.placetile or 2
 			self:addtile(cox, coy, tile)
 		elseif action == "print" then
-			local text = arg[1] or "n/a"
-			local index = arg[2] or false
-			if type(text) == "table" then
-				if index then
-					print(text[index])
-				else
-					for b = 1, #text do
-						print(text[b])
-					end
-				end
-			else
-				print(a)
-			end
-			self:print(arg[1], arg[2])
+			print(self[arg])
 		elseif string.sub(action, 0, 3) == "set" then
 			self[string.sub(action, 4, string.len(action))] = arg
 		end
@@ -2287,7 +2306,70 @@ function enemy:updatecustomdelay()
 	end
 end
 
-function enemy:script(list, cause, a)
+function enemy:ifstatement(first, symbol, second, action, arg, t)
+	--["speedx","==","speedy",["set","speedy"],10]
+	
+	if self[first] then
+		first = self[first]
+	end	
+	if self[second] then
+		second = self[second]
+	end	
+
+    if type(second) == "boolean" then
+        if second == true then
+            if first then
+                self:customtimeraction(action,arg,t)
+                return true
+            end
+        elseif second == false then 
+            if not first then
+                self:customtimeraction(action,arg,t)
+                return true
+            end
+        end
+    end
+
+    if symbol == "=" or symbol == "==" then
+        if first == second then
+            self:customtimeraction(action,arg,t)
+            return true
+        end
+    elseif symbol == ">" then
+        if first > second then
+            self:customtimeraction(action,arg,t)
+            return true
+        end
+    elseif symbol == "<" then
+        if first < second then
+            self:customtimeraction(action,arg,t)
+            return true
+        end
+    elseif symbol == ">=" then
+        if first >= second then
+            self:customtimeraction(action,arg,t)
+            return true
+        end
+    elseif symbol == "<=" then
+        if first <= second then
+            self:customtimeraction(action,arg,t)
+            return true
+        end
+    elseif symbol == "~=" then
+        if first ~= second then
+            self:customtimeraction(action,arg,t)
+            return true
+        end
+    end
+end
+
+function enemy:startruntimer(arg)
+	self.runtimer = arg
+	self.runtimerstage = 1
+	self.runtimerruntimer = 0
+end
+
+function enemy:script(list, cause, a, b)
 	for i = 1, #list do
 		if cause == "supersize" then
 			self[list[i][1]] = list[i][2]
@@ -2295,12 +2377,20 @@ function enemy:script(list, cause, a)
 			if type(list[i][1]) == "table" then
 				for t = 1, #list[i][1] do
 					if list[i][1][t] == a or list[i][1][t] == "all" or (list[i][1][t] == "enemies" and tablecontains(enemies, a)) then
-						self[list[i][2]] = list[i][3]
+						if list[i][2] == "unoreversecard" then
+							b[list[i][3]] = list[i][4]
+						else
+							self[list[i][2]] = list[i][3]
+						end
 					end
 				end
 			else
 				if list[i][1] == a or list[i][1] == "all" or (list[i][1] == "enemies" and tablecontains(enemies, a)) then
-					self[list[i][2]] = list[i][3]
+					if list[i][2] == "unoreversecard" then
+						b[list[i][3]] = list[i][4]
+					else
+						self[list[i][2]] = list[i][3]
+					end
 				end
 			end
 		end
@@ -2313,7 +2403,7 @@ end
 
 function enemy:globalcollide(a, b, c, d, dir)
 	if self.globalcollidescript then
-		self:script(self.globalcollidescript, "collide", a)
+		self:script(self.globalcollidescript, "collide", a, b)
 	end
 
 	if a == "tile" then
@@ -2585,7 +2675,7 @@ end
 
 function enemy:leftcollide(a, b, c, d)
 	if self.leftcollidescript then
-		self:script(self.leftcollidescript, "collide", a)
+		self:script(self.leftcollidescript, "collide", a, b)
 	end
 
 	if self:globalcollide(a, b, c, d, "left") then
@@ -2716,7 +2806,7 @@ end
 
 function enemy:rightcollide(a, b, c, d)
 	if self.rightcollidescript then
-		self:script(self.rightcollidescript, "collide", a)
+		self:script(self.rightcollidescript, "collide", a, b)
 	end
 
 	if self:globalcollide(a, b, c, d, "right") then
@@ -2848,7 +2938,7 @@ end
 
 function enemy:ceilcollide(a, b, c, d)
 	if self.ceilcollidescript then
-		self:script(self.ceilcollidescript, "collide", a)
+		self:script(self.ceilcollidescript, "collide", a, b)
 	end
 
 	if self:globalcollide(a, b, c, d, "ceil") then
@@ -2930,7 +3020,7 @@ end
 
 function enemy:floorcollide(a, b, c, d)
 	if self.floorcollidescript then
-		self:script(self.floorcollidescript, "collide", a)
+		self:script(self.floorcollidescript, "collide", a, b)
 	end
 
 	if self:globalcollide(a, b, c, d, "floor") then
@@ -3847,81 +3937,4 @@ function enemy:addtile(x, y, id)
 		updatespritebatch()
 		updateranges()
 	end
-end
-
-function enemy:ifstatement(first, symbol, second, action, arg)
-	--["speedx","==","speedy",["set","speedy"],10]
-	local f
-	if string.sub(first, 0, 6) == "player" then
-		f = string.sub(first, 6, string.len(first))
-		local player = tonumber(string.sub(f, 0, 1))
-		f = string.sub(f, 1, string.len(f))
-		if objects["player"][player][f] then
-			first = objects["player"][player][f]
-		end
-	else
-		if self[first] then
-			first = self[first]
-		end	
-	end
-
-	local s
-	if string.sub(second, 0, 6) == "player" then
-		s = string.sub(second, 6, string.len(second))
-		local player = tonumber(string.sub(s, 0, 1))
-		s = string.sub(f, 1, string.len(s))
-		if objects["player"][player][s] then
-			second = objects["player"][player][s]
-		end
-	else
-		if self[second] then
-			second = self[second]
-		end	
-	end
-
-    if type(second) == "boolean" then
-        if second == true then
-            if first then
-                self:customtimeraction(action,arg)
-                return true
-            end
-        elseif second == false then 
-            if not first then
-                self:customtimeraction(action,arg)
-                return true
-            end
-        end
-    end
-
-    if symbol == "=" or symbol == "==" then
-        if first == second then
-            self:customtimeraction(action,arg)
-            return true
-        end
-    elseif symbol == ">" then
-        if first > second then
-            self:customtimeraction(action,arg)
-            return true
-        end
-    elseif symbol == "<" then
-        if first < second then
-            self:customtimeraction(action,arg)
-            return true
-        end
-    elseif symbol == ">=" then
-        if first >= second then
-            self:customtimeraction(action,arg)
-            return true
-        end
-    elseif symbol == "<=" then
-        if first <= second then
-            self:customtimeraction(action,arg)
-            return true
-        end
-    elseif symbol == "~=" then
-        if first ~= second then
-            self:customtimeraction(action,arg)
-            return true
-        end
-    end
 end
