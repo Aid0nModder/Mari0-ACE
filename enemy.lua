@@ -165,22 +165,11 @@ function enemy:init(x, y, t, a, properties)
 	if self.customtimer then
 		self.customtimertimer = 0
 		self.currentcustomtimerstage = 1
-		--delay
-		self.customtimerdelay = self.customtimer[1][1]
-		--random delay
-		local v = self.customtimer[1][1]
-		if type(v) == "table" then
-			if v[1] == "range" then
-				self.customtimerdelay = math.random(v[2], v[3])
-			else
-				self.customtimerdelay = v[math.random(#v)]
-			end
-		end
 	end
 
 	self.runtimer = false
 	self.runtimerstage = 1
-	self.runtimerruntimer = 0
+	self.runtimertimer = 0
 
 	--Decide on a random movement if it's random..
 	if self.movementrandoms then
@@ -1878,10 +1867,10 @@ function enemy:update(dt)
 		end
 	end
 
-	if self.customtimer and not self.runtimer then
+	if self.customtimer then
 		self.customtimertimer = self.customtimertimer + dt
-		while self.customtimertimer > self.customtimerdelay do
-			self.customtimertimer = self.customtimertimer - self.customtimerdelay
+		while self.customtimertimer > self.customtimer[self.currentcustomtimerstage][1] do
+			self.customtimertimer = self.customtimertimer - self.customtimer[self.currentcustomtimerstage][1]
 			self:customtimeraction(self.customtimer[self.currentcustomtimerstage][2], self.customtimer[self.currentcustomtimerstage][3])
 			self.currentcustomtimerstage = self.currentcustomtimerstage + 1
 			if self.currentcustomtimerstage > #self.customtimer then
@@ -1891,14 +1880,13 @@ function enemy:update(dt)
 					break
 				end
 			end
-			self:updatecustomdelay()
 		end
 	end
 
 	if self.runtimer then
-		self.runtimerruntimer = self.runtimerruntimer + dt
-		while self.runtimerruntimer > self[self.runtimer][self.runtimerstage][1] do
-			self.runtimerruntimer = self.runtimerruntimer - self[self.runtimer][self.runtimerstage][1]
+		self.runtimertimer = self.runtimertimer + dt
+		while self.runtimertimer > self[self.runtimer][self.runtimerstage][1] do
+			self.runtimertimer = self.runtimertimer - self[self.runtimer][self.runtimerstage][1]
 			self:customtimeraction(self[self.runtimer][self.runtimerstage][2], self[self.runtimer][self.runtimerstage][3], "script")
 			self.runtimerstage = self.runtimerstage + 1
 			if self.runtimerstage > #self[self.runtimer] then
@@ -2035,7 +2023,7 @@ function enemy:update(dt)
                 self.currentcheckifstage = 1
             end
         end
-    end]]
+	end]]
 
 	self:convertallvariables(self)
 end
@@ -2191,12 +2179,16 @@ function enemy:customtimeraction(action, arg, t)
 				self.quad = self.quadgroup[self.quadno]
 			end
 			if p == "currentcustomtimerstage" then
-				self:updatecustomdelay()
+				self.customtimertimer = self.customtimer[self.currentcustomtimerstage][1]
 			end
 		elseif a == "add" then
-			self[p] = self[p] + arg
+		self[p] = self[p] + arg
+		elseif a == "minus" then
+			self[p] = self[p] - arg
 		elseif a == "multiply" then
 			self[p] = self[p] * arg
+		elseif a == "divide" then
+			self[p] = self[p] / arg
 		elseif a == "reverse" then
 			if type(self[p]) == "boolean" then
 				self[p] = not self[p]
@@ -2209,6 +2201,12 @@ function enemy:customtimeraction(action, arg, t)
 			else
 				self[p] = arg[math.random(#arg)]
 			end
+		elseif a == "abs" then
+			self[p] = math.abs(self[p])
+		elseif a == "floor" then
+			self[p] = math.floor(self[p])
+		elseif a == "ceil" or a == "ceiling" then
+			self[p] = math.ceil(self[p])
 		end
 	else --backwards compatibility
 		if action == "break" then
@@ -2252,12 +2250,20 @@ function enemy:customtimeraction(action, arg, t)
 			elseif self.timerstage then
 				self.customtimer[self.loopstage][3] = self.customtimer[self.loopstage][3] - 1
 				self.currentcustomtimerstage = self.timerstage
-				self:updatecustomdelay()
+				self.customtimertimer = self.customtimer[self.currentcustomtimerstage][1]
 			else
 				self.customtimer[self.loopstage][3] = self.customtimer[self.loopstage][3] - 1
 				self.timerstage = self.currentcustomtimerstage
 				self.currentcustomtimerstage = 1
-				self:updatecustomdelay()
+				self.customtimertimer = self.customtimer[self.currentcustomtimerstage][1]
+			end
+		elseif action == "skip" then
+			if t then
+				self.runtimerstage = self.runtimerstage + arg or 1
+				self.runtimertimer = self[self.runtimer][self.runtimerstage][1]
+			else
+				self.currentcustomtimerstage = self.currentcustomtimerstage + arg or 1
+				self.customtimertimer = self.customtimer[self.currentcustomtimerstage][1]
 			end
 		elseif action == "if" then
 			self:ifstatement(arg[1],arg[2],arg[3],arg[4],arg[5],t)
@@ -2285,23 +2291,22 @@ function enemy:customtimeraction(action, arg, t)
 			local coy = round(self.y+(self.placetileoffsety or 0)+1)
 			local tile = arg or self.placetile or 2
 			self:addtile(cox, coy, tile)
+		elseif action == "placeentity" then
+			-- ONLY FOR PEOPLE WHO KNOW WHAT THEIR DOING
+			local cox = round(self.x+(self.placetileoffsetx or 0)+1)
+			local coy = round(self.y+(self.placetileoffsety or 0)+1)
+			map[cox][coy][2] = arg or nil
+		elseif action == "loadentity" then
+			-- STILL ONLY FOR PEOPLE WHO KNOW WHAT THEIR DOING
+			self:spawnentity(arg[1], arg[2], arg[3], arg[4])
 		elseif action == "print" then
-			print(self[arg])
+			if self[arg] then
+				print(self[arg])
+			else
+				print(arg)
+			end
 		elseif string.sub(action, 0, 3) == "set" then
 			self[string.sub(action, 4, string.len(action))] = arg
-		end
-	end
-end
-
-function enemy:updatecustomdelay()
-	self.customtimerdelay = self.customtimer[self.currentcustomtimerstage][1]
-	--random delay
-	local v = self.customtimer[self.currentcustomtimerstage][1]
-	if type(v) == "table" then
-		if v[1] == "range" then
-			self.customtimerdelay = math.random(v[2], v[3])
-		else
-			self.customtimerdelay = v[math.random(#v)]
 		end
 	end
 end
@@ -2309,25 +2314,65 @@ end
 function enemy:ifstatement(first, symbol, second, action, arg, t)
 	--["speedx","==","speedy",["set","speedy"],10]
 	
-	if self[first] then
-		first = self[first]
-	end	
-	if self[second] then
-		second = self[second]
-	end	
+	if type(first) == "table" then
+		if first[1] == "tileid" then
+			local x, y = first[2], first[3]
+			if type(first[2]) == "string" then
+				x = self[first[2]]
+			end
+			if type(first[3]) == "string" then
+				y = self[first[3]]
+			end
+			x, y = math.ceil(x), math.ceil(y)
+			first = map[x][y][1]
+		elseif first[1] == "tileproperty" then
+			local x, y = first[2], first[3]
+			if tilequads[map[x][y][1]]:getproperty(first[4], x, y) then
+				first = true
+			else
+				first = false
+			end
+		end
+	else
+		if self[first] then
+			first = self[first]
+		end	
+	end
 
-    if type(second) == "boolean" then
-        if second == true then
-            if first then
-                self:customtimeraction(action,arg,t)
-                return true
-            end
-        elseif second == false then 
-            if not first then
-                self:customtimeraction(action,arg,t)
-                return true
-            end
-        end
+	if type(second) == "table" then
+		if second[1] == "tileid" then
+			local x, y = second[2], second[3]
+			if type(second[2]) == "string" then
+				x = self[second[2]]
+			end
+			if type(second[3]) == "string" then
+				y = self[second[3]]
+			end
+			x, y = math.ceil(x), math.ceil(y)
+			second = map[x][y][1]
+		elseif second[1] == "tileproperty" then
+			local x, y = second[2], second[3]
+			if tilequads[map[x][y][1]]:getproperty(second[4], x, y) then
+				second = true
+			else
+				second = false
+			end
+		end
+	else
+		if self[second] then
+			second = self[second]
+		end	
+	end
+	
+
+	if type(first) == "boolean" and type(second) == "boolean" then
+		if first and second then
+			self:customtimeraction(action,arg,t)
+			return true
+		if (not first) and (not second) then
+			self:customtimeraction(action,arg,t)
+			return true
+		end
     end
 
     if symbol == "=" or symbol == "==" then
@@ -2366,7 +2411,7 @@ end
 function enemy:startruntimer(arg)
 	self.runtimer = arg
 	self.runtimerstage = 1
-	self.runtimerruntimer = 0
+	self.runtimertimer = 0
 end
 
 function enemy:script(list, cause, a, b)
@@ -3937,4 +3982,25 @@ function enemy:addtile(x, y, id)
 		updatespritebatch()
 		updateranges()
 	end
+end
+
+function enemy:spawnentity(t, x, y, r)
+	--poperty stuff
+	if t and type(t) == "table" and t[1] and t[2] and t[1] == "property" then
+		t = self[t[2]]
+	end
+	if x and type(x) == "table" and x[1] and x[2] and x[1] == "property" then
+		x = self[x[2]]
+	end
+	if y and type(y) == "table" and y[1] and y[2] and y[1] == "property" then
+		y = self[y[2]]
+	end
+	if r and type(r) == "table" and r[1] and r[2] and r[1] == "property" then
+		r = self[r[2]]
+	end
+
+	local r = {x, y, r}
+
+	--do it
+	loadentity(t, x, y, r)
 end
