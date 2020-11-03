@@ -2369,6 +2369,7 @@ function enemy:ifstatement(first, symbol, second, action, arg, t)
 		if first and second then
 			self:customtimeraction(action,arg,t)
 			return true
+		end
 		if (not first) and (not second) then
 			self:customtimeraction(action,arg,t)
 			return true
