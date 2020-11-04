@@ -334,7 +334,6 @@ entitylist = {
 	{t="thwompnew", spawnable=true, supersize=true},
 	{t="iciclehuge", name="huge icicle", spawnable=true},
 	{t="iciclenew", name="small icicle", spawnable=true},
-	{t="animationtransform"},
 	{t="groundlighttright", name="antline"},
 	{t="groundlighttdown", name="antline"},
 	{t="groundlighttleft", name="antline"},
@@ -343,6 +342,7 @@ entitylist = {
 	{t="groundlightcircle", name="antline"},
 	{t="claw", name="swinging claw"},
 	{t="rouletteblock", name="roulette block"},
+	{t="crowber"},
 }
 
 --only spawnable with spawner or by enemies
@@ -742,7 +742,6 @@ entitydescriptions = {
 	"place on an empty tile - thwomp - right click for directions.", -- "thwompnew",
 	"place on the ceiling - huge icicle",--"iciclehuge",
 	"place on empty tile - icicle - right click for gravity", --"iciclenew",
-	"place anywhere - will transform an enemy with same id when triggered", -- "animationtransform"
 	"place on wall - antline - use link to show on/off state", --"groundlightver", (too lazy to change names)
 	"place on wall - antline - use link to show on/off state", --"groundlighthor",
 	"place on wall - antline - use link to show on/off state", --"groundlightupright",
@@ -751,6 +750,7 @@ entitydescriptions = {
 	"place on wall - antline - use link to show on/off state", --"groundlightleftup",
 	"place anywhere - swinging claw - will hold items and players - swing left and right to gain speed.", --"claw"
 	"place on empty tile - roulette block - will give out a random item.", --"rouletteblock"
+	"(unfinished!) place on empty tile - crowber - will swoop down from the sky.", --"crowber"
 }
 
 rightclickvalues = {}
@@ -781,7 +781,19 @@ rightclickvalues["powblock"] = {"type", "blue", "red"}
 
 rightclickvalues["angrysun"] = {"type", "sun", "moon"}
 
+rightclickvalues["levelball"] = {"type", 1, 2, 3, 4, 5, 6, 7, 8}
+
 rightclicktype = {}
+
+rightclicktype["goombashoe"] = {
+    name = "goombashoe",
+    default = "false|1",
+    format = {
+        {"checkbox", 1, "wings", function(v) rightclickvalues2[1] = v; rightclickobjects[1].var = v end, default = false},
+        "type",
+        {"dropdown", 2, 4, function(v) rightclickobjects[2].var = v; rightclickvalues2[2] = v end, {1,2}},
+    }
+}
 
 rightclicktype["text"] = {
 	name = "text",
@@ -945,19 +957,6 @@ rightclicktype["plusclock"] = {
 	format = {
 		"time:",
 		{"input", 1, "100", 4, 4, 1, function(v) rightclickvalues2[1] = v end},
-	}
-}
-
-rightclicktype["tilegravity"] = {
-	name = "tilegravity",
-	default = "true|0|0",
-	format = {
-		{"checkbox", 1, "pushable", function(v) rightclickvalues2[1] = v; rightclickobjects[1].var = v end},
-		"velocity x:",
-		{"slider", 2, function(v) return round(v*100-50, 1) end, range = {-50, 50, default = 0, round = 1}},
-		"velocity y:",
-		{"slider", 3, function(v) return round(v*100-50, 1) end, range = {-50, 50, default = 0, round = 1}},
-		{"button", 2, {"link drop", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}},
 	}
 }
 
@@ -1160,6 +1159,7 @@ rightclicktype["tiletool"] = {
 				elseif func == "check gel " then
 				elseif func == "check tile " then	
 				elseif func == "set gel " then
+				elseif func == "tile gravity " then	
 				else
 					rightclickobjects[3].active = false
 					rightclickobjects[3].dontdraw = true
@@ -1206,6 +1206,8 @@ rightclicktype["tiletool"] = {
 				rightclickobjects[3].value = "1"	
 			elseif func == "set gel " then
 				rightclickobjects[3].value = "top 1"
+			elseif func == "tile gravity " then	
+				rightclickobjects[3].value = "1"
 			else
 				rightclickobjects[3].active = false
 				rightclickobjects[3].dontdraw = true
@@ -1214,7 +1216,7 @@ rightclicktype["tiletool"] = {
 			rightclickobjects[3]:updatePos()
 			rightclicktype["tiletool"].savefunc()
 		end, 
-		{"change to ","set back to ","group","remove","break","hit","set gel ","check gel ","remove gel","bump into ","check tile "}},
+		{"change to ","set back to ","group","remove","break","hit","set gel ","check gel ","remove gel","bump into ","check tile ","tile gravity "}},
 
 		{"smallinput", 1, "1", 14, 20, 1, function(v) rightclicktype["tiletool"].savefunc() end},
 		{"button", 2, {"select tiles", 
@@ -1225,8 +1227,8 @@ rightclicktype["tiletool"] = {
 			end, {2, 1,}}},
 		{"button", 3, {"link trigger", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	},
-	t = {"change to ","set back to ","group","remove","break","hit","set gel ","check gel ","remove gel","bump into ", "check tile "},
-	d = {"change to:","set back to:","group","remove","break","hit","set gel:", "check gel:", "remove gel", "bump into:", "check tile:"},
+	t = {"change to ","set back to ","group","remove","break","hit","set gel ","check gel ","remove gel","bump into ", "check tile ", "tile gravity "},
+	d = {"change to:","set back to:","group","remove","break","hit","set gel:", "check gel:", "remove gel", "bump into:", "check tile:", "tile gravity:"},
 }
 rightclicktype["enemytool"] = {
 	name = "spawner",
@@ -1554,10 +1556,12 @@ rightclicktype["beltswitch"] = {
 }
 rightclicktype["animationtrigger"] = {
 	name = "animation trigger",
-	default = "",
+	default = "|",
 	format = {
 		"animation id",
 		{"input", 1, "", 14, 20, 1, function(v) rightclickvalues2[1] = v end},
+		"animation input",
+		{"input", 2, "", 14, 20, 1, function(v) rightclickvalues2[2] = v end},
 		{"button", 2, {"link trigger", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	}
 }rightclicktype["animationoutput"] = {
@@ -1566,15 +1570,6 @@ rightclicktype["animationtrigger"] = {
 	format = {
 		"animation id",
 		{"input", 1, "", 14, 20, 1, function(v) rightclickvalues2[1] = v end},
-	}
-}
-rightclicktype["animationtransform"] = {
-	name = "animation transform",
-	default = "",
-	format = {
-		"transform id",
-		{"input", 1, "", 14, 20, 1, function(v) rightclickvalues2[1] = v end},
-		{"button", 2, {"link trigger", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	}
 }
 
@@ -2055,10 +2050,11 @@ rightclicktype["risingwater"] = {
 
 rightclicktype["redseesaw"] = {
 	name = "red seesaw",
-	default = "5",
+	default = "5|false",
 	format = {
 		"width:",
 		{"slider", 1, function(v) return formatscrollnumber(round((v*(15-3))+3, 0)) end, range = {3, 15, default = 5, round = 0}},
+		{"checkbox", 2, "reverse", function(v) rightclickvalues2[2] = v; rightclickobjects[3].var = v end},
 	}
 }
 
@@ -2071,7 +2067,7 @@ rightclicktype["snakeblock"] = {
 	format = {
 		{"button", 1, {"  set path  ", function(var) startrcpath(var) end, {1}}, {"x", function() rightclickvalues2[1] = "" end, {}, textcolor = {255, 0, 0}}},
 		"length",
-		{"slider", 2, function(v) return formatscrollnumber(round((v*(20-3))+3, 0)) end, range = {3, 20, default = 3, round = 0}},
+		{"slider", 2, function(v) return formatscrollnumber(round((v*(20-2))+2, 0)) end, range = {2, 20, default = 3, round = 0}},
 		"speed",
 		{"slider", 3, function(v) return formatscrollnumber(round(v*6, 2)) end, range = {0, 6, default = 2, round = 2}},
 		{"checkbox", 4, "loop", function(v) rightclickvalues2[4] = v; rightclickobjects[7].var = v end},
@@ -2409,6 +2405,26 @@ rightclicktype["pbutton"] = {
 		"base",
 		{"verdirbuttonset", 1},
 	},
+}
+
+rightclicktype["tilegravity"] = {
+	name = "tilegravity",
+	default = "1|1|0|0|true|0|0",
+	regionfunc = function(w,h,x,y) --setting region vars
+		rightclickvalues2[1] = w
+		rightclickvalues2[2] = h
+		rightclickvalues2[3] = x
+		rightclickvalues2[4] = y
+	end,
+	format = {
+		{"button", 1, {"select range", function(var, step) startrcregion(var, step) end, {1, 1}}},
+		{"checkbox", 5, "pushable", function(v) rightclickvalues2[5] = v; rightclickobjects[2].var = v end},
+		"velocity x:",
+		{"slider", 6, function(v) return round(v*100-50, 1) end, range = {-50, 50, default = 0, round = 1}},
+		"velocity y:",
+		{"slider", 7, function(v) return round(v*100-50, 1) end, range = {-50, 50, default = 0, round = 1}},
+		{"button", 2, {"link drop", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}},
+	}
 }
 
 rightclicktype["ceilblocker"] = {

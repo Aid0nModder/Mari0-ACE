@@ -165,7 +165,18 @@ function enemy:init(x, y, t, a, properties)
 	if self.customtimer then
 		self.customtimertimer = 0
 		self.currentcustomtimerstage = 1
+		for i = 1, #self.customtimer do
+			if type(self.customtimer[i]) == "string" then
+				--comments
+				table.remove(self.customtimer, i)
+			end
+		end
 	end
+
+	self.loops = 0
+	self.startstage = {}
+	self.endstage = {}
+	self.looped = {}
 
 	self.runtimer = false
 	self.runtimerstage = 1
@@ -405,6 +416,7 @@ function enemy:init(x, y, t, a, properties)
 		makepoof(self.x+self.width/2, self.y+self.height/2, self.poofonspawn)
 	end
 
+	self.children = {}
 	if self.spawnchildren then
 		if not (self.a and self.a[1] == "ignorespawnchildren") then
 			for i = 1, #self.spawnchildren do
@@ -418,6 +430,28 @@ function enemy:init(x, y, t, a, properties)
 				end
 				local temp = enemy:new(self.x+self.width/2+.5+offsetx, self.y+self.height+offsety, self.spawnchildren[i], {"ignorespawnchildren"})
 				table.insert(objects["enemy"], temp)
+
+				--set
+				local set = self.spawnchildrenset or nil
+				if type(self.spawnchildrenset) == "table" then
+					set = self.spawnchildrenset[i]
+				end
+				if set then
+					for p = 1, #set do
+						temp[set[p][1]] = set[p][2]
+					end
+				end
+
+				--pass
+				local pass = self.spawnchildrenpass or nil 
+				if type(self.spawnchildrenpass) == "table" then
+					pass = self.spawnchildrenpass[i]
+				end
+				if pass then
+					for p = 1, #pass do
+						temp[pass[p][1]] = self[pass[p][1]] or nil
+					end
+				end
 			end
 		end
 	end
@@ -1677,14 +1711,26 @@ function enemy:update(dt)
 		if type(self.playerneardist) == "number" then
 			for i = 1, players do
 				local v = objects["player"][i]
-				if inrange(v.x+v.width/2, self.x+self.width/2-(self.playerneardist or 3), self.x+self.width/2+(self.playerneardist or 3)) then
-					if self:gettransformtrigger("playernear") then
-						self:transform(self:gettransformsinto("playernear"))
+				if self.playerneardistvertical then
+					if inrange(v.y+v.height/2, self.y+self.height/2-(self.playerneardist or 3), self.y+self.height/2+(self.playerneardist or 3)) then
+						if self:gettransformtrigger("playernear") then
+							self:transform(self:gettransformsinto("playernear"))
+							return
+						end
+					elseif self:gettransformtrigger("playernotnear") then
+						self:transform(self:gettransformsinto("playernotnear"))
 						return
 					end
-				elseif self:gettransformtrigger("playernotnear") then
-					self:transform(self:gettransformsinto("playernotnear"))
-					return
+				else
+					if inrange(v.x+v.width/2, self.x+self.width/2-(self.playerneardist or 3), self.x+self.width/2+(self.playerneardist or 3)) then
+						if self:gettransformtrigger("playernear") then
+							self:transform(self:gettransformsinto("playernear"))
+							return
+						end
+					elseif self:gettransformtrigger("playernotnear") then
+						self:transform(self:gettransformsinto("playernotnear"))
+						return
+					end
 				end
 			end
 		elseif type(self.playerneardist) == "table" and #self.playerneardist == 4 then
@@ -2119,7 +2165,7 @@ function enemy:shotted(dir, cause, high, fireball, star)
 			return
 		end
 	end
-	
+
 	self.speedy = -(self.shotjumpforce or shotjumpforce)
 	if high then
 		self.speedy = self.speedy*2
@@ -2169,20 +2215,14 @@ function enemy:customtimeraction(action, arg, t)
 	if type(action) == "table" then --The new *better* custom timer format
 		local a = action[1] --action
 		local p = action[2] --parameter
-		if p == "customtimerstage" then
-			p = "currentcustomtimerstage"
-		end
 		if a == "set" then
 			self[p] = arg
 			if p == "quadno" then
 				--update frame
 				self.quad = self.quadgroup[self.quadno]
 			end
-			if p == "currentcustomtimerstage" then
-				self.customtimertimer = self.customtimer[self.currentcustomtimerstage][1]
-			end
 		elseif a == "add" then
-		self[p] = self[p] + arg
+			self[p] = self[p] + arg
 		elseif a == "minus" then
 			self[p] = self[p] - arg
 		elseif a == "multiply" then
@@ -2229,32 +2269,24 @@ function enemy:customtimeraction(action, arg, t)
 			end
 			self:spawnenemy(self.spawnsenemy)
 		elseif not t and action == "startloop" then
-			self.timerstage = self.currentcustomtimerstage
+			table.insert(self.startstage, self.currentcustomtimerstage)
+			table.insert(self.endstage, 0)
+			table.insert(self.looped, 0)
+			self.loops = self.loops + 1
 		elseif not t and action == "loop" then
-			--self.timerstage = start loop stage
-			--self.loopstage = end loop stage
-			--self.looparg = old loop ammount
-			--self.loopargtime = old loop delay
-			self.loopstage = self.currentcustomtimerstage
-			self.looparg = self.looparg or arg --stores the old value of the loop
-			self.loopargtime = self.customtimer[self.loopstage][1] or self.loopargtime --stores the old value of the loop
-			--weird
-			if arg == 2 then
-				self.customtimer[self.loopstage][1] = 0
+			if self.looped[self.loops] == 0 then
+				self.endstage[self.loops] = self.currentcustomtimerstage
+				self.looped[self.loops] = arg
 			end
-			if arg == 1 then
-				self.customtimer[self.loopstage][3] = self.looparg
-				self.customtimer[self.loopstage][1] = self.loopargtime
-				self.looparg = false
-				self.loopargtime = false
-			elseif self.timerstage then
-				self.customtimer[self.loopstage][3] = self.customtimer[self.loopstage][3] - 1
-				self.currentcustomtimerstage = self.timerstage
-				self.customtimertimer = self.customtimer[self.currentcustomtimerstage][1]
+
+			if self.looped[self.loops] == 1 then
+				table.remove(self.startstage, self.loops)
+				table.remove(self.endstage, self.loops)
+				table.remove(self.looped, self.loops)
+				self.loops = self.loops - 1
 			else
-				self.customtimer[self.loopstage][3] = self.customtimer[self.loopstage][3] - 1
-				self.timerstage = self.currentcustomtimerstage
-				self.currentcustomtimerstage = 1
+				self.looped[self.loops] = self.looped[self.loops] - 1
+				self.currentcustomtimerstage = self.startstage[self.loops]
 				self.customtimertimer = self.customtimer[self.currentcustomtimerstage][1]
 			end
 		elseif action == "skip" then
@@ -2263,6 +2295,14 @@ function enemy:customtimeraction(action, arg, t)
 				self.runtimertimer = self[self.runtimer][self.runtimerstage][1]
 			else
 				self.currentcustomtimerstage = self.currentcustomtimerstage + arg or 1
+				self.customtimertimer = self.customtimer[self.currentcustomtimerstage][1]
+			end
+		elseif action == "stage" then
+			if t then
+				self.runtimerstage = arg or 1
+				self.runtimertimer = self[self.runtimer][self.runtimerstage][1]
+			else
+				self.currentcustomtimerstage = arg or 1
 				self.customtimertimer = self.customtimer[self.currentcustomtimerstage][1]
 			end
 		elseif action == "if" then
@@ -2305,6 +2345,8 @@ function enemy:customtimeraction(action, arg, t)
 			else
 				print(arg)
 			end
+		elseif action == "transform" then
+			self:transform(arg)
 		elseif string.sub(action, 0, 3) == "set" then
 			self[string.sub(action, 4, string.len(action))] = arg
 		end
@@ -2369,8 +2411,7 @@ function enemy:ifstatement(first, symbol, second, action, arg, t)
 		if first and second then
 			self:customtimeraction(action,arg,t)
 			return true
-		end
-		if (not first) and (not second) then
+		elseif (not first) and (not second) then
 			self:customtimeraction(action,arg,t)
 			return true
 		end
@@ -2413,6 +2454,12 @@ function enemy:startruntimer(arg)
 	self.runtimer = arg
 	self.runtimerstage = 1
 	self.runtimertimer = 0
+	for i = 1, #self.runtimer do
+		if type(self.runtimer[i]) == "string" then
+			--comments
+			table.remove(self.runtimer, i)
+		end
+	end
 end
 
 function enemy:script(list, cause, a, b)

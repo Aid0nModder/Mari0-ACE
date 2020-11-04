@@ -469,7 +469,7 @@ function menu_draw()
 	
 	love.graphics.setColor(255, 255, 255)
 	drawmaptiles("menu", 0, 0, xtodraw, ytodraw)
-	
+
 	--[[for y = 1, ytodraw do
 		for x = 1, xtodraw do
 			local t = map[x][y]
@@ -564,7 +564,7 @@ function menu_draw()
 
 		---UI
 		if hudvisible then
-			drawUI()
+			drawHUD()
 		end
 
 		local start = 9
@@ -691,7 +691,7 @@ function menu_draw()
 	elseif gamestate == "mappackmenu" then
 		---UI
 		if hudvisible then
-			drawUI()
+			drawHUD()
 		end
 
 		--background
@@ -1036,7 +1036,7 @@ function menu_draw()
 	elseif gamestate == "onlinemenu" then
 		---UI
 		if hudvisible then
-			drawUI()
+			drawHUD()
 		end
 		onlinemenu_draw()
 		--[[if CLIENT == false and SERVER == false then
@@ -1051,13 +1051,13 @@ function menu_draw()
 	elseif gamestate == "lobby" then
 		---UI
 		if hudvisible then
-			drawUI()
+			drawHUD()
 		end
 		lobby_draw()
 	elseif gamestate == "options" then
 		---UI
 		if hudvisible then
-			drawUI()
+			drawHUD()
 		end
 		love.graphics.setColor(0, 0, 0, 200)
 		love.graphics.rectangle("fill", 21*scale, 31*scale, 218*scale, 185*scale)
@@ -1880,7 +1880,33 @@ function loadbackground(background)
 			customtiles = false
 			customtilecount = 0
 		end
-		
+
+		local files = love.filesystem.getDirectoryItems(mappackfolder .. "/" .. mappack .. "/tiles")
+		if files ~= 0 then
+			modcustomtiles = #files
+			modcustomtilesimg = {}
+			modcustomtilecount = {}
+			for i = 1, modcustomtiles do
+				modcustomtilesimg[i] = love.graphics.newImage(mappackfolder .. "/" .. mappack .. "/tiles/" .. files[i])
+				local imgwidth, imgheight = modcustomtilesimg[i]:getWidth(), modcustomtilesimg[i]:getHeight()
+				local width = math.floor(imgwidth/17)
+				local height = math.floor(imgheight/17)
+				local imgdata = love.image.newImageData(mappackfolder .. "/" .. mappack .. "/tiles/" .. files[i])
+				
+				for y = 1, height do
+					for x = 1, width do
+						table.insert(tilequads, quad:new(modcustomtilesimg[i], imgdata, x, y, imgwidth, imgheight))
+						local r, g, b = getaveragecolor(imgdata, x, y)
+						table.insert(rgblist, {r, g, b})
+					end
+				end
+				modcustomtilecount[i] = (modcustomtilecount[i-1] or 0) + width*height
+			end
+		else
+			modcustomtiles = false
+			modcustomtilecount = {0}
+		end
+			
 		--MAP ITSELF
 		local t = s2[1]:split(",")
 		
@@ -1933,7 +1959,7 @@ function loadbackground(background)
 					local tiles = r[1]:split("~")
 					r[1] = tonumber(tiles[1])
 					map[x][y]["back"] = tonumber(tiles[2])
-				elseif (nr > smbtilecount+portaltilecount+customtilecount and nr <= 90000) or nr > 90000+animatedtilecount then
+				elseif (nr > smbtilecount+portaltilecount+customtilecount+modcustomtilecount[modcustomtiles] and nr <= 90000) or nr > 90000+animatedtilecount then
 					--tile doesn't exist
 					r[1] = 1
 				end

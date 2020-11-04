@@ -134,19 +134,19 @@ function claw:update(dt)
 	--timer
 	local timer
 	if self.dirstate == "right" then
-		self.timer = self.timer + dt
+		self.timer = self.timer + dt*2
 		if self.timer > math.pi then
 			self.timer = self.timer - math.pi
 			self.dirstate = "left"
 		end
-		timer = math.cos(self.timer)/200
+		timer = math.cos(self.timer)
 	elseif self.dirstate == "left" then
-		self.timer = self.timer - dt
+		self.timer = self.timer - dt*2
 		if self.timer < -math.pi then
 			self.timer = self.timer + math.pi
 			self.dirstate = "right"
 		end
-		timer = -math.cos(self.timer)/200
+		timer = -math.cos(self.timer)
 	end
 
 	--speed
@@ -216,7 +216,7 @@ function claw:update(dt)
 
 	--ok i guess you can update angle now
 	local oldangle = self.angle
-	self.angle = self.angle + timer
+	self.angle = self.angle + timer * dt
 	if self.angle > oldangle then
 		self.movedir = "right"
 	elseif self.angle < oldangle then

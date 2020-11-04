@@ -392,17 +392,20 @@ function editor_load(player_position) --{x, y, xscroll, yscroll}
 	for i, v in ipairs(animations) do
 		table.insert(args, string.sub(v.name, 1, -6))
 	end
-	guielements["animationselectdrop"] = guielement:new("dropdown", 16, 20, 15, selectanimation, 1, unpack(args))
+	guielements["animationselectdrop"] = guielement:new("dropdown", 51, 20, 15, selectanimation, 1, unpack(args))
 	guielements["animationnewbutton"] = guielement:new("button", 3, 20, "+", createnewanimation, nil)
-	guielements["animationsavebutton"] = guielement:new("button", 151, 20, "save", saveanimation, nil)
-	guielements["animationdelbutton"] = guielement:new("button", 188, 20, "x", removeanimation, nil)
-	guielements["animationdelbutton"].bordercolor = {255, 0, 0}
-	guielements["animationdelbutton"].bordercolorhigh = {255, 127, 127}
-	guielements["animationnameinput"] = guielement:new("input", 201, 20, 24, function() animationsaveas = guielements["animationnameinput"].value; guielements["animationnameinput"].inputting = false end, "", 20, nil, nil, 0)
+	guielements["animationnewbutton"].textcolor = {0, 200, 0}
+	guielements["animationdupebutton"] = guielement:new("button", 15, 20, "d", dupeanimation, nil)
+	guielements["animationdupebutton"].textcolor = {200, 200, 0}
+	guielements["animationsavebutton"] = guielement:new("button", 27, 20, "s", saveanimation, nil)
+	guielements["animationdelbutton"] = guielement:new("button", 39, 20, "x", removeanimation, nil)
+	guielements["animationdelbutton"].textcolor = {200, 0, 0}
+	guielements["animationnameinput"] = guielement:new("input", 282, 20, 14, function() animationsaveas = guielements["animationnameinput"].value; guielements["animationnameinput"].inputting = false end, "", 20, nil, nil, 0)
 	if animations[currentanimation] then
 		guielements["animationnameinput"].value = string.sub(animations[currentanimation].name, 1, -6)
 		guielements["animationnameinput"]:updatePos()
 	end
+
 	addanimationtriggerbutton = guielement:new("button", 0, 0, "+", addanimationtrigger, nil, nil, nil, 8)
 	addanimationtriggerbutton.textcolor = {0, 200, 0}
 	
@@ -3624,6 +3627,7 @@ function animationstab()
 	guielements["animationdelbutton"].active = true
 	guielements["animationselectdrop"].active = true
 	guielements["animationnewbutton"].active = true
+	guielements["animationdupebutton"].active = true
 	guielements["animationnameinput"].active = true
 	
 	generateanimationgui()
@@ -3757,7 +3761,7 @@ function generateanimationgui()
 	end
 end
 
-function createnewanimation(name)
+function createnewanimation(name,dont_generate_gui)
 	local s = {}
 	s.triggers = {}
 	s.conditions = {}
@@ -3777,6 +3781,39 @@ function createnewanimation(name)
 	table.insert(animations, animation:new(mappackfolder .. "/" .. mappack .. "/animations/" .. name .. ".json", name .. ".json"))
 	
 	currentanimation = #animations
+	if not dont_generate_gui then
+		generateanimationgui(currentanimation)
+	end
+	
+	updateanimationdropdown()
+	guielements["animationnameinput"].value = string.sub(animations[currentanimation].name, 1, -6)
+	guielements["animationnameinput"]:updatePos()
+	animationsaveas = false
+end
+
+function dupeanimation()
+	local s = {}
+	s.triggers = animations[currentanimation].triggers
+	s.conditions = animations[currentanimation].conditions
+	s.actions = animations[currentanimation].actions
+	
+	if not name then
+		local i = 1
+		while love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/animations/animation" .. i .. ".json") do
+			i = i + 1
+		end
+		name = "animation" .. i
+	end
+
+	love.filesystem.createDirectory(mappackfolder .. "/" .. mappack .. "/animations/")
+	love.filesystem.write(mappackfolder .. "/" .. mappack .. "/animations/" .. name .. ".json", JSON:encode_pretty(s))
+	
+	table.insert(animations, animation:new(mappackfolder .. "/" .. mappack .. "/animations/" .. name .. ".json", name .. ".json"))
+	
+	currentanimation = #animations
+	if not dont_generate_gui then
+		generateanimationgui(currentanimation)
+	end
 	
 	updateanimationdropdown()
 	guielements["animationnameinput"].value = string.sub(animations[currentanimation].name, 1, -6)
@@ -3790,7 +3827,7 @@ function updateanimationdropdown()
 		table.insert(args, string.sub(v.name, 1, -6))
 	end
 	
-	guielements["animationselectdrop"] = guielement:new("dropdown", 16, 20, 15, selectanimation, currentanimation, unpack(args))
+	guielements["animationselectdrop"] = guielement:new("dropdown", 51, 20, 15, selectanimation, currentanimation, unpack(args))
 end
 	
 function deleteanimationguiline(t, tabl)
@@ -3873,6 +3910,8 @@ function saveanimation()
 	local json = JSON:encode_pretty(out)
 	if animationsaveas then
 		love.filesystem.write(mappackfolder .. "/" .. mappack .. "/animations/" .. animationsaveas .. ".json", json)
+		love.filesystem.remove(animations[currentanimation].filepath)
+		table.remove(animations, currentanimation)
 		table.insert(animations, animation:new(mappackfolder .. "/" .. mappack .. "/animations/" .. animationsaveas .. ".json", animationsaveas .. ".json"))
 		updateanimationdropdown()
 		currentanimation = #animations
@@ -3889,11 +3928,11 @@ function removeanimation()
 	if areyousure then
 		--areyousure = false
 	else
-		notice.new("Delete Animation?|Press button again if yes.", notice.white, 2)
+		notice.new("Delete Animation?\nPress button again if yes.", notice.white, 2)
 		areyousure = true
 		return false
 	end
-	love.filesystem.remove(animations[currentanimation].filepath)
+	love.filesystem.remove(animations[i or currentanimation].filepath)
 	table.remove(animations, currentanimation)
 	if #animations <= 0 then
 		createnewanimation()
@@ -3903,6 +3942,7 @@ function removeanimation()
 	updateanimationdropdown()
 	currentanimation = #animations
 	guielements["animationselectdrop"].var = #animations
+	generateanimationgui(currentanimation)
 end
 
 function addanimationtrigger()
@@ -4364,8 +4404,14 @@ function placetile(x, y, tilei, group)
 			elseif tablecontains(customenemies, currenttile) and enemiesdata[currenttile] and enemiesdata[currenttile].rightclickmenu then --custom enemies
 				if enemiesdata[currenttile].rightclickmenutable then
 					map[cox][coy][3] = 2
+					if enemiesdata[currenttile].rightclickdefault then
+						map[cox][coy][3] = enemiesdata[currenttile].rightclickdefault+1
+					end
 				else
 					local default = enemiesdata[currenttile].rightclickmenu[2]
+					if enemiesdata[currenttile].rightclickdefault then
+						default = enemiesdata[currenttile].rightclickmenu[enemiesdata[currenttile].rightclickdefault+1]
+					end
 					local s = tostring(default)
 					default = s:gsub("-", "B")
 					map[cox][coy][3] = default
@@ -5436,6 +5482,9 @@ function openrightclickmenu(x, y, tileX, tileY)
 		--get width and start
 		local rcwidth = 0
 		local start = v.rightclickmenu[2]
+		if v.rightclickdefault then
+			start = v.rightclickmenu[v.rightclickdefault+1]
+		end
 		if v.rightclickmenutable then
 			start = (tonumber(r[3]) or 2)
 		end

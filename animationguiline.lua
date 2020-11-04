@@ -2122,7 +2122,7 @@ function animationguiline:draw(x, y)
 	self.upbutton.x = (x+xadd)+4
 	self.upbutton.y = y
 	self.upbutton:draw()
-	xadd = xadd + 12
+	xadd = xadd + 11
 	
 	for i = 1, #self.elements do
 		if self.elements[i].t == "text" then

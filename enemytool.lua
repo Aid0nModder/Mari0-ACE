@@ -9,7 +9,7 @@ function enemytool:init(x, y, r, e)
 	self.customenemy = true
 	self.animation = false
 	if e:find("|") then
-		local v = convertr(e, {"string", "num", "num", "bool", "string", "num"}, true)
+		local v = convertr(e, {"string", "num", "num", "bool", "string"}, true)
 		self.enemy = v[1]
 		self.xvel = v[2]
 		self.yvel = v[3]
@@ -237,20 +237,13 @@ function enemytool:spawn()
 	elseif i == "snowball" then
 		obj = spikeball:new(x-0.5, y, "snow", "left", true)
 		table.insert(objects["spikeball"], obj)
-	elseif i == "koopaling" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 1))
-	elseif i == "koopaling2" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 2))
-	elseif i == "koopaling3" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 3))
-	elseif i == "koopaling4" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 4))
-	elseif i == "koopaling5" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 5))
-	elseif i == "koopaling6" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 6))
-	elseif i == "koopaling7" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 7))
+	elseif string.find(i, "koopaling") then
+		local num = 1
+		if i ~= "koopaling" then
+			num = string.sub(i, 10, 10)
+		end
+		num = tonumber(num)
+		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, num))
 	elseif i == "box" then --change to enemy? (be wary of region triggers)
 		obj = box:new(x, y)
 		table.insert(objects["box"], obj)

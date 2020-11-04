@@ -6,9 +6,15 @@ function animationtrigger:init(x, y, r, id)
 	self.y = y
 	self.cox = x
 	self.coy = y
-	
+
 	self.r = r
-	self.id = id
+	local v = convertr(id, {"string", "string"})
+	self.id = v[1]
+	self.sub = false
+	if v[2] and v[2] ~= "" then
+		self.sub = v[2]
+	end
+	print(self.id, self.sub)
 end
 
 function animationtrigger:link()
@@ -30,7 +36,7 @@ function animationtrigger:input(t)
 		end
 		
 		for i = 1, #animationtriggerfuncs[self.id] do
-			animationtriggerfuncs[self.id][i]:trigger()
+			animationtriggerfuncs[self.id][i]:trigger(self.sub)
 		end
 	end
 end
@@ -61,36 +67,5 @@ function animationoutput:trigger(signal)
 		if self.outtable[i][1].input then
 			self.outtable[i][1]:input(signal or "toggle", self.outtable[i][2])
 		end
-	end
-end
-
---transform
-animationtransform = class:new()
-
-function animationtransform:init(x, y, r, id)
-	self.x = x
-	self.y = y
-	self.cox = x
-	self.coy = y
-
-	self.r = r
-	self.id = id
-end
-
-function animationtransform:link()
-	if #self.r > 2 then
-		for j, w in pairs(outputs) do
-			for i, v in pairs(objects[w]) do
-				if tonumber(self.r[5]) == v.cox and tonumber(self.r[6]) == v.coy then
-					v:addoutput(self)
-				end
-			end
-		end
-	end
-end
-
-function animationtransform:input(t)
-	if t == "on" or t == "toggle" then
-		transformenemyanimation(self.id)
 	end
 end

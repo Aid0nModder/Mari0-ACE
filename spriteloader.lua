@@ -27,7 +27,7 @@ imagestable = {  	"1", "2", "3", "blockdebrisimage", "coinblockanimationimage", 
 						"pblockimg", "spikeimg", "spikeballimg", "coinfrozenimg", "coinbrickfrozenimg", "helmetshellimg", "boxgelimg", "helmetpropellerimg", "helmetcannonimg",
 						"cannonballcannonimg", "clearpipeimg", "plantcreeperimg", "trackimg", "pneumatictubeimg", "dustimg", "platformtrackimg", "checkpointflagimg", "iceimg",
 						"snowspikeimg", "grinderimg", "fuzzyimg", "emancelaserimg", "iciclehugeimg", "mushroomfrozenimg", "frozenimg", "coinblockfrozenimg", "redpowblockimg",
-						"clawimg", "moonimg", "rouletteblockimg"}
+						"clawimg", "moonimg", "rouletteblockimg", "crowberimg"}
 
 table.sort(imagestable, function(a, b) return a < b end)--sort alphabetically
 imagestable[1] = "smbtilesimg"
@@ -176,7 +176,7 @@ function loadcustomsprites(initial) --Sprite loader
 	itemsquad = {}
 	for y = 1, 4 do
 		itemsquad[y] = {}
-		for x = 1, 17 do
+		for x = 1, 18 do
 			itemsquad[y][x] = love.graphics.newQuad((x-1)*16, (y-1)*16, 16, 16, itemsimg:getWidth(), 64)
 		end
 	end
@@ -599,6 +599,18 @@ function loadquads(initial)
 		createtilegroups(data)
 	end
 
+	--lightsout
+	lightsoutstuff = {}
+	customlightsout = false
+	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/lightsout.json") then
+		customlightsout = true
+		--load properties
+		local s = love.filesystem.read(mappackfolder .. "/" .. mappack .. "/lightsout.json")
+		local temp = JSON:decode(s)	
+		for i, v in pairs(temp) do
+			lightsoutstuff[i] = v
+		end
+	end
 	------------------------------
 	------------QUADS-------------
 	------------------------------

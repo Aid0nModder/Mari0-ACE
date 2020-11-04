@@ -359,6 +359,15 @@ function tiletool:action(cox, coy)
 				generatespritebatch()
 			end
 		end
+	elseif string.find(self.func, "tile gravity ") then
+		local x, y = self.regionX, self.regionY
+		local s = self.func:split(" ")
+		local id = tonumber(s[3])
+		local push = "false"
+		if s[4] and s[4] == "true" then
+			push = "true"
+		end
+		table.insert(objects["tilegravity"], tilegravity:new(x, y, {0, 0, "1|1|0|0|" .. push .. "|0|0"}, id))
 	end
 end
 

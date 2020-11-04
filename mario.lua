@@ -48,6 +48,10 @@ function mario:init(x, y, i, animation, size, t, properties)
 		self.width = self.width*scalefactor
 		self.height = self.height*scalefactor
 	end
+
+	self.jetpackstrength = jetpackstrength
+	self.jetpackcurrent = 0
+	self.jpsound = false
 	
 	self.y = y+1-self.height
 	self.static = false
@@ -314,7 +318,10 @@ function mario:init(x, y, i, animation, size, t, properties)
 	
 	self.mazevar = 0
 
-	self.light  = 3.5
+	self.light = 3.5
+	if customlightsout and lightsoutstuff.mariolight then
+		self.light = lightsoutstuff.mariolight
+	end
 	
 	self.bubbletimer = 0
 	self.bubbletime = bubblestime[math.random(#bubblestime)]
@@ -2769,6 +2776,10 @@ function mario:movement(dt)
 			end
 		end
 	end
+
+	if jetpack and jumpkey(self.playernumber) then
+		self:fly()
+	end
 		
 	--HORIZONTAL MOVEMENT
 	local runningkey = runkey(self.playernumber)
@@ -4681,7 +4692,7 @@ function mario:floorcollide(a, b)
 		end
 		return false
 	elseif a == "plant" or a == "bowser" or a == "cheep" or a == "upfire" or (a == "goomba" and b.t ~= "shyguy") or a == "koopa" or a == "squid" or a == "hammer" or a == "downplant" or a == "sidestepper" or a == "barrel" or (a == "angrysun" and b.t == "sun") or a == "splunkin" or a == "biggoomba" or a == "brofireball" or a == "skewer" or a == "fishbone" or a == "meteor" or (a == "boomerang" and b.kills)
-		or a == "ninji" or a == "boo" or a == "mole" or a == "bomb" or a == "fireplant" or a == "downfireplant" or a == "plantfire" or a == "torpedoted" or a == "torpedolauncher" or a == "boomboom" or a == "amp" or a == "fuzzy" or a == "longfire" or a == "turretrocket" or a == "glados" or a == "pokey" or a == "chainchomp" or a == "rockywrench" or a == "wrench" or (a == "drybones" and b.spiked) or a == "koopaling" or (a == "spikeball" and not b.stompable) or a == "plantcreeper" then --KILL
+		or a == "ninji" or a == "boo" or a == "mole" or a == "bomb" or a == "fireplant" or a == "downfireplant" or a == "plantfire" or a == "torpedoted" or a == "torpedolauncher" or a == "boomboom" or a == "amp" or a == "fuzzy" or a == "longfire" or a == "turretrocket" or a == "glados" or a == "pokey" or a == "chainchomp" or a == "rockywrench" or a == "wrench" or (a == "drybones" and b.spiked) or a == "koopaling" or (a == "spikeball" and not b.stompable) or a == "plantcreeper" or a == "crowber" then --KILL
 		if self.invincible then
 			self.jumping = jump
 			self.falling = fall
@@ -5239,7 +5250,7 @@ function mario:rightcollide(a, b, passive)
 	elseif self.size ~= -1 and (a == "goomba" and b.t == "tinygoomba") then
 		return true
 	elseif a == "castlefirefire" or a == "fire" or a == "koopa" or a == "goomba" or a == "bulletbill" or a == "plant" or a == "bowser" or a == "cheep" or a == "flyingfish" or a == "upfire" or a == "lakito" or a == "squid" or a == "hammer" or a == "hammerbro" or a == "downplant" or a == "bigbill" or (a == "cannonball" and b.kills) or (a == "kingbill" and not (levelfinished and not self.controlsenabled)) or a == "sidestepper" or a == "barrel" or a == "icicle" or (a == "angrysun" and b.t == "sun") or a == "splunkin" or a == "biggoomba" or a == "bigkoopa" or a == "brofireball"
-		or a == "thwomp" or a == "skewer" or a == "fishbone" or a == "drybones" or a == "meteor" or (a == "boomerang" and b.kills) or a == "ninji" or a == "boo" or a == "mole" or a == "bigmole" or (a == "bomb" and (not b.stomped or b.explosion)) or a == "fireplant" or a == "downfireplant" or a == "plantfire" or a == "torpedoted" or a == "torpedolauncher" or a == "boomboom" or a == "amp" or a == "fuzzy" or a == "longfire" or a == "turretrocket" or a == "glados" or a == "pokey" or a == "chainchomp" or a == "rockywrench" or a == "wrench" or a == "koopaling" or a == "magikoopa" or a == "spike" or (a == "spikeball" and not b.stompable) or a == "plantcreeper" then --KILLS
+		or a == "thwomp" or a == "skewer" or a == "fishbone" or a == "drybones" or a == "meteor" or (a == "boomerang" and b.kills) or a == "ninji" or a == "boo" or a == "mole" or a == "bigmole" or (a == "bomb" and (not b.stomped or b.explosion)) or a == "fireplant" or a == "downfireplant" or a == "plantfire" or a == "torpedoted" or a == "torpedolauncher" or a == "boomboom" or a == "amp" or a == "fuzzy" or a == "longfire" or a == "turretrocket" or a == "glados" or a == "pokey" or a == "chainchomp" or a == "rockywrench" or a == "wrench" or a == "koopaling" or a == "magikoopa" or a == "spike" or (a == "spikeball" and not b.stompable) or a == "plantcreeper" or a == "crowber" then --KILLS
 		if self.invincible then
 			if (a == "koopa" and b.small and b.speedx == 0) then
 				b:stomp(self.x, self)
@@ -5638,7 +5649,7 @@ function mario:leftcollide(a, b)
 	elseif self.size ~= -1 and (a == "goomba" and b.t == "tinygoomba") then
 		return true
 	elseif a == "castlefirefire" or a == "fire" or a == "koopa" or a == "goomba" or a == "bulletbill" or a == "plant" or a == "bowser" or a == "cheep" or a == "flyingfish" or a == "upfire" or a == "lakito" or a == "squid" or a == "hammer" or a == "hammerbro" or a == "downplant" or a == "bigbill" or (a == "cannonball" and b.kills) or (a == "kingbill" and not (levelfinished and not self.controlsenabled)) or a == "sidestepper" or a == "barrel" or a == "icicle" or (a == "angrysun" and b.t == "sun") or a == "splunkin" or a == "biggoomba" or a == "bigkoopa" or a == "brofireball"
-		or a == "thwomp" or a == "skewer" or a == "fishbone" or a == "drybones" or a == "meteor" or (a == "boomerang" and b.kills) or a == "ninji" or a == "boo" or a == "mole" or a == "bigmole" or a == "bomb" or a == "fireplant" or a == "downfireplant" or a == "plantfire" or a == "torpedolauncher" or a == "torpedoted" or a == "boomboom" or a == "amp" or a == "fuzzy" or a == "longfire" or a == "turretrocket" or a == "glados" or a == "pokey" or a == "chainchomp" or a == "rockywrench" or a == "wrench" or a == "koopaling" or a == "magikoopa" or a == "spike" or (a == "spikeball" and not b.stompable) or a == "plantcreeper" then --KILLS
+		or a == "thwomp" or a == "skewer" or a == "fishbone" or a == "drybones" or a == "meteor" or (a == "boomerang" and b.kills) or a == "ninji" or a == "boo" or a == "mole" or a == "bigmole" or a == "bomb" or a == "fireplant" or a == "downfireplant" or a == "plantfire" or a == "torpedolauncher" or a == "torpedoted" or a == "boomboom" or a == "amp" or a == "fuzzy" or a == "longfire" or a == "turretrocket" or a == "glados" or a == "pokey" or a == "chainchomp" or a == "rockywrench" or a == "wrench" or a == "koopaling" or a == "magikoopa" or a == "spike" or (a == "spikeball" and not b.stompable) or a == "plantcreeper" or a == "crowber" then --KILLS
 		if self.invincible then
 			if ((a == "koopa" or a == "bigkoopa") and b.small and b.speedx == 0) then
 				b:stomp(self.x, self)
@@ -5936,7 +5947,7 @@ function mario:ceilcollide(a, b)
 	elseif (a == "plantfire" or a == "brofireball" or a == "castlefirefire" or a == "fire") and self.size == 4 and self.ducking then
 		return false
 	elseif a == "castlefirefire" or a == "fire" or a == "plant" or a == "goomba" or a == "koopa" or a == "bulletbill" or a == "bowser" or a == "cheep" or a == "flyingfish" or a == "upfire" or a == "lakito" or a == "squid" or a == "hammer" or a == "hammerbro" or a == "downplant" or a == "bigbill" or (a == "cannonball" and b.kills) or (a == "kingbill" and not (levelfinished and not self.controlsenabled)) or a == "sidestepper" or a == "barrel" or a == "icicle" or (a == "angrysun" and b.t == "sun") or a == "splunkin" or a == "biggoomba" or a == "bigkoopa" or a == "brofireball"
-		or a == "thwomp" or a == "skewer" or a == "fishbone" or a == "drybones" or a == "meteor" or (a == "boomerang" and b.kills) or a == "parabeetle" or a == "ninji" or a == "mole" or a == "bigmole" or a == "bomb" or a == "plantfire" or a == "fireplant" or a == "downfireplant" or a == "torpedoted" or a == "torpedolauncher" or a == "boo" or a == "boomboom" or a == "amp" or a == "fuzzy" or a == "longfire" or a == "turretrocket" or a == "glados" or a == "pokey" or a == "chainchomp" or a == "rockywrench" or a == "wrench" or a == "koopaling" or a == "magikoopa" or a == "spike" or (a == "spikeball" and not b.stompable) or a == "plantcreeper" then --STUFF THAT KILLS
+		or a == "thwomp" or a == "skewer" or a == "fishbone" or a == "drybones" or a == "meteor" or (a == "boomerang" and b.kills) or a == "parabeetle" or a == "ninji" or a == "mole" or a == "bigmole" or a == "bomb" or a == "plantfire" or a == "fireplant" or a == "downfireplant" or a == "torpedoted" or a == "torpedolauncher" or a == "boo" or a == "boomboom" or a == "amp" or a == "fuzzy" or a == "longfire" or a == "turretrocket" or a == "glados" or a == "pokey" or a == "chainchomp" or a == "rockywrench" or a == "wrench" or a == "koopaling" or a == "magikoopa" or a == "spike" or (a == "spikeball" and not b.stompable) or a == "plantcreeper" or a == "crowber" then --STUFF THAT KILLS
 		if self.invincible then
 			if a == "koopa" and b.helmetable and self:helmeted(b.helmetable) then
 				b:helmeted()
@@ -6491,7 +6502,7 @@ function mario:starcollide(a, b)
 		end
 		return true
 	elseif (a == "goomba" or a == "koopa" or a == "plant" or a == "bowser" or a == "squid" or a == "cheep" or a == "hammerbro" or a == "lakito" or a == "bulletbill" or a == "flyingfish" or a == "downplant" or a == "bigbill" or a == "cannonball" or (a == "kingbill" and not (levelfinished and not self.controlsenabled)) or a == "sidestepper" or a == "barrel" or a == "icicle" or (a == "angrysun" and b.t == "sun")
-		or a == "splunkin" or a == "biggoomba" or a == "bigkoopa" or a == "fishbone" or a == "drybones" or a == "meteor" or a == "ninji" or a == "boo" or a == "mole" or a == "bomb" or a == "fireplant" or a == "downfireplant" or a == "plantfire" or a == "torpedoted" or a == "torpedolauncher" or a == "parabeetle" or a == "pokey" or a == "chainchomp" or a == "rockywrench" or a == "magikoopa" or a == "spike" or a == "spikeball" or a == "plantcreeper" or a == "fuzzy")
+		or a == "splunkin" or a == "biggoomba" or a == "bigkoopa" or a == "fishbone" or a == "drybones" or a == "meteor" or a == "ninji" or a == "boo" or a == "mole" or a == "bomb" or a == "fireplant" or a == "downfireplant" or a == "plantfire" or a == "torpedoted" or a == "torpedolauncher" or a == "parabeetle" or a == "pokey" or a == "chainchomp" or a == "rockywrench" or a == "magikoopa" or a == "spike" or a == "spikeball" or a == "plantcreeper" or a == "fuzzy" or a == "crowber")
 		and (not b.resistsstar) then
 		b:shotted("right")
 		if a ~= "bowser" then
@@ -9109,5 +9120,35 @@ function mario:portaled()
 	if self.drybonespound then
 		self.drybonespound = false
 		self.controlsenabled = true
+	end
+end
+
+function mario:fly()
+	if not noupdate and self.controlsenabled then
+		if self.speedy > -jetpackmaxspeed then
+			local jdt
+			if timecontrol then
+				jdt = mdt
+			else
+				jdt = gdt
+			end
+			if self.y > 0 then
+				if self.speedy == 0 then
+					self.speedy = -100 * jdt
+				elseif self.speedy < 0 and self.speedy >= -1.2 then
+					self.speedy = self.speedy - self.jetpackstrength/1.8*jdt
+				elseif self.speedy > 15 then
+					self.speedy = self.speedy - self.jetpackstrength*2*jdt
+				else
+					self.speedy = self.speedy - self.jetpackstrength*jdt
+				end
+			end
+			if self.jpsound == false then
+				self.jpsound = true
+			end
+			self.jumping = true
+			self.animationstate = "jumping"
+			self:setquad()
+		end
 	end
 end

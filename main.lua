@@ -221,8 +221,8 @@ function love.load()
 					"according to all known laws of aviation", "i am not a moron", "dlc is broken, go fix", "now with 3d!.. wait wrong mod",
 					"adhesion gel is not purple!", "youtuber flamingo will come for u at 3 am"}
 						
-	--loadingtext = loadingtexts[math.random(#loadingtexts)]
-	loadingtext = loadingtexts[#loadingtexts]
+	loadingtext = loadingtexts[math.random(#loadingtexts)]
+	--loadingtext = loadingtexts[#loadingtexts]
 	loadingbardraw(1)
 	
 	--require ALL the files!
@@ -248,8 +248,8 @@ function love.load()
 				"emancipationfizzle", "emancipateanimation", "ceilblocker", "belt", "hatloader", "poof", "animationguiline", "animation",
 				"animationsystem", "animationtrigger", "dialogbox", "portal", "orgate", "andgate", "animatedtiletrigger", "rsflipflop", "animatedtimer",
 				"collectable", "powblock", "smallspring", "risingwater", "redseesaw", "snakeblock", "frozencoin", "entitytooltip", "spawnanimation",
-				"camerastop", "clearpipe", "track", "tilemoving", "checkpointflag", "ice", "pipe", "errorwindow", "entitiesform", "tilegravity",
-				"claw", "rouletteblock"}
+				"camerastop", "clearpipe", "track", "tilemoving", "checkpointflag", "ice", "pipe", "errorwindow", "tilegravity", "claw",
+				"rouletteblock", "crowber"}
 	for i = 1, #luas do
 		require(luas[i])
 	end
@@ -1025,9 +1025,6 @@ function love.load()
 	
 	showdebug = true
 
-	multi = 1
-	speedtimer = 0
-	
 	intro_load()
 end
 
@@ -1065,13 +1062,7 @@ function love.update(dt)
 		end
 	end
 	
-	--[[speedtimer = speedtimer + dt
-	if speedtimer > 1 then
-		speedtimer = speedtimer - 1
-		multi = math.random(1, 25) / 10
-		print(multi)
-	end]]
-	dt = dt * multi --* speed
+	dt = dt * speed
 	gdt = dt
 	
 	if frameadvance == 1 then
@@ -2394,7 +2385,16 @@ function love.keypressed(key, unicode, isrepeat)
 		return
 	end
 	
-	if key == "f9" then
+	if key == "f8" then
+		loadanimatedtiles()
+		enemies_load()
+		loadcustomsprites()
+		loadcustomtext()
+		loadcustomsounds()
+		loadcustommusic()
+		loadcustombackgrounds()
+		getmappacklevels()
+	elseif key == "f9" then
 		showinfo = not showinfo
 	elseif key == "f10" then
 		if android then
@@ -3891,13 +3891,13 @@ function loadnitpicks()
 			local listpos = t.entities
 			for i = 1, #listpos do
 				local curlist = listpos[i]
-				local templist = {name = curlist[1]}
+				local templist = {name=curlist[1]}
 				for p = 2, #curlist do
 					table.insert(templist, curlist[p])
 				end
 				table.insert(entitiesforms["custom"], templist)
 			end
-			table.insert(entitiesforms["custom"], {name = "custom enemies",})
+			table.insert(entitiesforms["custom"], {name="custom enemies"})
 		end
 	end
 end

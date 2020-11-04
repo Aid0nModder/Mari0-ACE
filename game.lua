@@ -98,10 +98,10 @@ function game_load(suspended)
 	autoscrollx = true
 	autoscrolly = true
 	
-	inputs = { "door", "groundlight", "wallindicator", "cubedispenser", "walltimer", "notgate", "laser", "lightbridge", "delayer", "funnel", "portal1", "portal2", "text", "geldispenser", "tiletool", "enemytool", "randomizer", "musicchanger", "rocketturret", "checkpoint", "emancipationgrill", "belt", "animationtrigger", "faithplate", "animatedtiletrigger", "orgate", "andgate", "rsflipflop", "kingbill", "platform", "collectable", "skewer", "energylauncher", "camerastop", "laserfields", "track", "animationtrigger", "animationtransform", "faithplateup" }
+	inputs = {"door", "groundlight", "wallindicator", "cubedispenser", "walltimer", "notgate", "laser", "lightbridge", "delayer", "funnel", "portal1", "portal2", "text", "geldispenser", "tiletool", "enemytool", "randomizer", "musicchanger", "rocketturret", "checkpoint", "emancipationgrill", "belt", "animationtrigger", "faithplate", "animatedtiletrigger", "orgate", "andgate", "rsflipflop", "kingbill", "platform", "collectable", "skewer", "energylauncher", "camerastop", "laserfields", "track", "animationtrigger", "animationtransform", "faithplateup" }
 	inputsi = {28, 29, 30, 43, 44, 45, 46, 47, 48, 67, 74, 84, 52, 53, 54, 55, 36, 37, 38, 39, 186, 198, 197, 199, 61, 62, 63, 64, 65, 66, 71, 72, 73, 181, 182, 183, 201, 205, 206, 210, 194, 225, 226, 227, 229, 230, 231, 232, 100, 26, 27, 266, 271, 273, 274, 272, 105, 163, 248, 249, 18, 19, 259, 166, 167, 168, 169, 304, 309, 317, 306, 270, 321, 49}
 	
-	outputs = { "button", "laserdetector", "box", "pushbutton", "walltimer", "notgate", "energycatcher", "squarewave", "delayer", "regiontrigger", "randomizer", "tiletool", "orgate", "andgate", "rsflipflop", "flipblock", "doorsprite", "collectablelock", "collectable", "animationoutput" }
+	outputs = {"button", "laserdetector", "box", "pushbutton", "walltimer", "notgate", "energycatcher", "squarewave", "delayer", "regiontrigger", "randomizer", "tiletool", "orgate", "andgate", "rsflipflop", "flipblock", "doorsprite", "collectablelock", "collectable", "animationoutput" }
 	outputsi = {40, 56, 57, 58, 59, 20, 68, 69, 74, 84, 165, 170, 171, 172, 173, 185, 186, 200, 206, 201, 222, 267, 268, 273, 274, 272, 275, 163, 248, 249, 277, 276, 291}
 	
 	--purpose of enemies table:
@@ -111,15 +111,15 @@ function game_load(suspended)
 	--granted despawning immunity when mario goes through doors
 	--killed by rainboom
 	--deep copied by regiontrigger
-	enemies = { "goomba", "koopa", "hammerbro", "plant", "lakito", "bowser", "cheep", "squid", "flyingfish", "cheepwhite", "cheepred", "beetle", "spikey",
+	enemies = {"goomba", "koopa", "hammerbro", "plant", "lakito", "bowser", "cheep", "squid", "flyingfish", "cheepwhite", "cheepred", "beetle", "spikey",
 		"sidestepper", "barrel", "icicle", "angrysun", "splunkin", "firebro", "fishbone", "drybones", "muncher", "bigbeetle", "meteor",
 		"boomerangbro", "ninji", "boo", "mole", "bigmole", "bomb", "bombhalf", "torpedoted", "parabeetle", "parabeetleright", "boomboom",
 		"pinksquid", "shell", "shyguy", "beetleshell", "spiketop",  "pokey", "snowpokey", "fighterfly", "chainchomp", "rockywrench", "tinygoomba", "koopaling", "bowser3", "icebro",
-		"squidnanny", "goombashoe", "wiggler", "magikoopa", "spike", "spikeball", "plantcreeper"}
+		"squidnanny", "goombashoe", "wiggler", "magikoopa", "spike", "spikeball", "plantcreeper", "crowber"}
 	--aren't spawned when player at checkpoint
-	checkpointignoreenemies = { "goomba", "koopa", "hammerbro", "plant", "lakito", "bowser", "cheep", "squid", "flyingfish", "goombahalf", "koopahalf", "cheepwhite", "cheepred", "koopared", "kooparedhalf", "kooparedflying", "beetle", "beetlehalf", "spikey", "spikeyhalf", "downplant", "paragoomba", "sidestepper", "barrel", "icicle", "angrysun", "splunkin", "biggoomba", "firebro", "redplant", "reddownplant", "fishbone", "drybones", "muncher", "dryboneshalf", "bigbeetle", "meteor", "drygoomba", "dryplant", "drydownplant", "boomerangbro", "ninji", "boo", "mole", "bigmole", "bomb", "bombhalf", "fireplant", "downfireplant", "torpedoted", "parabeetle", "parabeetleright", "boomboom", "koopablue", "koopabluehalf", "pinksquid", "shell", "shyguy", "shyguyhalf", "beetleshell", "spiketop", "spiketophalf", "pokey", "snowpokey", "fighterfly", "chainchomp", "bighammerbro", "rockywrench", "tinygoomba", "koopaling", "bowser3", "icebro", "squidnanny", "goombashoe", "wiggler", "magikoopa", "spike", "spikeball", "plantcreeper"}
+	checkpointignoreenemies = {"goomba", "koopa", "hammerbro", "plant", "lakito", "bowser", "cheep", "squid", "flyingfish", "goombahalf", "koopahalf", "cheepwhite", "cheepred", "koopared", "kooparedhalf", "kooparedflying", "beetle", "beetlehalf", "spikey", "spikeyhalf", "downplant", "paragoomba", "sidestepper", "barrel", "icicle", "angrysun", "splunkin", "biggoomba", "firebro", "redplant", "reddownplant", "fishbone", "drybones", "muncher", "dryboneshalf", "bigbeetle", "meteor", "drygoomba", "dryplant", "drydownplant", "boomerangbro", "ninji", "boo", "mole", "bigmole", "bomb", "bombhalf", "fireplant", "downfireplant", "torpedoted", "parabeetle", "parabeetleright", "boomboom", "koopablue", "koopabluehalf", "pinksquid", "shell", "shyguy", "shyguyhalf", "beetleshell", "spiketop", "spiketophalf", "pokey", "snowpokey", "fighterfly", "chainchomp", "bighammerbro", "rockywrench", "tinygoomba", "koopaling", "bowser3", "icebro", "squidnanny", "goombashoe", "wiggler", "magikoopa", "spike", "spikeball", "plantcreeper", "crowber"}
 	
-	jumpitems = { "mushroom", "oneup", "poisonmush" , "threeup", "minimushroom"}
+	jumpitems = {"mushroom", "oneup", "poisonmush" , "threeup", "minimushroom"}
 	
 	marioworld = 1
 	mariolevel = 1	
@@ -1581,9 +1581,6 @@ function game_draw()
 		
 		--custom background
 		rendercustombackground(xscroll, yscroll, scrollfactor, scrollfactory)
-				
-		--custom foreground
-		rendercustomforeground(xscroll, yscroll, scrollfactor2, scrollfactor2y)
 
 		--BACKGROUND TILES
 		if bmap_on then
@@ -1659,6 +1656,12 @@ function game_draw()
 			end
 			for j, w in pairs(objects["claw"]) do
 				w:draw("drop")
+			end
+			for j, w in pairs(objects["rouletteblock"]) do
+				w:draw()
+			end
+			for j, w in pairs(objects["yoshi"]) do
+				w:draw()
 			end
 			for j, w in pairs(objects) do	
 				if j ~= "tile" and j ~= "pixeltile" then
@@ -1858,7 +1861,7 @@ function game_draw()
 		---UI
 		if ((not darkmode and not lightsout) or editormode) and not hudsimple then
 			if hudvisible then
-				drawUI()
+				drawHUD()
 			end
 		end
 		
@@ -1882,6 +1885,10 @@ function game_draw()
 					love.graphics.setColor(255, 255, 255, 255)
 				end
 			end
+		end
+
+		if players > 1 then
+			drawmultiHUD()
 		end
 		
 		love.graphics.setColor(255, 255, 255)
@@ -2212,6 +2219,7 @@ function game_draw()
 						love.graphics.draw(modcustomspritebatch[split][j], math.floor((-math.mod(xscroll, 1)*16)*scale), math.floor((-math.mod(yscroll, 1)*16)*scale))
 					end
 				end
+
 				if i > 8 then
 					drawmaptiles("dropshadow", xscroll, yscroll, xtodraw, ytodraw)
 				else
@@ -2221,12 +2229,6 @@ function game_draw()
 				--OBJECTS
 				if i > 0 and i < 8 then
 					for j, w in pairs(objects["cannonballcannon"]) do
-						w:draw()
-					end
-					for j, w in pairs(objects["tilemoving"]) do
-						w:draw()
-					end
-					for j, w in pairs(objects["tilegravity"]) do
 						w:draw()
 					end
 					for j, w in pairs(objects["checkpointflag"]) do
@@ -2275,6 +2277,12 @@ function game_draw()
 						w:draw()
 					end
 					for j, w in pairs(objects["frozencoin"]) do
+						w:draw()
+					end
+					for j, w in pairs(objects["tilemoving"]) do
+						w:draw()
+					end
+					for j, w in pairs(objects["tilegravity"]) do
 						w:draw()
 					end
 				end
@@ -2638,12 +2646,12 @@ function game_draw()
 		--UI over everything
 		if hudsimple and ((not darkmode and not lightsout) or editormode) then
 			if hudvisible then
-				drawUI()
+				drawHUD()
 			end
 		end
 
 		--Player markers
-		if players > 1 then--playermarkers then
+		if players > 1 then
 			for i = 1, players do
 				local v = objects["player"][i]
 				if not v.dead and v.drawable and v.y < mapheight-.5 then
@@ -2842,6 +2850,9 @@ function game_draw()
 			love.graphics.stencil(lightsoutstencil)
 			love.graphics.setStencilTest("less", 1)
 			love.graphics.setColor(0, 0, 0, 255)
+			if customlightsout and lightsoutstuff.color then
+				love.graphics.setColor(unpack(lightsoutstuff.color))
+			end
 			if objects["player"][1] then
 				--stencils not supported
 				local v = objects["player"][1]
@@ -2903,14 +2914,14 @@ function game_draw()
 		love.graphics.setColor(255, 255, 255)
 		love.graphics.setStencilTest()
 		if hudvisible then
-			drawUI()
+			drawHUD()
 		end
 	end
 
 	--UI over everything in darkmode
 	if ((darkmode or lightsout) and not editormode) then
 		if hudvisible then
-			drawUI()
+			drawHUD()
 		end
 	end
 	
@@ -3092,7 +3103,7 @@ function drawentity(j, w, i, v, currentscissor)
 	end
 	
 	local oldoffsetx, oldoffsety
-	if v.supersized then
+	if v.supersized and (not v.dontmakebigwhensupersized) then
 		oldoffsetx, oldoffsety = v.offsetX, v.offsetY
 		v.offsetX = v.offsetX*v.supersized
 		v.offsetY = (v.offsetY-8)*v.supersized+8
@@ -3883,7 +3894,7 @@ function drawplayer(i, x, y, r, pad, drop)
 	end
 end
 
-function drawUI()
+function drawHUD()
 	local cy = 32 --collectable coin ui y
 	local cx = 16 --collectable coin ui x (used only in custom)
 	local properprintfunc = properprint
@@ -3924,6 +3935,14 @@ function drawUI()
 
 				local allinmentpos = {} -- better allinement
 				local templist = {}
+
+				local c, p, health, maxhealth
+				if (not editormode) and gamestate == "game" then
+					c = objects["player"][1].characterdata or 0
+					p = objects["player"][1] or 0
+					health = p.health
+					maxhealth = c.health
+				end
 
 				for hudpos = 1, #hudstuff.hud do
 					local hudtemp = hudstuff.hud[hudpos]
@@ -3987,10 +4006,10 @@ function drawUI()
 							else
 								thiccness = hudtemp[4]*8+gap
 							end
-						--[[elseif hudtemp[3] == "health" then
+						elseif hudtemp[3] == "health" then
 							thiccness = string.len(health or 1)*8+gap
 						elseif hudtemp[3] == "maxhealth" then
-							thiccness = string.len(maxhealth or 1)*8+gap]]
+							thiccness = string.len(maxhealth or 1)*8+gap
 						elseif hudtemp[3] == "score" then
 							if string.len(math.ceil(marioscore or 0)) > hudtemp[4] then
 								thiccness = string.len(math.ceil(marioscore or 0))*8+gap
@@ -4093,10 +4112,10 @@ function drawUI()
 						properprintfunc((mariosublevel or 1), xvalue*scale, hudtemp[2]*scale)
 					elseif hudtemp[3] == "lives" then
 						properprintfunc(addzeros((mariolives[1] or 0), hudtemp[4]), xvalue*scale, hudtemp[2]*scale)
-					--[[elseif hudtemp[3] == "health" then
+					elseif hudtemp[3] == "health" then
 						properprintfunc((health or 0), xvalue*scale, hudtemp[2]*scale)
 					elseif hudtemp[3] == "maxhealth" then
-						properprintfunc((maxhealth or 0), xvalue*scale, hudtemp[2]*scale)]]
+						properprintfunc((maxhealth or 0), xvalue*scale, hudtemp[2]*scale)
 					elseif hudtemp[3] == "score" then
 						properprintfunc(addzeros((marioscore or 0), hudtemp[4]), xvalue*scale, hudtemp[2]*scale)
 					elseif hudtemp[3] == "time" then
@@ -4332,6 +4351,73 @@ function drawUI()
 					love.graphics.draw(c.healthimg, c.healthquad[qi], 16*scale, (cy+(c.healthimg:getHeight()/2)*(y-1))*scale, 0, scale, scale)
 				end
 				cy = cy + c.healthimg:getHeight()
+			end
+		end
+	end
+end
+
+function drawmultiHUD()
+	--multiplayer hud
+	local properprintfunc = properprint
+	if hudoutline then
+		properprintfunc = properprintbackground
+	end
+	
+	local livesdisplay = (mariolivecount ~= false)
+	if (not livesdisplay) and objects and objects["player"] then
+		--should the lives counter be displayed?
+		for i = 1, players do
+			local p = objects["player"][i]
+			if p and ((p.key and p.key > 0) or (p.health and p.characterdata.healthimg)) then
+				livesdisplay = true
+				break
+			end
+		end
+	end
+
+	if livesdisplay then
+		for i = 1, players do
+			--lives
+			local s
+			if (mariolivecount ~= false) then
+				s = "p" .. i .. " * " .. mariolives[i]
+			else
+				s = "p" .. i
+			end
+
+			local x = (width*16)/players/2 + (width*16)/players*(i-1)
+			local cx = x-string.len(s)*4-4
+			local cy = 25 --offset y
+
+			--display lives
+			love.graphics.setColor(255, 255, 255, 255)
+			properprintfunc(s, (cx+8)*scale, cy*scale)
+			if hudoutline then
+				love.graphics.setColor(0, 0, 0)
+				love.graphics.rectangle("fill", (cx-1)*scale, (cy-1)*scale, 9*scale, 9*scale)
+			end
+			love.graphics.setColor(mariocolors[i][1])
+			love.graphics.rectangle("fill", (cx)*scale, cy*scale, 7*scale, 7*scale)
+			love.graphics.setColor(255, 255, 255, 255)
+			cy = cy + 10
+
+			if objects and objects["player"] and objects["player"][i] then
+				local p = objects["player"][i]
+				--health
+				if p.health and p.characterdata.healthimg then
+					love.graphics.setColor(255, 255, 255)
+					local s = "hp: " .. p.health
+					properprintfunc(s, cx*scale, cy*scale)
+					cy = cy + 10
+				end
+				--keys
+				if p.key and p.key > 0 then
+					love.graphics.setColor(255, 255, 255)
+					local s = "*" .. p.key
+					love.graphics.draw(keyuiimg, keyuiquad[spriteset or 1][coinframe or 1], cx*scale, cy*scale, 0, scale, scale)
+					properprintfunc(s, (cx+9)*scale, cy*scale)
+					cy = cy + 10
+				end
 			end
 		end
 	end
@@ -4677,6 +4763,7 @@ function startlevel(level)
 	objects["grinder"] = {}
 	objects["claw"] = {}
 	objects["rouletteblock"] = {}
+	objects["crowber"] = {}
 
 	objects["cappy"] = {}
 	
@@ -5495,6 +5582,7 @@ function updatespritebatch()
 								elseif tilenumber <= smbtilecount+portaltilecount+customtilecount then
 									custommsb:add( tilequads[tilenumber].quad, (x-1)*16*scale, ((y-1)*16-8)*scale, 0, scale, scale )
 								else
+									--FUCK THIS WHY ISMT THIS SHIT WORKING
 									local max = smbtilecount+portaltilecount+customtilecount
 									local loop = true
 									for j = 1, modcustomtiles do		
@@ -6970,7 +7058,7 @@ function loadentity(t, x, y, r, id)
 		pipes[tilemap(x,y)] = pipe:new("warppipe", x, y, r)
 	elseif t == "pipe" then
 		if not (ismaptile(x, y) and map[x][y][1] and tilequads[map[x][y][1]].noteblock) then
-			pipes[tilemap(x,y)] = pipe:new("pipe", x, y, r)
+			pipes[tilemap(x,y)] = pipe:new("pipe", x, y, r)	
 		end
 	elseif t == "pipe2" then
 		pipes[tilemap(x,y)] = pipe:new("pipe2", x, y, r)
@@ -7011,6 +7099,14 @@ function loadentity(t, x, y, r, id)
 			else
 				showcastleflag = true
 			end
+		end
+
+		flagimgx = flagx+8/16
+		flagimgy = flagy-10+1/16
+		if not flagborder then
+			objects["screenboundary"]["flag"] = screenboundary:new(mapwidth)
+		else
+			objects["screenboundary"]["flag"] = screenboundary:new(flagx+6/16)
 		end
 	elseif t == "manycoins" then
 		map[x][y][3] = 7
@@ -7178,8 +7274,6 @@ function spawnentity(t, x, y, r, id)
 		table.insert(objects["animationtrigger"], animationtrigger:new(x, y, r, r[3]))
 	elseif t == "animationoutput" then
 		table.insert(objects["animationoutput"], animationoutput:new(x, y, r, r[3]))
-	elseif t == "animationtransform" then
-		table.insert(objects["animationtransform"], animationtransform:new(x, y, r, r[3]))
 
 	elseif t == "risingwater" then
 		table.insert(objects["risingwater"], risingwater:new(x, y, r))
@@ -7500,7 +7594,7 @@ function spawnentity(t, x, y, r, id)
 		table.insert(objects["grinder"] , grinder:new(x, y, r[3]))
 
 	elseif t == "tilegravity" then
-		if ismaptile(x, y) and tilequads[map[x][y][1]] and tilequads[map[x][y][1]].collision and not tilequads[map[x][y][1]].coinblock and not tilequads[map[x][y][1]].platform then
+		if ismaptile(x, y) and tilequads[map[x][y][1]] and tilequads[map[x][y][1]].collision and not tilequads[map[x][y][1]].platform then
 			table.insert(objects["tilegravity"] , tilegravity:new(x, y, r))
 		end
 
@@ -7729,7 +7823,7 @@ function spawnenemy(t, x, y, r, spawner)
 			objtable, obj = "boomboom", boomboom:new(x-0.5, y-1/16, r[3])
 		elseif t == "levelball" then
 			if not tilequads[r[1]]["collision"] then
-				objtable, obj = "levelball", levelball:new(x-0.5, y-1/16)
+				objtable, obj = "levelball", levelball:new(x-0.5, y-1/16, r[3])
 			end
 		elseif t == "koopablue" then
 			objtable, obj = "koopa", koopa:new(x-0.5, y-1/16, "blue")
@@ -7898,6 +7992,8 @@ function spawnenemy(t, x, y, r, spawner)
 			table.insert(rocketlaunchers, rocketlauncher:new(x, y, "homing"))
 		elseif t == "cannonballcannon" then
 			objtable, obj = "cannonballcannon", cannonballcannon:new(x, y, r[3])
+		elseif t == "crowber" then
+			objtable, obj = "crowber", crowber:new(x, y)
 			
 		elseif t == "upfire" then
 			objtable, obj = "upfire", upfire:new(x, y, r[3])
@@ -7937,7 +8033,7 @@ function spawnenemy(t, x, y, r, spawner)
 			end
 		--items without block
 		elseif t == "threeup" and ((not tilequads[r[1]].collision) or spawner) then
-			obj = smbsitem:new(x-0.5, y+14/16, "threeup")
+			obj = smbsitem:new(x-0.5, y+14/16, "cherry")
 			obj.uptimer = mushroomtime+0.00001
 			objtable = "threeup"
 		elseif t == "plusclock" and ((not tilequads[r[1]].collision) or spawner) then
@@ -8215,9 +8311,13 @@ function item(i, x, y, size)
 	elseif i == "levelball" then
 		playsound(boomsound)
 		makepoof(x-.5, y-1.5, "boom")
-		local obj = levelball:new(x-0.5, y-1/16)
-		obj.speedy = -10
+		local obj = levelball:new(x-0.5, y-1.5, map[x][y][3])
 		table.insert(objects["levelball"], obj)
+	elseif i == "powblock" then
+		local obj = powblock:new(x, y, map[x][y][3])
+		table.insert(objects["powblock"], obj)
+		table.insert(spawnanimations, spawnanimation:new(x, y-1, "block", obj))
+		table.insert(enemiesspawned, {x, y})
 	elseif anyiteminblock and _G[i] then
 		local obj = _G[i]:new(x-0.5, y-1)
 		obj.x = x-0.5-(obj.width/2)
@@ -9675,7 +9775,7 @@ function supersizeentity(v, size)
 		size = 0.25
 	end
 	v.supersized = size or 2
-	if v.x and v.y and v.width and v.height then
+	if (not v.dontmakebigwhensupersized) and v.x and v.y and v.width and v.height then
 		local x, y, y2 = v.x+v.width/2, v.y+v.height/2, v.y+v.height
 
 		v.animationscalex = (size or 2)
