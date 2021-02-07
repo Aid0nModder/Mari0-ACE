@@ -67,7 +67,7 @@ function dialogbox:draw()
 	local charsy = math.floor(availablepixelsy / lineheight)
 	
 	for i = 1, self.curchar do
-		local x = math.mod(i-1, charsx)+1
+		local x = math.fmod(i-1, charsx)+1
 		local y = math.ceil(i/charsx)
 		
 		if y <= charsy then

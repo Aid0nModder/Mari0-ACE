@@ -117,7 +117,7 @@ function faithplate:draw()
 				rot = math.pi/4*(1 - (self.animationtimer-0.3)/0.7)
 			end
 				
-			love.graphics.draw(faithplateplateimg, faithplatequad[quadi], math.floor((self.cox+1-xscroll)*16*scale), (self.coy-1.5-yscroll)*16*scale, rot, scale, scale, 32)
+			love.graphics.draw(faithplateplateimg, faithplatequad[spriteset][quadi], math.floor((self.cox+1-xscroll)*16*scale), (self.coy-1.5-yscroll)*16*scale, rot, scale, scale, 32)
 		elseif self.dir == "left" then
 			local rot = 0
 			if self.animationtimer < 0.1 then
@@ -128,7 +128,7 @@ function faithplate:draw()
 				rot = math.pi/4*(1 - (self.animationtimer-0.3)/0.7)
 			end
 				
-			love.graphics.draw(faithplateplateimg, faithplatequad[quadi], math.floor((self.cox-1-xscroll)*16*scale), (self.coy-1.5-yscroll)*16*scale, -rot, -scale, scale, 32)
+			love.graphics.draw(faithplateplateimg, faithplatequad[spriteset][quadi], math.floor((self.cox-1-xscroll)*16*scale), (self.coy-1.5-yscroll)*16*scale, -rot, -scale, scale, 32)
 		elseif self.dir == "up" then
 			local ymod = 0
 			if self.animationtimer < 0.1 then
@@ -139,13 +139,13 @@ function faithplate:draw()
 				ymod = .5*(1 - (self.animationtimer-0.3)/0.7)
 			end
 			
-			love.graphics.draw(faithplateplateimg, faithplatequad[quadi], math.floor((self.cox-1-xscroll)*16*scale), (self.coy-1.5-yscroll-ymod)*16*scale, 0, scale, scale)
+			love.graphics.draw(faithplateplateimg, faithplatequad[spriteset][quadi], math.floor((self.cox-1-xscroll)*16*scale), (self.coy-1.5-yscroll-ymod)*16*scale, 0, scale, scale)
 		end
 	else
 		if self.dir ~= "left" then
-			love.graphics.draw(faithplateplateimg, faithplatequad[quadi], math.floor((self.cox-1-xscroll)*16*scale), (self.coy-1.5-yscroll)*16*scale, 0, scale, scale)
+			love.graphics.draw(faithplateplateimg, faithplatequad[spriteset][quadi], math.floor((self.cox-1-xscroll)*16*scale), (self.coy-1.5-yscroll)*16*scale, 0, scale, scale)
 		else
-			love.graphics.draw(faithplateplateimg, faithplatequad[quadi], math.floor((self.cox+1-xscroll)*16*scale), (self.coy-1.5-yscroll)*16*scale, 0, -scale, scale)
+			love.graphics.draw(faithplateplateimg, faithplatequad[spriteset][quadi], math.floor((self.cox+1-xscroll)*16*scale), (self.coy-1.5-yscroll)*16*scale, 0, -scale, scale)
 		end
 	end
 	

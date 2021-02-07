@@ -170,7 +170,7 @@ function server_update(dt)
 	--recieve
 	local data, msg_or_ip, port_or_nil = udp:receivefrom()
 	if data then
-		print(data)
+		--print(data)
 		
 		--add player to list
 		local t = data:split("~")
@@ -189,14 +189,14 @@ function server_update(dt)
 			end
 			if gamestate ~= "lobby" then
 				--kick out during game
-				notice.new("rejected player|cant join during the game", notice.red, 3)
+				notice.new("rejected player\ncant join during the game", notice.red, 3)
 				udp:sendto(string.format("%s~%s", 'notice', "cant connect during the game"), clients[entity][1], clients[entity][2])
 				udp:sendto('kick', clients[entity][1], clients[entity][2])
 				return
 			end
 			if not t[6] then --no character sent, must be from v11 or lower
-				notice.new("rejected player|cant join with outdated version", notice.red, 3)
-				udp:sendto(string.format("%s~%s", 'notice', "outdated game!|you need to be on version " .. VERSIONSTRING), clients[entity][1], clients[entity][2])
+				notice.new("rejected player\ncant join with outdated version", notice.red, 3)
+				udp:sendto(string.format("%s~%s", 'notice', "outdated game!\nyou need to be on version " .. VERSIONSTRING), clients[entity][1], clients[entity][2])
 				udp:sendto('kick', clients[entity][1], clients[entity][2])
 				return
 			end
@@ -310,10 +310,10 @@ function server_update(dt)
 		elseif cmd == 'quit' then
 			
 		else
-			print("unrecognised command:", cmd)
+			print("-- ERROR -- Unrecognised command:", cmd)
 		end
 	elseif msg_or_ip ~= 'timeout' then
-		print("Unknown network error: "..tostring(msg_or_ip))
+		print("-- ERROR -- Unknown network error: "..tostring(msg_or_ip))
 		--notice.new("Unknown network error: "..tostring(msg_or_ip), notice.red, 3)
 	end
 end
@@ -369,7 +369,7 @@ function client_update(dt)
 	repeat
 		local data, msg = udp:receive()
 		if data then
-			print(data)
+			--print(data)
 			local t = data:split("~")
 			local cmd = t[1]
 			if cmd == 'connect' then
@@ -545,10 +545,10 @@ function client_update(dt)
 				net_quit()
 				notice.new("Kicked from server", notice.red, 5)
 			else
-				print("unrecognised command:", cmd)
+				print("-- ERROR -- Unrecognised command:", cmd)
 			end
 		elseif msg ~= 'timeout' then 
-			print("Network error: "..tostring(msg))
+			print("-- ERROR -- Network error: "..tostring(msg))
 			notice.new("Network error: "..tostring(msg), notice.red, 3)
 			net_quit()
 		end
@@ -751,7 +751,7 @@ function server_disconnect(removei)
 	for i, v in pairs(delete) do
 		--table.remove(clients, v) --remove
 		clients[v] = nil
-		print("removed client: " .. tostring(v))
+		print("-- ERROR -- Removed client: " .. tostring(v))
 	end
 end
 
@@ -815,7 +815,7 @@ function net_doaction(player, s)
 		player.netaction = nil
 	elseif s[1] == 'pipe' then
 		player:pipe(tonumber(s[2]), tonumber(s[3]), s[4], tonumber(s[5]))
-		print(unpack(s))
+		--print(unpack(s))
 	elseif s[1] == 'warppipe' then
 		player:pipe(tonumber(s[2]), tonumber(s[3]), s[4], tonumber(s[5]))
 	elseif s[1] == 'door' then

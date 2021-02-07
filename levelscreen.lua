@@ -15,7 +15,9 @@ function levelscreen_load(reason, i)
 		return
 	end
 
-	music:disableintromusic()
+	if not continuesublevelmusic then
+		music:disableintromusic()
+	end
 
 	levelscreenimagecheck = false
 	checkcheckpoint = false
@@ -50,7 +52,19 @@ function levelscreen_load(reason, i)
 			
 			--check if next level doesn't exist
 			if not dcplaying then
+				local gamefinished = false
 				if not love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/" .. marioworld .. "-" .. mariolevel .. ".txt") then
+					gamefinished = true
+					--check incase there are fewer than 4 levels in the world
+					if reason == "next" and tonumber(mariolevel) and mariolevel <= 4 then
+						if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/" .. marioworld+1 .. "-1.txt") then
+							marioworld = marioworld + 1
+							mariolevel = 1
+							gamefinished = false
+						end
+					end
+				end
+				if gamefinished then
 					gamestate = "mappackfinished"
 					blacktime = gameovertime
 					
@@ -194,7 +208,7 @@ function levelscreen_update(dt)
 		elseif gamestate == "sublevelscreen" then
 			gamestate = "game"
 			actualsublevel = sublevelscreen_level
-			startlevel(sublevelscreen_level)
+			startlevel(sublevelscreen_level, "sublevel")
 		elseif gamestate == "dclevelscreen" then
 			gamestate = "game"
 			startlevel("dc")
@@ -218,9 +232,9 @@ function levelscreen_update(dt)
 end
 
 function levelscreen_draw()
-	local properprintfunc = properprint
+	local properprintfunc = properprintF
 	if hudoutline then
-		properprintfunc = properprintbackground
+		properprintfunc = properprintFbackground
 	end
 	if levelscreentimer < blacktime - blacktimesub and levelscreentimer > blacktimesub then
 		love.graphics.setColor(255, 255, 255, 255)
@@ -233,6 +247,8 @@ function levelscreen_draw()
 			local world = marioworld
 			if hudworldletter and tonumber(world) and world > 9 and world <= 9+#alphabet then
 				world = alphabet:sub(world-9, world-9)
+			elseif world == "M" then
+				world = " "
 			end
 			properprintfunc("world " .. world .. "-" .. mariolevel, (width/2*16)*scale-40*scale, 72*scale - (players-1)*6*scale)
 			
@@ -252,7 +268,7 @@ function levelscreen_draw()
 		
 				--hat
 				
-				offsets = hatoffsets["idle"]
+				offsets = customplayerhatoffsets(mariocharacter[i], "hatoffsets", "idle") or hatoffsets["idle"]
 				if #mariohats[i] > 1 or mariohats[i][1] ~= 1 then
 					local yadd = 0
 					for j = 1, #mariohats[i] do
@@ -345,7 +361,7 @@ function levelscreen_draw()
 		end
 		
 		if hudvisible then
-			drawUI()
+			drawHUD()
 		end
 	elseif CLIENT and levelscreentimer > blacktime then
 		local s = "waiting for players..."

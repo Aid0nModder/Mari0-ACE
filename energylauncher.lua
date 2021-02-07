@@ -145,13 +145,13 @@ function energylauncher:launchenergyball()
 	end
 	local obj
 	if self.dir == "right" then
-		obj = energyball:new(self.x+4/16, self.y+4/16, self.dir, t, self)
+		obj = energyball:new(self.x+8/16, self.y+4/16, self.dir, t, self)
 	elseif self.dir == "down" then
-		obj = energyball:new(self.x+4/16, self.y+4/16, self.dir, t, self)
+		obj = energyball:new(self.x+4/16, self.y+8/16, self.dir, t, self)
 	elseif self.dir == "left" then
-		obj = energyball:new(self.x-4/16, self.y+4/16, self.dir, t, self)
+		obj = energyball:new(self.x-8/16, self.y+4/16, self.dir, t, self)
 	elseif self.dir == "up" then
-		obj = energyball:new(self.x+4/16, self.y-4/16, self.dir, t, self)
+		obj = energyball:new(self.x+4/16, self.y-8/16, self.dir, t, self)
 	end
 	self.child = obj
 	table.insert(objects["energyball"], obj)

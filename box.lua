@@ -1,23 +1,15 @@
 box = class:new()
 
 function box:init(x, y, t)
-	self.bigboi = false --don't ask
 	--PHYSICS STUFF
 	self.cox = x
 	self.coy = y
 	self.x = x-14/16
 	self.y = y-12/16
-	if self.bigboi then
-		self.width = (12/16)*2
-		self.height = (12/16)*2
-		self.bigboisize = (12/16)*2
-	else
-		self.width = 12/16
-		self.height = 12/16
-		self.bigboisize = 12/16
-	end
 	self.speedy = 0
 	self.speedx = 0
+	self.width = 12/16
+	self.height = 12/16
 	self.static = false
 	self.active = true
 	self.category = 9
@@ -31,11 +23,11 @@ function box:init(x, y, t)
 					true, true, false, false, true,
 					false, true, true, false, false,
 					true, false, true, true, true,
-					false, true, false}
+					false, true}
 					
 	self.emancipatecheck = true
 
-	self.userect = adduserect(self.x, self.y, self.bigboisize, self.bigboisize, self)
+	self.userect = adduserect(self.x, self.y, 12/16, 12/16, self)
 	
 	self.t = t or "box1"
 	
@@ -68,6 +60,8 @@ function box:init(x, y, t)
 
 	self.gel = false
 	self.pipespawnmax = 1
+
+	self.gravitydir = "down"
 end
 
 function box:update(dt)
@@ -109,15 +103,29 @@ function box:update(dt)
 	end
 	
 	if not self.pushed then
-		if self.speedx > 0 then
-			self.speedx = self.speedx - friction*dt
-			if self.speedx < 0 then
-				self.speedx = 0
+		if self.gravitydir == "right" or self.gravity == "left" then
+			if self.speedy > 0 then
+				self.speedy = self.speedy - friction*dt
+				if self.speedy < 0 then
+					self.speedy = 0
+				end
+			else
+				self.speedy = self.speedy + friction*dt
+				if self.speedy > 0 then
+					self.speedy = 0
+				end
 			end
 		else
-			self.speedx = self.speedx + friction*dt
 			if self.speedx > 0 then
-				self.speedx = 0
+				self.speedx = self.speedx - friction*dt
+				if self.speedx < 0 then
+					self.speedx = 0
+				end
+			else
+				self.speedx = self.speedx + friction*dt
+				if self.speedx > 0 then
+					self.speedx = 0
+				end
 			end
 		end
 	else
@@ -131,7 +139,7 @@ function box:update(dt)
 			self.rotation = self.rotation + math.pi*2
 		end
 	elseif self.t ~= "edgeless" then
-		self.rotation = math.mod(self.rotation, math.pi*2)
+		self.rotation = math.fmod(self.rotation, math.pi*2)
 		if self.rotation > 0 then
 			self.rotation = self.rotation - portalrotationalignmentspeed*dt
 			if self.rotation < 0 then
@@ -156,7 +164,7 @@ function box:update(dt)
 		
 		if self.portaledframe == false then
 			for h, u in pairs(emancipationgrills) do
-				if u.active and u.fizzleitems then
+				if u.active then
 					if u.dir == "hor" then
 						if inrange(self.x+6/16, u.startx-1, u.endx, true) and inrange(u.y-14/16, oldy, self.y, true) then
 							self:emancipate(h)
@@ -164,20 +172,6 @@ function box:update(dt)
 					else
 						if inrange(self.y+6/16, u.starty-1, u.endy, true) and inrange(u.x-14/16, oldx, self.x, true) then
 							self:emancipate(h)
-						end
-					end
-				elseif u.active and u.washitems then
-					if u.dir == "hor" then
-						if inrange(self.x+6/16, u.startx-1, u.endx, true) and inrange(u.y-14/16, oldy, self.y, true) then
-							self.gel = false
-							self.overlaygraphic = false
-							self.overlayquad = false
-						end
-					else
-						if inrange(self.y+6/16, u.starty-1, u.endy, true) and inrange(u.x-14/16, oldx, self.x, true) then
-							self.gel = false
-							self.overlaygraphic = false
-							self.overlayquad = false
 						end
 					end
 				end
@@ -295,11 +289,24 @@ function box:floorcollide(a, b)
 		self.speedy = -10
 		return false
 	end
+
+	if a == "player" then
+		if self.gravitydir == "right" or self.gravity == "left" then
+			self.pushed = true
+			return false
+		end
+	end
 end
 
 function box:ceilcollide(a, b)
 	if self:globalcollide(a, b) then
 		return false
+	end
+	if a == "player" then
+		if self.gravitydir == "right" or self.gravity == "left" then
+			self.pushed = true
+			return false
+		end
 	end
 end
 
@@ -334,7 +341,7 @@ function box:globalcollide(a, b)
 	if a == "gel" then
 		--cover in gel
 		self.rotationspeed = 0
-		if b.id == 5 or b.id == 6 then
+		if b.id == 5 then
 			self.gel = false
 			self.overlaygraphic = false
 			self.overlayquad = false

@@ -10,7 +10,7 @@ function laserdetector:init(x, y, dir, r)
 	table.remove(self.r, 1)
 	table.remove(self.r, 1)
 	if #self.r > 0 and self.r[1] ~= "link" then
-		local v = convertr(self.r[1], {"string", "bool", "bool"}, true)
+		local v = convertr(self.r[1], {"string", "bool", "bool", "string"}, true)
 		self.dir = v[1]
 		self.detectslasers = v[2]
 		self.detectslightbridges = v[3]

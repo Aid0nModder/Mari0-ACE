@@ -342,6 +342,8 @@ function lightbridgebody:draw()
 					img = gel3ground
 				elseif i == 4 then
 					img = gel4ground
+				elseif i == 6 then
+					img = gel6ground
 				end
 				
 				love.graphics.draw(img, math.floor((self.cox-.5-xscroll)*16*scale), math.floor((self.coy-1-yscroll)*16*scale), r, scale, scale, 8, 2)

@@ -1,59 +1,71 @@
 entity = class:new()
 
---KEY
---t: codename
---name: display name (spawner, tooltip)
+--[[
+	--   KEY   --
 
---enemy: is it an enemy? (not spawned near checkpoints) (TODO)
+	t                = codename
+	name             = display name (spawner, tooltip)
+	spawnable        = can be spawned with spawner
+	item             = can be placed into ? blocks
+	offset           = can be offset (true or id)
+	supersize        = can be supersized
+	argument         = argument id
+	argumentname     = name of the argument
+	input            = can be linked
+	output           = can output to linked entities
+	enemy            = is it an enemy? (not spawned near checkpoints)
 
---item: can be placed into ? blocks [item()]
---spawnable: can be spawned with spawner
---offset: can be offset
+	(EDITOR PREVEIWS)
+	displayval = value used on preveiw
+	displaytype = type of display
+	displaycustomcondition = 
+	displaycustomquad =
 
---input: can be linked (TODO)
---output: can output to linked entities (TODO)
+	(TODO)
+	none
+]]
 
 entitylist = {	
 	{t="remove"},
 	{t="mushroom", spawnable=true, block=true},
-	{t="oneup", spawnable=true, block=true, name="1up"},
+	{t="oneup", spawnable=true, block=true},
 	{t="star", spawnable=true, block=true},
-	{t="manycoins", block=true, name="multicoin block"},
+	{t="manycoins", block=true},
 	{t="goomba", spawnable=true, offset=9, block=true, supersize=true},
 	{t="koopa", spawnable=true, offset=10, block=true, supersize=true},
-	{t="spawn"},
+	{t="spawn", displayval=1, displaytype="bool"},
 	{t="goombahalf", supersize=true},
 	{t="koopahalf", supersize=true},
 	{t="flag"},
-	{t="koopared", spawnable=true, offset=13, block=true, supersize=true, name="red koopa"},
+	{t="koopared", spawnable=true, offset=13, block=true, supersize=true},
 	{t="kooparedhalf"},
 	{t="vine", block=true},
-	{t="hammerbro", spawnable=true, block=true, name="hammer bro"},
-	{t="cheepred", spawnable=true, supersize=true, name="red cheep cheep"},
-	{t="cheepwhite", spawnable=true, supersize=true, name="white cheep cheep"},
+	{t="hammerbro", spawnable=true, block=true},
+	{t="cheepred", spawnable=true, supersize=true},
+	{t="cheepwhite", spawnable=true, supersize=true},
 	{t="platformup"}, --my mouse is dying :(
 	{t="platformright"},
-	{t="box", name="cube", spawnable=true},
-	{t="pipe", name="pipe enter"},
+	{t="box", name="storage cube", spawnable=true},
+	{t="pipe"},
 	{t="lakito", name="lakitu", spawnable=true, supersize=true},
-	{t="mazestart", name="maze start"},
-	{t="mazeend", name="maze end"},
-	{t="mazegate", name="maze gate"},
+	{t="mazestart"},
+	{t="mazeend"},
+	{t="mazegate"},
 	{t="emancehor"},
-	{t="emancever", name="emancipation grill"},
-	{t="doorver", name="test door"},
-	{t="doorhor"},
-	{t="wallindicator", name="wall indicater"},
-	{t="pipespawn", name="pipe exit"},
-	{t="platformfall", spawnable=true, name="platform fall"},
+	{t="emancever", name="emancipation grill", displayval=1, displaytype="custom", displaycustomcondition={"ver", "hor"}, displaycustomquad={"no", "yes"}},
+	{t="doorver", name="test door", displayval=2, displaytype="custom", displaycustomcondition={"ver", "hor"}, displaycustomquad={"no", "yes"}},
+	{t="doorhor", name="test door"},
+	{t="wallindicator"},
+	{t="pipespawn"},
+	{t="platformfall", spawnable=true},
 	{t="bulletbillstart"},
 	{t="bulletbillend"},
 	{t="drain"},
-	{t="lightbridgeright", name="lightbridge"},
+	{t="lightbridgeright", name="lightbridge", displayval=1, displaytype="dir"},
 	{t="lightbridgeleft"},
 	{t="lightbridgedown"},
 	{t="lightbridgeup"},
-	{t="button"},
+	{t="button", displayval=1, displaytype="dir"},
 	{t="platformspawnerdown"},
 	{t="platformspawnerup"},
 	{t="groundlightver", name="antline"},
@@ -65,16 +77,16 @@ entitylist = {
 	{t="faithplateup", name="faithplate"},
 	{t="faithplateright"},
 	{t="faithplateleft"},
-	{t="laserright", name="laser"},
+	{t="laserright", name="laser", displayval=1, displaytype="dir"},
 	{t="laserdown"},
 	{t="laserleft"},
 	{t="laserup"},
-	{t="laserdetectorright", name="laserdetector"},
+	{t="laserdetectorright", name="laserdetector", displayval=1, displaytype="dir"},
 	{t="laserdetectordown"},
 	{t="laserdetectorleft"},
 	{t="laserdetectorup"},
 	{t="bulletbill", name="bullet bill launcher"},
-	{t="bluegeldown", name="gel dispenser"},
+	{t="bluegeldown", name="gel dispenser", displayval=1, displaytype="dir"},
 	{t="bluegelright"},
 	{t="bluegelleft"},
 	{t="orangegeldown"},
@@ -83,29 +95,29 @@ entitylist = {
 	{t="boxtube", name="cube dispenser"},
 	{t="pushbuttonleft", name="pedestal button"},
 	{t="pushbuttonright"},
-	{t="plant", spawnable=true, supersize=true, name="parana plant"},
+	{t="plant", spawnable=true, supersize=true, displayval=1, displaytype="dir"},
 	{t="whitegeldown"},
 	{t="whitegelright"},
 	{t="whitegelleft"},
 	{t="timer"},
 	{t="beetle", spawnable=true, offset=76, block=true, supersize=true},
 	{t="beetlehalf"},
-	{t="kooparedflying", spawnable=true, supersize=true, name="flying red koopa"},
+	{t="kooparedflying", spawnable=true, supersize=true},
 	{t="koopaflying", spawnable=true, supersize=true},
 	{t="castlefireccw", name="firebar"},
 	{t="seesaw"},
-	{t="warppipe", name="world warp"},
+	{t="warppipe"},
 	{t="castlefirecw"},
 	{t="lakitoend"},
-	{t="notgate", name="not gate"},
-	{t="geltop", name="floor gel"},
+	{t="notgate"},
+	{t="geltop", name="gel"},
 	{t="gelleft"},
 	{t="gelbottom"},
 	{t="gelright"},
 	{t="firestart"},
 	{t="bowser", spawnable=true, supersize=true},
 	{t="axe"},
-	{t="platformbonus", name="bonus platform"},
+	{t="platformbonus"},
 	{t="spring"},
 	{t="squid", name="blooper", spawnable=true, supersize=true},
 	{t="flyingfishstart"},
@@ -114,7 +126,7 @@ entitylist = {
 	{t="spikey", name="spiny", spawnable=true, offset=99, block=true, supersize=true},
 	{t="spikeyhalf"},
 	{t="checkpoint"},
-	{t="poisonmush", spawnable=true, block=true, name="poison mushroom"},
+	{t="poisonmush", spawnable=true, block=true},
 	{t="downplant", spawnable=true, supersize=true},
 	{t="paragoomba", spawnable=true, block=true, supersize=true},
 	{t="bigbill", name="banzai bill launcher"},
@@ -136,7 +148,7 @@ entitylist = {
 	{t="firebro", spawnable=true, block=true},
 	{t="plusclock", spawnable=true, block=true},
 	{t="springgreen"},
-	{t="redplant", spawnable=true, supersize=true},
+	{t="redplant", spawnable=true, supersize=true, displayval=1, displaytype="dir"},
 	{t="reddownplant", spawnable=true, supersize=true},
 	{t="thwomp", spawnable=true, offset=224, supersize=true},
 	{t="fishbone", spawnable=true, supersize=true},
@@ -148,7 +160,7 @@ entitylist = {
 	{t="meteorend"},
 	{t="drygoomba", spawnable=true, offset=134, supersize=true},
 	{t="drygoombahalf"},
-	{t="dryplant", spawnable=true, supersize=true},
+	{t="dryplant", spawnable=true, supersize=true, displayval=1, displaytype="dir"},
 	{t="drydownplant", spawnable=true, supersize=true},
 	{t="donut"},
 	{t="boomerangbro", spawnable=true, block=true},
@@ -160,7 +172,7 @@ entitylist = {
 	{t="bigmole", spawnable=true, supersize=true},
 	{t="bomb", spawnable=true, offset=146, block=true, supersize=true},
 	{t="bombhalf"},
-	{t="fireplant", spawnable=true, supersize=true},
+	{t="fireplant", spawnable=true, supersize=true, displayval=1, displaytype="dir"},
 	{t="flipblock"},
 	{t="downfireplant", spawnable=true, supersize=true},
 	{t="torpedoted"},
@@ -179,11 +191,11 @@ entitylist = {
 	{t="door"}, --not portal
 	{t="ice"},
 	{t="box2", name="companion cube", spawnable=true},
-	{t="energylauncherright", name="energy launcher"},
+	{t="energylauncherright", name="energy launcher", displayval=1, displaytype="dir"},
 	{t="energylauncherleft"},
 	{t="energylauncherup"},
 	{t="energylauncherdown"},
-	{t="energycatcherright", name="energy catcher"},
+	{t="energycatcherright", name="energy catcher", displayval=1, displaytype="dir"},
 	{t="energycatcherleft"},
 	{t="energycatcherup"},
 	{t="energycatcherdown"},
@@ -191,7 +203,7 @@ entitylist = {
 	{t="turretright"},
 	{t="turret2left"},
 	{t="turret2right"},
-	{t="blocktogglebutton", name="! button"},
+	{t="blocktogglebutton", name="! button", displayval=2, displaytype="dir"},
 	{t="buttonblockon", name="on block"},
 	{t="buttonblockoff", name="off block"},
 	{t="purplegeldown"},
@@ -221,10 +233,10 @@ entitylist = {
 	{t="enemytool", name="spawner", supersize=true},
 	{t="randomizer"},
 	{t="yoshi", spawnable=true, block=true, supersize=false},
-	{t="bigblocktogglebutton"},
+	{t="bigblocktogglebutton", displayval=2, displaytype="dir"},
 	{t="beetleshell", spawnable=true, supersize=true},
 	{t="musicchanger"},
-	{t="pbutton", name="p switch", spawnable=true, block=true},
+	{t="pbutton", name="p switch", spawnable=true, block=true, displayval=1, displaytype="dir"},
 	{t="spiketop", spawnable=true, offset=213, supersize=true},
 	{t="spiketophalf"},
 	{t="pokey", spawnable=true, supersize=true},
@@ -244,19 +256,19 @@ entitylist = {
 	{t="rotodisc"},
 	{t="funneldown"},
 	{t="funnelup"},
-	{t="funnelright", name="funnel"},
+	{t="funnelright", name="funnel", displayval=3, displaytype="dir"},
 	{t="funnelleft"},
 	{t="pipespawndown"},
 	{t="thwimp", spawnable=true},
 	{t="drybeetle", spawnable=true, offset=236, block=true, supersize=true},
 	{t="drybeetlehalf"},
-	{t="tinygoomba", spawnable=true, block=true, supersize=true},
+	{t="tinygoomba", spawnable=true, block=true},
 	{t="koopaling", spawnable=true, supersize=true},
 	{t="bigmushroom", spawnable=true, name="mega mushroom", block=true},
 	{t="bowser3", spawnable=true, supersize=true},
 	{t="icebro", spawnable=true, block=true},
 	{t="squidnanny", name="blooper nanny", spawnable=true, supersize=true},
-	{t="goombashoe", spawnable=true, supersize=false},
+	{t="goombashoe", spawnable=true, supersize=true},
 	{t="wiggler", spawnable=true, supersize=true}, --wiggler wednesday
 	{t="magikoopa", spawnable=true, block=true, supersize=true},
 	{t="homingbullet"},
@@ -272,16 +284,16 @@ entitylist = {
 	{t="pipespawnhor"},
 	{t="ceilblocker"},
 	{t="donutlast"},
-	{t="skewer"},
+	{t="skewer", displayval=1, displaytype="dir"},
 	{t="boocrawler", spawnable=true, supersize=true},
 	{t="downspikey", name="downspiny", spawnable=true, supersize=true},
 	{t="downbeetle", spawnable=true, supersize=true},
 	{t="spikeyshell", name="spinyshell", spawnable=true, block=true, supersize=true},
 	{t="bigcloud", spawnable=true, block=true},
-	{t="longfireoff", name="burner on"},
+	{t="longfireoff", name="burner on", displayval=1, displaytype="dir"},
 	{t="belt"},
-	{t="buttonbox", name="box button"},
-	{t="buttonedgeless", name="edgeless button"},
+	{t="buttonbox", name="box button", displayval=1, displaytype="dir"},
+	{t="buttonedgeless", name="edgeless button", displayval=1, displaytype="dir"},
 	{t="luckystar", spawnable=true, block=true},
 	{t="animationtrigger"},
 	{t="animatedtiletrigger"},
@@ -291,11 +303,11 @@ entitylist = {
 	{t="actionblock"},
 	{t="collectable"},
 	{t="collectablelock"},
-	{t="powblock", spawnable=true, block=true},
+	{t="powblock", spawnable=true, block=true, displayval=1, displaytype="custom", displaycustomcondition={"blue", "red"}, displaycustomquad={"no", "yes"}},
 	{t="switchblock"},
-	{t="iciclebig", spawnable=true},
-	{t="verspring", name="spring ver", spawnable=true, block=true},
-	{t="horspring", name="spring hor", spawnable=true, block=true},
+	{t="iciclebig", spawnable=true, displayval=2, displaytype="bool"},
+	{t="verspring", name="spring ver", spawnable=true, supersize=true, block=true},
+	{t="horspring", name="spring hor", spawnable=true, supersize=true, block=true},
 	{t="thwompleft", spawnable=true, supersize=true},
 	{t="thwompright", spawnable=true, supersize=true},
 	{t="risingwater"},
@@ -309,7 +321,7 @@ entitylist = {
 	{t="pbuttonblockoff"},
 	{t="spike", spawnable=true, block=true, supersize=true},
 	{t="spikeball", spawnable=true, block=true, supersize=true},
-	{t="frozencoin", spawnable=true, name="frozen coin"},
+	{t="frozencoin", spawnable=true},
 	{t="powerup", block=true},
 	{t="cheepcheep", supersize=true},
 	{t="fireflower", spawnable=true, block=true},
@@ -325,24 +337,18 @@ entitylist = {
 	{t="platform"},
 	{t="pneumatictube"},
 	{t="bigclassicmushroom", name="classic big mushroom", spawnable=true, block=true},
-	{t="checkpointflag"},
+	{t="checkpointflag", displayval=1, displaytype="dir"},
 	{t="supersize", argument="b", argumentname="supersize"},
 	{t="mole", name="mole", spawnable=true, block=true, supersize=true},
-	{t="grinder"},
+	{t="grinder", displayval=1, displaytype="custom", displaycustomcondition={"grinder", "bumper"}, displaycustomquad={"no", "yes"}},
 	{t="bowserjr", spawnable=true, supersize=true},
 	{t="tilegravity", name="gravity block"},
 	{t="thwompnew", spawnable=true, supersize=true},
-	{t="iciclehuge", name="huge icicle", spawnable=true},
-	{t="iciclenew", name="small icicle", spawnable=true},
-	{t="groundlighttright", name="antline"},
-	{t="groundlighttdown", name="antline"},
-	{t="groundlighttleft", name="antline"},
-	{t="groundlighttup", name="antline"},
-	{t="groundlightcross", name="antline"},
-	{t="groundlightcircle", name="antline"},
+	{t="iciclehuge", name="huge icicle", spawnable=true, displayval=2, displaytype="bool"},
+	{t="iciclenew", name="small icicle", spawnable=true, displayval=2, displaytype="bool"},
 	{t="claw", name="swinging claw"},
 	{t="rouletteblock", name="roulette block"},
-	{t="crowber"},
+	{t="commander"},
 }
 
 --only spawnable with spawner or by enemies
@@ -350,7 +356,7 @@ hiddenentitylist = {
 	{t="spikeyfall", name="spiny egg"},
 	{t="bulletbillsingle", name="bulletbill"},
 	{t="bigbillsingle", name="banzaibill"},
-	{t="cannonballsingle", name = "cannonball"},
+	{t="cannonballsingle", name="cannonball"},
 	{t="hammer"},
 	{t="bowserfire"},
 	{t="flyingfish"},
@@ -381,32 +387,6 @@ hiddenentitylist = {
 	{t="magic", name="magickoopa magic", supersize=true},
 	{t="moon"},
 }
-
---sort spawnable entities into a neat table
-function generatespawnableentitylist(extraentities)
-	local temptable = {}
-	for i, t in pairs(entitylist) do
-		if t.spawnable then
-			table.insert(temptable, {t.t, t.name or t.t})
-		end
-	end
-	if extraentities then
-		for i, t in pairs(extraentities) do
-			table.insert(temptable, {t.t, t.name or t.t})
-		end
-	end
-
-	table.sort(temptable, function(a, b) return a[2] < b[2] end)
-
-	local spawnableentities = {}
-	local spawnableentitiesnames = {}
-	for i, t in pairs(temptable) do
-		table.insert(spawnableentities, t[1])
-		table.insert(spawnableentitiesnames, t[2])
-	end
-
-	return spawnableentities, spawnableentitiesnames
-end
 
 tooltipimages = {}
 tooltipquad = {}
@@ -717,7 +697,7 @@ entitydescriptions = {
 	"place on empty tile - p block - off", --"pbuttonblockoff",
 	"place on empty tile - spike - right click for types", --"spike",
 	"place on empty tile - spike ball - right click for types", --"spikeball",
-	"place on empty tile - frozen coin - melts when hit by fire", --"frozencoin",
+	"place on empty tile - frozen coin", --"frozencoin",
 	"place on block - will give either a mushroom or a flower", --"powerup",
 	"place on empty tile - red or white cheep cheep", --"cheepcheep",
 	"place anywhere - fire flower", --"fireflower",
@@ -742,33 +722,44 @@ entitydescriptions = {
 	"place on an empty tile - thwomp - right click for directions.", -- "thwompnew",
 	"place on the ceiling - huge icicle",--"iciclehuge",
 	"place on empty tile - icicle - right click for gravity", --"iciclenew",
-	"place on wall - antline - use link to show on/off state", --"groundlightver", (too lazy to change names)
-	"place on wall - antline - use link to show on/off state", --"groundlighthor",
-	"place on wall - antline - use link to show on/off state", --"groundlightupright",
-	"place on wall - antline - use link to show on/off state", --"groundlightrightdown",
-	"place on wall - antline - use link to show on/off state", --"groundlightdownleft",
-	"place on wall - antline - use link to show on/off state", --"groundlightleftup",
-	"place anywhere - swinging claw - will hold items and players - swing left and right to gain speed.", --"claw"
-	"place on empty tile - roulette block - will give out a random item.", --"rouletteblock"
-	"(unfinished!) place on empty tile - crowber - will swoop down from the sky.", --"crowber"
+	"place anywhere - swinging claw - will hold items and players - swing left and right to gain speed.", --"claw",
+	"place on empty tile - roulette block - will give out a random item.", --"rouletteblock",
+	"place anywhere - commander - run commands", --"commander"
 }
 
-rightclickvalues = {}
+--sort spawnable entities into a neat table
+function generatespawnableentitylist(extraentities)
+	local temptable = {}
+	for i, t in pairs(entitylist) do
+		if t.spawnable then
+			table.insert(temptable, {t.t, t.name or t.t})
+		end
+	end
+	if extraentities then
+		for i, t in pairs(extraentities) do
+			table.insert(temptable, {t.t, t.name or t.t})
+		end
+	end
 
-rightclickvalues["vine"] = {"target", 0, 1, 2, 3, 4, 5, 6}
+	table.sort(temptable, function(a, b) return a[2] < b[2] end)
+
+	local spawnableentities = {}
+	local spawnableentitiesnames = {}
+	for i, t in pairs(temptable) do
+		table.insert(spawnableentities, t[1])
+		table.insert(spawnableentitiesnames, t[2])
+	end
+
+	return spawnableentities, spawnableentitiesnames
+end
+
+rightclickvalues = {}
 
 rightclickvalues["mazegate"] = {"gateno", 1, 2, 3, 4, 5}
 
 rightclickvalues["icicle"] = {"gravity", 10, 13, 15, 8, 5}
 
 rightclickvalues["pedestal"] = {"portals", "both", "1 only", "2 only", "none", "gel"}
-
-rightclickvalues["pokey"] = {"height", "default", 1, 2, 3, 4, 5, 6, 7, 8}
-rightclickvalues["snowpokey"] = {"height", "default", 1, 2, 3, 4, 5, 6, 7, 8}
-
-rightclickvalues["goombashoe"] = {"type", 1, 2}
-
-rightclickvalues["yoshi"] = {"color", 1, 2, 3, 4}
 
 rightclickvalues["spike"] = {"type", "spike", "snow"}
 rightclickvalues["spikeball"] = {"type", "spike", "snow"}
@@ -783,35 +774,37 @@ rightclickvalues["angrysun"] = {"type", "sun", "moon"}
 
 rightclickvalues["levelball"] = {"type", 1, 2, 3, 4, 5, 6, 7, 8}
 
+rightclickvalues["squid"] = {"type", "normal", "ground", "nanny"}
+
+rightclickvalues["wiggler"] = {"type", "normal", "angry"}
+
+rightclickvalues["spring"] = {"gravity", "false", "true"}
+rightclickvalues["springgreen"] = {"gravity", "false", "true"}
+
 rightclicktype = {}
 
-rightclicktype["goombashoe"] = {
-    name = "goombashoe",
-    default = "false|1",
-    format = {
-        {"checkbox", 1, "wings", function(v) rightclickvalues2[1] = v; rightclickobjects[1].var = v end, default = false},
-        "type",
-        {"dropdown", 2, 4, function(v) rightclickobjects[2].var = v; rightclickvalues2[2] = v end, {1,2}},
-    }
-}
-
+--rgb added
 rightclicktype["text"] = {
 	name = "text",
-	default = "text|white|false|false|false|false",
+	default = "text|rgb|false|false|false|false|255|255|255|255",
 	objfunc = function()
-		rightclickobjects[4].coloredtext = true
+		rightclickobjects[3].backgroundcolor = {100, 0, 0}
+		rightclickobjects[4].backgroundcolor = {0, 100, 0}
+		rightclickobjects[5].backgroundcolor = {0, 0, 100}
+		rightclickobjects[6].backgroundcolor = {50, 50, 50}
 	end,
 	format = {
 		"text",
-		{"input", 1, "text", 14, 50, 1, function(v) rightclickvalues2[1] = v end}, --"input", var, default, width, maxlen, height, function
-		"color",
-		{"dropdown", 2, 6, function(v) rightclickobjects[4].var = v; rightclickvalues2[2] = v end,
-			{"black","blue","brown","gray","green","lime","maroon","orange","pink","purple","red","sky","white","yellow"}},
-		{"checkbox", 3, "outline", function(v) rightclickvalues2[3] = v; rightclickobjects[5].var = v end, default = false},
-		{"checkbox", 5, "centered", function(v) rightclickvalues2[5] = v; rightclickobjects[6].var = v end, default = false},
-		{"checkbox", 6, "big", function(v) rightclickvalues2[6] = v; rightclickobjects[7].var = v end, default = false},
-		{"checkbox", 4, "default off", function(v) rightclickvalues2[4] = v; rightclickobjects[8].var = v end, default = false},
-		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}} --"input", var, text, function
+		{"input", 1, "text", 12, 50, 1, function(v) rightclickvalues2[1] = v end},
+		{"slider", 7, function(v) return formatscrollnumber(round(v*255, 0), true) end, range = {0, 255, default = 255, round = 1}},
+		{"slider", 8, function(v) return formatscrollnumber(round(v*255, 0), true) end, range = {0, 255, default = 255, round = 1}},
+		{"slider", 9, function(v) return formatscrollnumber(round(v*255, 0), true) end, range = {0, 255, default = 255, round = 1}},
+		{"slider", 10, function(v) return formatscrollnumber(round(v*255, 0), true) end, range = {0, 255, default = 255, round = 1}},
+		{"checkbox", 3, "outline", function(v) rightclickvalues2[3] = v; rightclickobjects[7].var = v end, default = false},
+		{"checkbox", 5, "centered", function(v) rightclickvalues2[5] = v; rightclickobjects[8].var = v end, default = false},
+		{"checkbox", 6, "big", function(v) rightclickvalues2[6] = v; rightclickobjects[9].var = v end, default = false},
+		{"checkbox", 4, "default off", function(v) rightclickvalues2[4] = v; rightclickobjects[10].var = v end, default = false},
+		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	}
 }
 rightclicktype["regiontrigger"] = {
@@ -835,7 +828,7 @@ rightclicktype["regiontrigger"] = {
 		"trigger on",
 		{"input", 5, "player", 13, 100, 1, function(v) rightclickvalues2[5] = v end},
 		--{"dropdown", 5, 10, function(v) rightclickobjects[2].var = v; rightclickvalues2[5] = v end, {"player","enemy","powerups","everything"}},
-		{"button", 2, {"select region", startrcregion, {1, 4}}}
+		{"button", 2, {"select region", startrcregion, {1, 16}}}
 	},
 }
 
@@ -859,6 +852,18 @@ rightclicktype["pipe"] = {
 	customoutputs = {"pipe", "pipe2", "pipespawn", "pipespawndown", "pipespawnhor"}
 }
 rightclicktype["pipe2"] = deepcopy(rightclicktype["pipe"])
+
+rightclicktype["vine"] = {
+	name = "vine",
+	default = "0",
+	objfunc = function()
+		rightclickobjects[2].entries = sublevelstable
+	end,
+	format = {
+		"target sub",
+		{"dropdown", 1, 4, function(v) rightclickobjects[2].var = v; rightclickvalues2[1] = v end, maxsublevelstable},
+	},
+}
 
 rightclicktype["pipespawn"] = {
 	name = "pipespawn",
@@ -932,7 +937,6 @@ rightclicktype["warppipe"] = {
 	}
 }
 
---rightclickvalues["platformfall"] = {"width", 1.5, 2, 3, 5}
 rightclicktype["platformfall"] = {
 	name = "plarform fall",
 	default = "1.5",
@@ -951,29 +955,6 @@ rightclicktype["platformfall"] = {
 	}
 }
 
-rightclicktype["plusclock"] = {
-	name = "plus clock",
-	default = "100",
-	format = {
-		"time:",
-		{"input", 1, "100", 4, 4, 1, function(v) rightclickvalues2[1] = v end},
-	}
-}
-
-rightclicktype["blocktogglebutton"] = {
-	name = "blocktogglebutton",
-	default = "1",
-	format = {
-		"color:",
-		{"colorbuttonset", 1},
-	}
-}
-
-rightclicktype["buttonblockon"] = rightclicktype["blocktogglebutton"]
-rightclicktype["buttonblockoff"] = rightclicktype["blocktogglebutton"]
-rightclicktype["bigblocktogglebutton"] = rightclicktype["blocktogglebutton"]
-rightclicktype["switchblock"] = rightclicktype["blocktogglebutton"]
-
 rightclicktype["platformbonus"] = {
 	name = "plarform bonus",
 	default = "3",
@@ -989,6 +970,7 @@ rightclicktype["platformbonus"] = {
 		{"slider", 1, function(v) return formatscrollnumber(math.floor((v*9+1)*2)/2) end}
 	}
 }
+
 rightclicktype["platformup"] = {
 	name = "plarformup",
 	default = "1.5|0|8.625|6.4|false",
@@ -1052,6 +1034,7 @@ rightclicktype["platformright"].default = "1.5|n3.3125|0|4"
 rightclicktype["platform"] = deepcopy(rightclicktype["platformup"])
 rightclicktype["platform"].default = "1.5|n3.3125|0|4"
 rightclicktype["platform"].name = "platform"
+
 rightclicktype["platformspawnerup"] = {
 	name = "plarformspawnerup",
 	default = "3|3.5|2.18|up",
@@ -1087,6 +1070,7 @@ rightclicktype["platformspawnerup"] = {
 }
 rightclicktype["platformspawnerdown"] = deepcopy(rightclicktype["platformspawnerup"])
 rightclicktype["platformspawnerdown"].default = "3|3.5|2.18|down"
+
 rightclicktype["cannonball"] = {
 	name = "cannon ball",
 	default = "left|7",
@@ -1097,6 +1081,7 @@ rightclicktype["cannonball"] = {
 		{"slider", 2, function(v) return formatscrollnumber(round((v*(14-3.5))+3.5, 2)) end, range = {3.5, 14, default = cannonballspeed, round = 2}},
 	},
 }
+
 rightclicktype["cannonballcannon"] = {
 	name = "cannon ball",
 	default = "left|7|down",
@@ -1109,6 +1094,7 @@ rightclicktype["cannonballcannon"] = {
 		{"slider", 2, function(v) return formatscrollnumber(round((v*(14-3.5))+3.5, 2)) end, range = {3.5, 14, default = cannonballspeed, round = 2}},
 	},
 }
+
 rightclicktype["delayer"] = {
 	name = "delayer",
 	default = "1|true",
@@ -1119,6 +1105,7 @@ rightclicktype["delayer"] = {
 		{"button", 2, {"link trigger", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	}
 }
+
 rightclicktype["squarewave"] = {
 	name = "square wave",
 	default = "0.5|0.5|true|0",
@@ -1141,6 +1128,7 @@ rightclicktype["squarewave"] = {
 		{"slider", 4, function(v) return formatscrollnumber(round((v*(1)), 2)) end, range = {0, 1, default = 0, round = 2}},
 	}
 }
+
 rightclicktype["tiletool"] = {
 	name = "tile tool",
 	default = "change to 1|1|1|0|0",
@@ -1198,7 +1186,7 @@ rightclicktype["tiletool"] = {
 				rightclickobjects[3].value = "1"
 			elseif func == "set back to " then
 				rightclickobjects[3].value = "1"
-			elseif func == "bump into " then
+			elseif func == "b`ump into " then
 				rightclickobjects[3].value = "1"	
 			elseif func == "check gel " then	
 				rightclickobjects[3].value = "1 all"
@@ -1230,6 +1218,7 @@ rightclicktype["tiletool"] = {
 	t = {"change to ","set back to ","group","remove","break","hit","set gel ","check gel ","remove gel","bump into ", "check tile ", "tile gravity "},
 	d = {"change to:","set back to:","group","remove","break","hit","set gel:", "check gel:", "remove gel", "bump into:", "check tile:", "tile gravity:"},
 }
+
 rightclicktype["enemytool"] = {
 	name = "spawner",
 	default = "goomba|0|0|false|none",
@@ -1305,6 +1294,7 @@ rightclicktype["enemytool"] = {
 	entitylistlength = 1,
 	tnames = {"goomba"},
 }
+
 rightclicktype["kingbill"] = {
 	name = "king ball",
 	default = "5|right",
@@ -1326,6 +1316,7 @@ rightclicktype["kingbill"] = {
 		{"button", 2, {"link trigger", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}},
 	},
 }
+
 rightclicktype["musicchanger"] = {
 	name = "music changer",
 	default = "overworld|1|true",
@@ -1387,11 +1378,11 @@ rightclicktype["seesaw"] = {
 	end,
 	format = {
 		"distance:",
-		{"slider", 1, function(v) return formatscrollnumber(round(v*8+1, 0)) end, range = {2, 10, default = 7, round = 0}},
+		{"slider", 1, function(v) return formatscrollnumber(round(v*8+1, 0), true) end, range = {2, 10, default = 7, round = 0}},
 		"left height:",
-		{"slider", 2, function(v) return formatscrollnumber(round(v*9+1, 0)) end, range = {1, 10, default = 4, round = 0}},
+		{"slider", 2, function(v) return formatscrollnumber(round(v*9+1, 0), true) end, range = {1, 10, default = 4, round = 0}},
 		"right height:",
-		{"slider", 3, function(v) return formatscrollnumber(round(v*9+1, 0)) end, range = {1, 10, default = 6, round = 0}},
+		{"slider", 3, function(v) return formatscrollnumber(round(v*9+1, 0), true) end, range = {1, 10, default = 6, round = 0}},
 		"platf. width:",
 		{"slider", 4, function(v) return formatscrollnumber(math.floor((v*9+1)*2)/2) end},
 	},
@@ -1421,7 +1412,6 @@ rightclicktype["door"] = {
 		{"button", 2, {"link exit", startrclink, {"exit", "exit"}}, {"x", resetrclink, {"exit"}, textcolor = {255, 0, 0}}},
 	},
 }
-
 rightclicktype["pdoor"] = rightclicktype["door"]
 rightclicktype["keydoor"] = rightclicktype["door"]
 
@@ -1452,7 +1442,7 @@ rightclicktype["castlefirecw"] = {
 	end,
 	format = {
 		"length:",
-		{"slider", 1, function(v) return formatscrollnumber(round((v*17)+1,0)) end, range = {1, 18, default = 6, round = 0}},
+		{"slider", 1, function(v) return formatscrollnumber(round((v*17)+1, 0), true) end, range = {1, 18, default = 6, round = 0}},
 		"delay:",
 		{"slider", 2, function(v) return formatscrollnumber(round((v+0.03)/1.03, 2)) end},
 		"angle:",
@@ -1475,6 +1465,7 @@ rightclicktype["rotodisc"] = {
 		{"rotdirbuttonset", 2},
 	},
 }
+
 rightclicktype["funnel"] = {
 	name = "excursion funnel",
 	default = tostring(funnelspeed) .. "|false|right|false",
@@ -1535,11 +1526,12 @@ rightclicktype["belt"] = {
 		{"slider", 1, function(v) return round((v*12)-6, 1) end},
 		"length",
 		--{"input", 2, "3", 3, 2, 1, function(v) rightclickvalues2[2] = v end},
-		{"slider", 2, function(v) return formatscrollnumber(round((v*(50-2))+2, 0)) end, range = {2, 50, default = 3, round = 0}},
+		{"slider", 2, function(v) return formatscrollnumber(round((v*(50-2))+2, 0), true) end, range = {2, 50, default = 3, round = 0}},
 		{"button", 2, {"link power  ", startrclink, {"power", "power"}}, {"x", resetrclink, {"power"}, textcolor = {255, 0, 0}}},
 		{"button", 2, {"link reverse", startrclink, {"reverse", "reverse"}}, {"x", resetrclink, {"reverse"}, textcolor = {255, 0, 0}}}
 	}
 }
+
 rightclicktype["beltswitch"] = {
 	name = "beltswitch",
 	default = "3|3|1",
@@ -1547,24 +1539,27 @@ rightclicktype["beltswitch"] = {
 		"speed",
 		{"slider", 1, function(v) return round((v*12)-6, 1) end, range = {-6, 6, default = 3, round = 1}},
 		"length",
-		{"slider", 2, function(v) return formatscrollnumber(round((v*(50-2))+2, 0)) end, range = {2, 50, default = 3, round = 0}},
+		{"slider", 2, function(v) return formatscrollnumber(round((v*(50-2))+2, 0), true) end, range = {2, 50, default = 3, round = 0}},
 		"color:",
 		{"colorbuttonset", 3},
 		--[["color",
 		{"dropdown", 3, 3, function(v) rightclickobjects[6].var = v; rightclickvalues2[3] = v end, {1,2,3,4}},]]
 	},
 }
+
 rightclicktype["animationtrigger"] = {
 	name = "animation trigger",
 	default = "|",
 	format = {
 		"animation id",
 		{"input", 1, "", 14, 20, 1, function(v) rightclickvalues2[1] = v end},
-		"animation input",
+		"animation arg",
 		{"input", 2, "", 14, 20, 1, function(v) rightclickvalues2[2] = v end},
 		{"button", 2, {"link trigger", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	}
-}rightclicktype["animationoutput"] = {
+}
+
+rightclicktype["animationoutput"] = {
 	name = "animation output",
 	default = "",
 	format = {
@@ -1594,7 +1589,6 @@ rightclicktype["collectablelock"] = {
 	},
 }
 
---linking buttons
 rightclicktype["timer"] = {
 	name = "timer",
 	default = "1|true",
@@ -1615,6 +1609,7 @@ rightclicktype["timer"] = {
 		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	},
 }
+
 rightclicktype["portal"] = {
 	name = "portal",
 	default = "left|1|false",
@@ -1630,8 +1625,8 @@ rightclicktype["portal"] = {
 		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	},
 }
-rightclicktype["portal1"] = rightclicktype["portal"]
-rightclicktype["portal2"] = rightclicktype["portal"]
+rightclicktype["portal1"] = deepcopy(rightclicktype["portal"])
+rightclicktype["portal2"] = deepcopy(rightclicktype["portal"])
 
 rightclicktype["faithplate"] = {
 	name = "faithplate",
@@ -1684,6 +1679,7 @@ rightclicktype["animatedtiletrigger"] = {
 		{"button", 2, {"link trigger", startrclink, {"power"}}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	}
 }
+
 rightclicktype["orgate"] = {
 	name = "orgate",
 	default = "true",
@@ -1695,6 +1691,7 @@ rightclicktype["orgate"] = {
 		{"button", 1, {"link power", startrclink, {"link 4", 4}}, {"x", resetrclink, {4}, textcolor = {255, 0, 0}}}
 	}
 }
+
 rightclicktype["andgate"] = {
 	name = "andgate",
 	default = "true",
@@ -1706,6 +1703,7 @@ rightclicktype["andgate"] = {
 		{"button", 1, {"link power", startrclink, {"link 4", 4}}, {"x", resetrclink, {4}, textcolor = {255, 0, 0}}}
 	}
 }
+
 rightclicktype["rsflipflop"] = {
 	name = "rsflipflop",
 	default = "true",
@@ -1719,21 +1717,15 @@ rightclicktype["rsflipflop"] = {
 rightclicktype["geltop"] = {
 	name = "gel",
 	default = "1|true|false|false|false",
-	--[[objfunc = function()
-		rightclickobjects[2].displayentries = rightclicktype["geltop"].tdisplay
-	end,]]
 	format = {
 		"gel type",
 		{"gelbuttonset", 1},
-		--{"dropdown", 1, 6, function(v) rightclickobjects[2].var = v; rightclickvalues2[1] = v end, {"1", "2", "3", "4", "5"}},
 		{"checkbox", 2, "top", function(v) rightclickvalues2[2] = v; rightclickobjects[8].var = v end},
 		{"checkbox", 3, "left", function(v) rightclickvalues2[3] = v; rightclickobjects[9].var = v end},
 		{"checkbox", 4, "bottom", function(v) rightclickvalues2[4] = v; rightclickobjects[10].var = v end},
 		{"checkbox", 5, "right", function(v) rightclickvalues2[5] = v; rightclickobjects[11].var = v end},
 	},
-	--tdisplay = {"blue","orange","white","purple","cleanse"},
 }
---rightclicktype["geltop"] = {"gelid", 1, 2, 3, 4}
 rightclicktype["gelleft"] = deepcopy(rightclicktype["geltop"])
 rightclicktype["gelleft"].default = "1|false|true|false|false"
 rightclicktype["gelbottom"] = deepcopy(rightclicktype["geltop"])
@@ -1759,7 +1751,7 @@ rightclicktype["boxtube"] = {
 		return v
 	end,
 	maketable = function()
-		local t = {"cube","companion cube","edgeless cube", "core1", "core2", "core3", "core4"}
+		local t = {"cube","companion cube","edgeless cube", "core1", "core2", "core3", "core4", "turret", "defective turret"}
 		for j, w in pairs(customenemies) do
 			if w and enemiesdata[w] and enemiesdata[w].hidden then
 				--hidden!
@@ -1771,8 +1763,8 @@ rightclicktype["boxtube"] = {
 	end,
 	objfunc = function()
 		rightclicktype["boxtube"].t = rightclicktype["boxtube"].maketable()
-		rightclickobjects[8].entries = rightclicktype["boxtube"].t
-		rightclickobjects[8]:updatePos()
+		rightclickobjects[4].entries = rightclicktype["boxtube"].t
+		rightclickobjects[4]:updatePos()
 	end,
 	savefunc = function()
 		if tonumber(rightclickvalues2[3]) then
@@ -1781,18 +1773,15 @@ rightclicktype["boxtube"] = {
 		end
 	end,
 	format = {
-		"on load:",
-		{"checkbox", 1, "drop box", function(v) rightclickvalues2[1] = v; rightclickobjects[2].var = v end},
-		"",
-		{"checkbox", 2, "respawn obj", function(v) rightclickvalues2[2] = v; rightclickobjects[4].var = v end},
-		"if destroyed",
-		"",
+		{"checkbox", 1, "drop on load", function(v) rightclickvalues2[1] = v; rightclickobjects[1].var = v end},
+		{"checkbox", 2, "respawn", function(v) rightclickvalues2[2] = v; rightclickobjects[2].var = v end},
 		"object:",
-		{"dropdown", 3, 13, function(v) rightclickobjects[8].var = v; rightclickvalues2[3] = rightclicktype["boxtube"].t[v] end, {}}, --"dropdown", var, width (in chars), func, {entries}
+		{"dropdown", 3, 15, function(v) rightclickobjects[4].var = v; rightclickvalues2[3] = rightclicktype["boxtube"].t[v] end, {}}, --"dropdown", var, width (in chars), func, {entries}
 		{"button", 2, {"link trigger", startrclink},{"x", resetrclink, textcolor = {255, 0, 0}}}
 	},
 	t = {}
 }
+
 rightclicktype["button"] = {
 	name = "button",
 	default = "down",
@@ -1830,6 +1819,7 @@ rightclicktype["doorver"] = {
 }
 rightclicktype["doorhor"] = deepcopy(rightclicktype["doorver"])
 rightclicktype["doorhor"].default = "true|hor|false"
+
 rightclicktype["emancever"] = {
 	name = "emancever",
 	default = "ver|false|fizzler",
@@ -1850,11 +1840,10 @@ rightclicktype["emancever"] = {
 
 rightclicktype["laser"] = {
 	name = "laser",
-	default = "right|false|true",
+	default = "right|false",
 	format = {
 		"direction",
 		{"dirbuttonset",1},
-		{"checkbox", 3, "kills", function(v) rightclickvalues2[3] = v; rightclickobjects[6].var = v end},
 		{"checkbox", 2, "default off", function(v) rightclickvalues2[2] = v; rightclickobjects[7].var = v end},
 		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	}
@@ -1866,6 +1855,7 @@ rightclicktype["laserleft"] = deepcopy(rightclicktype["laser"])
 rightclicktype["laserleft"].default = "left|false"
 rightclicktype["laserup"] = deepcopy(rightclicktype["laser"])
 rightclicktype["laserup"].default = "up|false"
+
 rightclicktype["laserdetectorright"] = {
 	name = "laser detector",
 	default = "right|true|false|wall",
@@ -1885,6 +1875,7 @@ rightclicktype["laserdetectorleft"] = deepcopy(rightclicktype["laserdetectorrigh
 rightclicktype["laserdetectorleft"].default = "left|true|false"
 rightclicktype["laserdetectorup"] = deepcopy(rightclicktype["laserdetectorright"])
 rightclicktype["laserdetectorup"].default = "up|true|false"
+
 rightclicktype["lightbridge"] = {
 	name = "lightbridge",
 	default = "right|false",
@@ -1902,6 +1893,7 @@ rightclicktype["lightbridgedown"] = deepcopy(rightclicktype["lightbridge"])
 rightclicktype["lightbridgedown"].default = "left|false"
 rightclicktype["lightbridgeup"] = deepcopy(rightclicktype["lightbridge"])
 rightclicktype["lightbridgeup"].default = "up|false"
+
 rightclicktype["notgate"] = {
 	name = "notgate",
 	default = "true",
@@ -1910,26 +1902,51 @@ rightclicktype["notgate"] = {
 		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	}
 }
-rightclicktype["wallindicator"] = {name = "wallindicator", default = nil, varfunc = function(v) end,
-	format = {{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}}}
 
-rightclicktype["groundlight"] = {name = "groundlight", default = nil, varfunc = function(v) end,
-	format = {{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}}}
-rightclicktype["groundlightver"] = rightclicktype["groundlight"]
-rightclicktype["groundlighthor"] = rightclicktype["groundlight"]
-rightclicktype["groundlightupright"] = rightclicktype["groundlight"]
-rightclicktype["groundlightrightdown"] = rightclicktype["groundlight"]
-rightclicktype["groundlightdownleft"] = rightclicktype["groundlight"]
-rightclicktype["groundlightleftup"] = rightclicktype["groundlight"]
-rightclicktype["groundlighttright"] = rightclicktype["groundlight"]
-rightclicktype["groundlighttdown"] = rightclicktype["groundlight"]
-rightclicktype["groundlighttleft"] = rightclicktype["groundlight"]
-rightclicktype["groundlighttup"] = rightclicktype["groundlight"]
-rightclicktype["groundlightcross"] = rightclicktype["groundlight"]
-rightclicktype["groundlightcircle"] = rightclicktype["groundlight"]
+rightclicktype["wallindicator"] = {
+	name = "wallindicator",
+	default = "false",
+	format = {
+		{"checkbox", 1, "default on", function(v) rightclickvalues2[1] = v; rightclickobjects[1].var = v end},
+		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
+	}
+}
 
-rightclicktype["link"] = {name = "link", default = nil, varfunc = function(v) end,
-	format = {{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}}}
+rightclicktype["groundlight"] = {
+	name = "groundlight",
+	default = "false|false|false|false|false|false|false|false|false|false",
+	objfunc = function()
+		rightclickobjects[2].y = rightclickobjects[2].y + 2
+	end,
+	format = {
+		{"checkbox", 1, "default on", function(v) rightclickvalues2[1] = v; rightclickobjects[1].var = v end},
+		"shape",
+		{"checkboxbox", 2, 3, function(v, id) rightclickvalues2[id] = v; rightclickobjects[id+1].var = v end},
+		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
+	}
+}
+rightclicktype["groundlightver"] = deepcopy(rightclicktype["groundlight"])
+rightclicktype["groundlightver"].default = "false|false|false|false|true|true|true|false|false|false"
+rightclicktype["groundlighthor"] = deepcopy(rightclicktype["groundlight"])
+rightclicktype["groundlighthor"].default = "false|false|true|false|false|true|false|false|true|false"
+rightclicktype["groundlightupright"] = deepcopy(rightclicktype["groundlight"])
+rightclicktype["groundlightupright"].default = "false|false|false|false|true|true|false|false|true|false"
+rightclicktype["groundlightrightdown"] = deepcopy(rightclicktype["groundlight"])
+rightclicktype["groundlightrightdown"].default = "false|false|false|false|false|true|true|false|true|false"
+rightclicktype["groundlightdownleft"] = deepcopy(rightclicktype["groundlight"])
+rightclicktype["groundlightdownleft"].default = "false|false|true|false|false|true|true|false|false|false"
+rightclicktype["groundlightleftup"] = deepcopy(rightclicktype["groundlight"])
+rightclicktype["groundlightleftup"].default = "false|false|true|false|true|true|false|false|false|false"
+
+rightclicktype["link"] = {
+	name = "link",
+	default = nil, 
+	varfunc = function(v) end,
+	format = {
+		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
+	}
+}
+
 rightclicktype["randomizer"] = {
 	name = "randomizer",
 	default = "1|true",
@@ -1940,26 +1957,36 @@ rightclicktype["randomizer"] = {
 		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	},
 }
-rightclicktype["rocketturret"] = {name = "rocketturret", default = nil, varfunc = function(v) end,
-	format = {{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}}}
-rightclicktype["checkpoint"] = {name = "checkpoint", default = nil, varfunc = function(v) end,
-	format = {{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}}}
+
+rightclicktype["rocketturret"] = {
+	name = "rocketturret",
+	default = nil, 
+	varfunc = function(v) end,
+	format = {
+		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
+	}
+}
+
+rightclicktype["checkpoint"] = {
+	name = "checkpoint",
+	default = nil, 
+	varfunc = function(v) end,
+	format = {
+		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
+	}
+}
+
 rightclicktype["geldispenser"] = {
 	name = "geldispenser",
 	default = "down|1|false",
-	--[[objfunc = function()
-		rightclickobjects[7].displayentries = rightclicktype["geldispenser"].tdisplay
-	end,]]
 	format = {
 		"direction",
 		{"dirbuttonset", 1},
 		"type",
 		{"gelbuttonset", 2},
-		--{"dropdown", 2, 6, function(v) rightclickobjects[7].var = v; rightclickvalues2[2] = v end, {"1", "2", "3", "4", "5"}},
 		{"checkbox", 3, "default off", function(v) rightclickvalues2[3] = v; rightclickobjects[13].var = v end},
 		{"button", 2, {"link power", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	},
-	--tdisplay = {"blue","orange","white","purple","cleanse"},
 }
 rightclicktype["bluegeldown"] = deepcopy(rightclicktype["geldispenser"])
 rightclicktype["bluegelright"] = deepcopy(rightclicktype["geldispenser"])
@@ -2050,11 +2077,10 @@ rightclicktype["risingwater"] = {
 
 rightclicktype["redseesaw"] = {
 	name = "red seesaw",
-	default = "5|false",
+	default = "5",
 	format = {
 		"width:",
-		{"slider", 1, function(v) return formatscrollnumber(round((v*(15-3))+3, 0)) end, range = {3, 15, default = 5, round = 0}},
-		{"checkbox", 2, "reverse", function(v) rightclickvalues2[2] = v; rightclickobjects[3].var = v end},
+		{"slider", 1, function(v) return formatscrollnumber(round((v*(15-3))+3, 0), true) end, range = {3, 15, default = 5, round = 0}},
 	}
 }
 
@@ -2067,7 +2093,7 @@ rightclicktype["snakeblock"] = {
 	format = {
 		{"button", 1, {"  set path  ", function(var) startrcpath(var) end, {1}}, {"x", function() rightclickvalues2[1] = "" end, {}, textcolor = {255, 0, 0}}},
 		"length",
-		{"slider", 2, function(v) return formatscrollnumber(round((v*(20-2))+2, 0)) end, range = {2, 20, default = 3, round = 0}},
+		{"slider", 2, function(v) return formatscrollnumber(round((v*(20-2))+2, 0), true) end, range = {2, 20, default = 3, round = 0}},
 		"speed",
 		{"slider", 3, function(v) return formatscrollnumber(round(v*6, 2)) end, range = {0, 6, default = 2, round = 2}},
 		{"checkbox", 4, "loop", function(v) rightclickvalues2[4] = v; rightclickobjects[7].var = v end},
@@ -2203,6 +2229,7 @@ rightclicktype["energylauncherup"] = deepcopy(rightclicktype["energylauncherrigh
 rightclicktype["energylauncherup"].default = "up|false"
 rightclicktype["energylauncherdown"] = deepcopy(rightclicktype["energylauncherright"])
 rightclicktype["energylauncherdown"].default = "down|false"
+
 rightclicktype["energycatcherright"] = {
 	name = "energycatcher",
 	default = "right|false",
@@ -2264,6 +2291,7 @@ rightclicktype["clearpipe"] = {
 		{"checkbox", 2, "intersection", function(v) rightclickvalues2[2] = v; rightclickobjects[3].var = v end},
 	}
 }
+
 rightclicktype["pneumatictube"] = {
 	name = "pneumatic tube",
 	default = "|false|true",
@@ -2294,7 +2322,7 @@ rightclicktype["plantcreeper"] = {
 
 rightclicktype["track"] = {
 	name = "track",
-	default = "0:0:c:c:d|true|false",
+	default = "0:0:c:c:d|true",
 	trackfunc = function(s)
 		rightclickvalues2[1] = s
 	end,
@@ -2340,6 +2368,7 @@ rightclicktype["flag"] = {
 		{"checkbox", 2, "castleflag", function(v) rightclickvalues2[2] = v; rightclickobjects[2].var = v end},
 	},
 }
+
 rightclicktype["checkpointflag"] = {
 	name = "checkpoint flag",
 	default = "down|2",
@@ -2367,7 +2396,10 @@ rightclicktype["checkpointflag"] = {
 rightclicktype["plant"] = {
 	name = "plant",
 	default = "up",
-	format = {"direction", {"dirbuttonset", 1} },
+	format = {
+		"direction", 
+		{"dirbuttonset", 1}
+	},
 }
 rightclicktype["redplant"] = rightclicktype["plant"]
 rightclicktype["dryplant"] = rightclicktype["plant"]
@@ -2398,14 +2430,64 @@ rightclicktype["amp"] = {
 		{"dropdown", 1, 2, function(v) rightclickobjects[4].var = v; rightclickvalues2[1] = v end, {"0", "1", "2", "3", "4"}},
 	},
 }
+
 rightclicktype["pbutton"] = {
 	name = "pswitch",
 	default = "down",
 	format = {
 		"base",
-		{"verdirbuttonset", 1},
+		{"dirbuttonset", 1},
 	},
 }
+
+rightclicktype["boocircle"] = {
+	name = "boocircle",
+	default = "cw|3|8|1.5|0.333",
+	format = {
+		"direction",
+		{"rotbuttonset", 1},
+		"radius",
+		{"slider", 2, function(v) return formatscrollnumber(round((v*(8-2))+2, 1)) end, range = {2, 8, default = 3, round = 1}},
+		"boos",
+		{"slider", 3, function(v) return math.floor((v*(20-2))+2) end, range = {2, 20, default = 8, round = 0}},
+		"gap",
+		{"slider", 4, function(v) return formatscrollnumber(round((v*(10)), 1)) end, range = {0, 10, default = 1.5, round = 1}},
+		"speed",
+		{"slider", 5, function(v) return formatscrollnumber(round((v*(1-0.1))+0.1, 1)) end, range = {0.1, 1, default = 0.333, round = 3}},
+	},
+}
+
+rightclicktype["plusclock"] = {
+	name = "plus clock",
+	default = "100",
+	format = {
+		"time:",
+		{"input", 1, "100", 4, 4, 1, function(v) rightclickvalues2[1] = v end},
+	}
+}
+
+rightclicktype["blocktogglebutton"] = {
+	name = "blocktogglebutton",
+	default = "1|down",
+	format = {
+		"color:",
+		{"colorbuttonset", 1},
+		"base",
+		{"dirbuttonset", 2},
+	}
+}
+rightclicktype["bigblocktogglebutton"] = deepcopy(rightclicktype["blocktogglebutton"])
+
+rightclicktype["switchblock"] = {
+	name = "switchblock",
+	default = "1",
+	format = {
+		"color:",
+		{"colorbuttonset", 1},
+	}
+}
+rightclicktype["buttonblockon"] = deepcopy(rightclicktype["switchblock"])
+rightclicktype["buttonblockoff"] = deepcopy(rightclicktype["switchblock"])
 
 rightclicktype["tilegravity"] = {
 	name = "tilegravity",
@@ -2431,7 +2513,7 @@ rightclicktype["ceilblocker"] = {
 	name = "ceilblocker",
 	default = "false",
 	format = {
-		{"checkbox", 1, "just this spot", function(v) rightclickvalues2[1] = v; rightclickobjects[1].var = v end},
+		{"checkbox", 1, "just this spot", function(v) rightclickvalues2[1] = v; rightclickobjects[1].var = v end}
 	},
 }
 
@@ -2445,20 +2527,228 @@ rightclicktype["claw"] = {
 }
 
 rightclicktype["rouletteblock"] = {
-	name = "rouletteblock",
-	default = "mushroom|oneup|star|none|none|0.15|false",
+	name = "roulette block",
+	default = "mushroom`oneup`star|0.15|false",
+	additem = function() 
+		local len = #rightclickobjects[6].items or 0
+		print(len, rightclickobjects[6].maxitems)
+		if len ~= rightclickobjects[6].maxitems then
+			local lest = {"coin", "mushroom", "fireflower", "iceflower", "oneup", "star"}
+			table.insert(rightclickobjects[6].items, 1, lest[rightclickobjects[4].var])
+		end
+	end,
 	format = {
 		"speed:",
-		{"input", 6, "0.15", 4, 4, 1, function(v) rightclickvalues2[6] = v end},
+		{"input", 2, "0.15", 4, 4, 1, function(v) rightclickvalues2[2] = v end},
 		"items:",
-		{"dropdown", 1, 10, function(v) rightclickobjects[4].var = v; rightclickvalues2[1] = v end, {"none", "coin", "mushroom", "fireflower", "oneup", "star"}},
-		{"dropdown", 2, 10, function(v) rightclickobjects[5].var = v; rightclickvalues2[2] = v end, {"none", "coin", "mushroom", "fireflower", "oneup", "star"}},
-		{"dropdown", 3, 10, function(v) rightclickobjects[6].var = v; rightclickvalues2[3] = v end, {"none", "coin", "mushroom", "fireflower", "oneup", "star"}},
-		{"dropdown", 4, 10, function(v) rightclickobjects[7].var = v; rightclickvalues2[4] = v end, {"none", "coin", "mushroom", "fireflower", "oneup", "star"}},
-		{"dropdown", 5, 10, function(v) rightclickobjects[8].var = v; rightclickvalues2[5] = v end, {"none", "coin", "mushroom", "fireflower", "oneup", "star"}},
-		{"checkbox", 7, "random", function(v) rightclickvalues2[7] = v; rightclickobjects[9].var = v end},
+		{"list", 1, 6, 10, 6, function(v) rightclickobjects[4].var = v end, {"coin", "mushroom", "fireflower", "iceflower", "oneup", "star"}, function() rightclicktype["rouletteblock"].additem() end},
+		{"checkbox", 3, "random", function(v) rightclickvalues2[3] = v; rightclickobjects[7].var = v end},
 	},
-	--list = {"none", "coin", "mushroom", "fireflower", "oneup", "star"}
+}
+
+rightclicktype["goombashoe"] = {
+    name = "goombashoe",
+    default = "1|false|true",
+    format = {
+        "type",
+		{"dropdown", 1, 4, function(v) rightclickobjects[2].var = v; rightclickvalues2[1] = v end, {1,2}},
+		{"checkbox", 2, "wings", function(v) rightclickvalues2[2] = v; rightclickobjects[3].var = v end, default = false},
+		{"checkbox", 3, "goomba", function(v) rightclickvalues2[3] = v; rightclickobjects[4].var = v end, default = false},
+	}
+}
+
+rightclicktype["yoshi"] = {
+    name = "yoshi",
+    default = "1|2.5",
+    format = {
+		"color",
+		{"dropdown", 1, 3, function(v) rightclickobjects[2].var = v; rightclickvalues2[1] = v end, {1,2,3,4}},
+        "tongue length",
+		{"input", 2, "2.5", 5, 5, 1, function(v) rightclickvalues2[2] = v end},
+	}
+}
+
+rightclicktype["commander"] = {
+	name = "commander",
+	default = "",
+	objfunc = function()
+		commandert(rightclickvalues2[1])
+	end,
+	settext = function(text, textb, textc)
+		rightclickobjects[3].text = text
+		rightclickobjects[4].text = textb
+		rightclickobjects[5].text = textc
+	end,
+	format = {
+		"command",
+		{"input", 1, "", 30, 150, 5, function(v) rightclickvalues2[1] = v end, true},
+		"please start inputing command.",
+		"",
+		"",
+		{"button", 2, {"link trigger", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
+	},
+}
+
+-- i decided to condence a few old enemies
+rightclicktype["parabeetle"] = {
+    name = "parabeetle",
+    default = "red|left",
+    format = {
+		"type",
+		{"dropdown", 1, 5, function(v) rightclickobjects[2].var = v; rightclickvalues2[1] = v end, {"red", "green"}},
+        "direction",
+		{"hordirbuttonset", 2},
+	}
+}
+rightclicktype["parabeetleright"] = deepcopy(rightclicktype["parabeetle"])
+rightclicktype["parabeetleright"].default = "red|right"
+rightclicktype["parabeetlegreen"] = deepcopy(rightclicktype["parabeetle"])
+rightclicktype["parabeetlegreen"].default = "green|left"
+rightclicktype["parabeetlegreenright"] = deepcopy(rightclicktype["parabeetle"])
+rightclicktype["parabeetlegreenright"].default = "green|right"
+
+rightclicktype["spikey"] = {
+	name = "spikey",
+	default = "down",
+	format = {
+		"base",
+		{"verdirbuttonset", 1},
+	},
+}
+
+rightclicktype["beetle"] = {
+	name = "beetle",
+	default = "down",
+	format = {
+		"base",
+		{"verdirbuttonset", 1},
+	},
+}
+
+rightclicktype["pokey"] = {
+	name = "pokey",
+	default = "pokey|3",
+	format = {
+		"type",
+		{"dropdown", 1, 9, function(v) rightclickobjects[2].var = v; rightclickvalues2[1] = v end, {"pokey", "snowpokey"}},
+		"height",
+		{"dropdown", 2, 3, function(v) rightclickobjects[4].var = v; rightclickvalues2[2] = v end, {1, 2, 3, 4, 5, 6, 7, 8}},
+	},
+}
+rightclicktype["snowpokey"] = deepcopy(rightclicktype["pokey"])
+rightclicktype["snowpokey"].default = "snowpokey|3"
+
+--testing
+--[[rightclicktype["box"] = {
+	name = "box",
+	default = "e`e|a`b`c",
+	format = {
+		--this was hell, format is "list", value, list obj list pos, dropdown function, dropdown items, + button click function
+		"shit:",
+		{"list", 1, 12, 4, function(v) rightclickobjects[2].var = v end, {"uwu", "benis", "e", "aaaaaa"}, function() 
+			local len = #rightclickobjects[4].items or 0
+			print(len, rightclickobjects[4].maxitems)
+			if len ~= rightclickobjects[4].maxitems then
+				local lest = {"uwu", "benis", "e", "aaaaaa"}
+				table.insert(rightclickobjects[4].items, 1, lest[rightclickobjects[2].var])
+			end
+		end},
+		{"list", 2, 8, 7, function(v) rightclickobjects[5].var = v end, {"a", "b", "c", "shitfuck"}, function() 
+			local len = #rightclickobjects[7].items or 0
+			print(len, rightclickobjects[7].maxitems)
+			if len ~= rightclickobjects[7].maxitems then
+				local lest = {"a", "b", "c", "shitfuck"}
+				table.insert(rightclickobjects[7].items, 1, lest[rightclickobjects[5].var])
+			end
+		end},
+	},
+}]]
+
+entitiesforms = {}
+
+entitiesforms["default"] = {	
+	{name = "level markers",
+		1,8,100,312,11, --erase and start
+		21,--[[161,]]31,--[[233,256,]]81, --pipes (possibly combine them later?)
+		257, --celing block (possibly camera block too?)
+		23,24,25, 89, 33,34, 95,96, 131,132, 83, 110, 159,160,--zones
+		35, --drag in
+		304,--camera stop
+		},
+	{name = "platforming elements",
+		309,--[[18,19,]]32,41,--[[42,]]92,80,289, --platforms
+		258,137, --donut
+		148,278, --block like entities
+		266,287, --conveyors
+		290, --snake block
+		93,122,281,282, --springs
+		14,219,--vines
+		163,248,249,250, --doors
+		79,--[[82,]]265,--[[191,]] 228,  --fire
+		315, --grinder
+		285,164, --water
+		211,292,293, 178,208,279,179,180,--buttons
+		300,301, --helmet boxes
+		302,--clear pipe
+		306,--tracks!
+		317,--moving bloccs
+		321, --CLAWWS
+		},
+	{name = "items",
+		--[[297,]]2,3,101,4,187,296,5, --regulars
+		121,269,217,218,113, --smbs items
+		299,202,155,141,151,252,253,254,255,239,311,193,286,307,308, --new powerups
+		207, --yoshi
+		154, --? Ball
+		322, --roulette block
+		},
+	{name = "enemies",
+		6,--[[9,]]103,114,237,118,--[[119,]] --goomba
+		7,--[[10,]]117,78,158,116, 12,--[[13,]]77, 156,--[[157,]] --koopa, red, blue
+		98,--[[99,]]263,--[[261,]]115, --spiny
+		75,--[[76,]]209,--[[262,]]130, --beetle
+		212,--[[213,]] --spiketop
+		70,--[[102,]]123,--[[124,]]147,--[[149,]]129,305, --plants
+		15,120,241,138,221, --hammer bros
+		16,17,298,184, 94,--[[162,242,]] --fishies (and bloopers)
+		22,--[[83,]]264, 109,--[[110,]] --lakitu and sun
+		188, -- fantastic fuzzy
+		60,246,104,105,150,192,303,145,--[[146,]] --bullets and military stuff
+		142,260,247, 111,--[[112,]]--boos and splunkins
+		--[[125,224,283,284,]]318,234,259, 127,--[[128,]]288,126,133,--[[134,]]235,--[[236,]]135,--[[136,]] 97, --castle stuffs
+		90,91,153,238,316,240, --bowser bosses
+		106,216,107,--[[108,]]320,280,319, --smbs enemies
+		203,--[[204,]]140,214,--[[215,]] --smb2 enemies
+		139,--[[152,189,190,]] --flying beetles
+		--[[143,]]314,144,223, --moles
+		220, 243, 244,--[[251,]] 245, 294,295, --mario maker enemies
+		
+		313, --super size
+		},
+	{name = "i/o objects",
+		275,210,271,270,291,200,199,276,277,201,205,323},
+	{name = "gates",
+		84,274,273,186,272,185,206},
+	{name = "portal elements",
+		20,165,222, --cubes
+		40,267,268, 68,--[[69,]] --buttons
+		28,--[[29,]] --doors
+		--[[26,]]27, --emancipation grill
+		36,--[[37,38,39,]] 52,--[[53,54,55,]] 56,--[[57,58,59,]] --lasers
+		30,74, --wall indicater and timer
+		43,44,45,46,47,48, --antlines
+		49,--[50,51,]] --faithplate
+		67, 61,--[[62,63, 64,65,66, 71,72,73, 181,182,183, 225,226,227,]] --dispensers
+		85,--[[86,87,88,]] --gel
+		166,--[[167,168,169,]] 170,--[[171,172,173,]] --energy launcher
+		174,--[[175, 176,177,]] 194, --turrets
+		195, --glados
+		196,
+		197,198, --portals
+		231,--[[229,230,232]] --funnels
+		310,--pneumatic tube (just clearpipe but shhh)
+	},
+	{name = "custom enemies"},
 }
 
 function entity:init(img, x, y, width, height)

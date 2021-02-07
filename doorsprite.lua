@@ -6,13 +6,14 @@ function doorsprite:init(x, y, r, i)
 	self.r = r
 	self.i = i
 
-	local v = convertr(r[3], {"num", "num", "bool"}, true)
+	local v = convertr(r[3], {"num", "num", "bool", "num"}, true)
 	self.targetsublevel = v[1] or 0
 	self.exitid = v[2] or 1
 	self.visible = true
 	if v[3] ~= nil then
 		self.visible = v[3]
 	end
+
 	if pipeexitid and pipeexitid > 1 and pipeexitid == self.exitid then
 		pipestartx = x+.5
 		pipestarty = y
@@ -46,18 +47,14 @@ end
 
 function doorsprite:lock(lock)
 	self.locked = lock
-	if self.i == "pdoor" then
+	if self.i ~= "door" then
 		if self.locked then
 			self.frame = 1
 		else
 			self.frame = 2
-		end
-	elseif self.i == "keydoor" then
-		if self.locked then
-			self.frame = 1
-		else
-			self.frame = 2
-			playsound(keyopensound)
+			if self.i == "keydoor" then
+				playsound(keyopensound)
+			end
 		end
 	end
 end

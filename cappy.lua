@@ -1,4 +1,3 @@
---most simple entity ever
 cappy = class:new()
 
 local throwdist = 4
@@ -25,7 +24,7 @@ function cappy:init(player)
 	self.speedy = 0
 	self.speedx = 0
 	self.width = 12/16
-	self.height = 12/16
+	self.height = 13/16
 	self.category = 4
 	self.gravity = 0
 	self.mask = {	true, 
@@ -53,6 +52,8 @@ function cappy:init(player)
 	
 	self.thrown = false
 	self.returning = false
+
+	self.button = false --what button was used to trigger it?
 	
 	self.cooldown = 0
 	
@@ -65,18 +66,21 @@ end
 function cappy:update(dt)
 	if self.thrown then
 		if self.returning then
+			--start returning
 			local rx, ry = (self.player.x + -self.x), (self.player.y + -self.y)
 			local dist = math.sqrt(rx*rx+ry*ry)
 			self.speedx, self.speedy = (rx)/dist*returnspeed, (ry)/dist*returnspeed
 		elseif math.abs(self.x-self.ox) > throwdist then
+			--stay in position when thrown
 			self.speedx = 0
-			if runkey(self.num) and self.holdtimer < holdtime then
+			if ((self.button == "run" and runkey(self.num)) or (self.button == "use" and usekey(self.num))) and self.holdtimer < holdtime then
 				self.holdtimer = self.holdtimer + dt
 			else
 				self.returning = true
 				self.holdtimer = 0
 			end
 		end
+		--spin animation
 		self.spintimer = self.spintimer + dt
 		while self.spintimer > spintime do
 			self.spin = -self.spin
@@ -161,7 +165,7 @@ function cappy:update(dt)
 		if runkey(self.num) then
 			self.host:update(dt)
 		end
-		if self.host.shot or self.host.dead or levelfinished then
+		if self.host.shot or self.host.dead or self.host.delete or levelfinished then
 			self:release()
 			return
 		end
@@ -170,7 +174,7 @@ function cappy:update(dt)
 			self.host.timer2 = 0
 		end
 		
-		if self.jumping and self.host.speedy == 0 then
+		if self.jumping and (self.host.speedy == 0 or self.host.speedy == -goombajumpforce) then
 			self.jumping = false
 		end
 		
@@ -203,6 +207,19 @@ function cappy:draw()
 			quad = bighat[self.hat].quad[1]
 		end
 		love.graphics.draw(graphic, quad, math.floor((self.x+width/2-xscroll)*16*scale), ((self.y-yscroll)*16-8-offsety)*scale, 0, (self.spin)*scale, scale, 4, 8)
+	end
+end
+
+function cappy:trigger(dir, button)
+	if self.host then
+		if upkey(self.num) then
+			self:release()
+		else
+			self:fire()
+		end
+	elseif not self.thrown then
+		self.button = button
+		self:throw(dir)
 	end
 end
 
@@ -263,7 +280,7 @@ function cappy:capture(b, a)
 	self.thrown = false
 	
 	if not releasenotice then
-		notice.new("to exit enemy: hold up|then press the run button", notice.white, 6)
+		notice.new("to exit enemy: hold up\nthen press the run button", notice.white, 6)
 		releasenotice = true
 	end
 end

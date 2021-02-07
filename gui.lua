@@ -17,6 +17,7 @@ function guielement:init(...)
 			self.var = true
 		end
 		self.text = arg[6]
+		self.arg = arg[7]
 	elseif arg[1] == "dropdown" then --dropdown(x, y, width (in chars), func, start, {entries})
 		self.type = arg[1]
 		self.x = arg[2]
@@ -65,7 +66,7 @@ function guielement:init(...)
 			self.arguments = arg[7]
 		end
 		self.height = arg[8] or 1
-		self.width = arg[9] or string.len(self.text)*8
+		self.width = arg[9] or utf8.len(self.text)*8
 		if arg[10] and tonumber(arg[10]) then
 			self.autorepeat = arg[10] or false
 			self.repeatwait = 0.3
@@ -137,6 +138,20 @@ function guielement:init(...)
 		self.y = arg[3]
 		self.text = arg[4]
 		self.color = arg[5]
+	elseif arg[1] == "list" then --list(x, y, width, max items(also effects height))
+		self.type = arg[1]
+		self.x = arg[2]
+		self.y = arg[3]
+		self.width = arg[4]
+		self.height = arg[5]*12
+		self.maxitems = arg[5]
+
+		if arg[6] then
+			self.items = arg[6]
+			print(self.items[1])
+		else
+			self.items = {}
+		end
 	end
 end
 
@@ -232,6 +247,17 @@ function guielement:update(dt)
 			if self.timer and self.timer > 0 then
 				self.timer = self.timer - dt
 			end
+		elseif self.type == "list" then
+			self.select = 0
+			local x, y
+			local mx, my = love.mouse.getPosition()
+			--print(x,y,mx,my)
+			for i = 1, #self.items do
+				x, y = self.x*scale, (self.y+((i-1)*12))*scale
+				if ((mx > x) and (mx <= x+self.width*scale)) and ((my > y) and (my <= y+self.height)) then
+					self.select = i
+				end
+			end
 		end
 	end
 end
@@ -251,7 +277,7 @@ function guielement:draw(a, offx, offy)
 		love.graphics.draw(checkboximg, checkboxquad[high][quad], self.x*scale, self.y*scale, 0, scale, scale)
 		
 		if self.text then
-			properprint(self.text, (self.x+10)*scale, (self.y+1)*scale)
+			properprintF(self.text, (self.x+10)*scale, (self.y+1)*scale)
 		end
 	elseif self.type == "dropdown" then
 		local high = self:inhighlight(love.mouse.getPosition())
@@ -470,7 +496,7 @@ function guielement:draw(a, offx, offy)
 			else
 				love.graphics.setColor(255,255,255)
 			end
-			love.graphics.draw(self.image, (self.x+self.imageoffsetx)*scale, (self.y+self.imageoffsety)*scale, 0, self.scalefactor or scale, scale)
+			love.graphics.draw(self.image, (self.x+self.imageoffsetx)*scale, (self.y+self.imageoffsety)*scale, 0, scale, scale)
 		end
 		
 		love.graphics.setColor(self.textcolor)
@@ -479,12 +505,16 @@ function guielement:draw(a, offx, offy)
 		else
 			if self.centertext then
 				if self.image then
-					properprintbackground(self.text, math.floor((self.x+(self.width/2)-(string.len(self.text)*4))*scale), math.floor((self.y+((self.height*10)/2)-3)*scale))
+					properprintFbackground(self.text, math.floor((self.x+(self.width/2)-(utf8.len(self.text)*4))*scale), math.floor((self.y+((self.height*10)/2)-3)*scale))
 				else
-					properprint(self.text, math.floor((self.x+(self.width/2)-(string.len(self.text)*4))*scale), math.floor((self.y+((self.height*10)/2)-3)*scale))
+					if utf8.len(self.text) ~= string.len(self.text) then
+						properprintF(self.text, math.floor((self.x+(self.width/2)-(utf8.len(self.text)*4))*scale), math.floor((self.y+((self.height*10)/2)-3)*scale))
+					else
+						properprint(self.text, math.floor((self.x+(self.width/2)-(utf8.len(self.text)*4))*scale), math.floor((self.y+((self.height*10)/2)-3)*scale))
+					end
 				end
 			else
-				properprint(self.text, (self.x+1+self.space)*scale, (self.y+2+self.space)*scale)
+				properprintF(self.text, (self.x+1+self.space)*scale, (self.y+2+self.space)*scale)
 			end
 		end
 		
@@ -582,6 +612,18 @@ function guielement:draw(a, offx, offy)
 	elseif self.type == "text" then
 		love.graphics.setColor(self.color)
 		properprint(self.text, self.x*scale, self.y*scale)
+	elseif self.type == "list" then
+		love.graphics.setColor(0,0,0)
+		love.graphics.rectangle("fill", self.x*scale, self.y*scale, self.width*scale, self.height*scale)
+		for y = 1, #self.items do
+			if y == self.select then
+				love.graphics.setColor(255,255,255)
+			else
+				love.graphics.setColor(150,150,150)
+			end
+			local item = self.items[y]
+			properprint(item, (self.x+1)*scale, (self.y+2+(y-1)*12)*scale)
+		end
 	end
 	love.graphics.setColor(255, 255, 255)
 end
@@ -590,7 +632,11 @@ function guielement:click(x, y, button)
 	if self.active then
 		if self.type == "checkbox" then
 			if self:inhighlight(x, y) and button ~= "wd" and button ~= "wu" then
-				self.func(not self.var)
+				if self.arg then
+					self.func(not self.var, self.arg)
+				else
+					self.func(not self.var)
+				end
 			end
 		elseif self.type == "dropdown" then
 			if self.extended == false then
@@ -691,6 +737,10 @@ function guielement:click(x, y, button)
 					self.inputting = false
 				end
 			end
+		elseif self.type == "list" then
+			if self.select ~= 0 then
+				table.remove(self.items, self.select)
+			end
 		end
 	end
 end
@@ -754,6 +804,10 @@ function guielement:keypress(key)
 					if self.offset > 0 and self.offset > string.len(self.value)-self.width then
 						self.offset = self.offset - 1
 					end
+					
+					if self.typefunc then
+						commandert(self.value)
+					end
 				else
 					if string.len(self.value) < self.maxlength or self.maxlength == 0 then
 						local found = false
@@ -762,12 +816,12 @@ function guielement:keypress(key)
 						if self.shift then
 							if key == "1" then
 								targetkey = "!"
-							elseif key == "5" then
-								targetkey = "%"
+							elseif key == "8" then
+								targetkey = "*"
 							elseif key == "9" then
 								targetkey = "("
 							elseif key == "0" then
-								targetkey = ")"	
+								targetkey = ")"
 							elseif key == "/" then
 								targetkey = "?"
 							elseif key == "]" then
@@ -776,15 +830,20 @@ function guielement:keypress(key)
 								targetkey = "{"
 							elseif key == "-" then
 								targetkey = "_"
+							elseif key == "=" then
+								targetkey = "+"
 							elseif key == "B" and not self.bypassspecialcharacters then
 								targetkey = "_"
 							end
 						end
 						
-						for i = 1, string.len(fontglyphs) do
-							if targetkey == string.sub(fontglyphs, i, i) then
-								found = true
-								break
+						found = (targetkey == " ")
+						if not found then
+							for char, quad in pairs(fontquads) do
+								if targetkey == char then
+									found = true
+									break
+								end
 							end
 						end
 						
@@ -800,9 +859,12 @@ function guielement:keypress(key)
 								self.textoffset = self.textoffset + 1
 							end
 						end
+
+						if self.typefunc then
+							commandert(self.value)
+						end
 					end
 				end
-				
 				return true
 			end
 		end
@@ -835,7 +897,7 @@ function guielement:inhighlight(x, y)
 	if self.type == "checkbox" then
 		local xadd = 0
 		if self.text then
-			xadd = string.len(self.text)*8+1
+			xadd = utf8.len(self.text)*8+1
 		end
 		if x >= self.x*scale and x < (self.x+9+xadd)*scale and y >= self.y*scale and y < (self.y+9)*scale then
 			return true
@@ -940,5 +1002,12 @@ function guielement:updatePos()
 		while string.len(self.value)-self.textoffset > self.width-1 and self.width ~= 1 and self.width ~= self.maxlength do
 			self.textoffset = self.textoffset + 1
 		end
+	end
+end
+
+function guielement:additem(v)
+	local len = self.items or 0
+	if len ~= self.maxitems then
+		table.insert(self.items, 1, v.var)
 	end
 end

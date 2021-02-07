@@ -18,7 +18,7 @@ function door:init(x, y, r, dir)
 	--FORCE CLOSE (for the padawans)
 	if #self.r > 0 and self.r[1] ~= "link" then
 		local v = convertr(self.r[1], {"bool", "string", "bool"}, true)
-		self.forceclose = (v[1] == "true")
+		self.forceclose = v[1]
 		if v[2] ~= nil then
 			self.dir = v[2]
 		end
@@ -68,7 +68,6 @@ function door:link()
 		table.remove(self.r, 1)
 	end
 end
-
 
 function door:update(dt)	
 	if self.targetopen ~= self.open then

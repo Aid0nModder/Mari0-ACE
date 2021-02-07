@@ -15,7 +15,7 @@ function funnel:init(x, y, dir, r)
 	self.timer = 0
 	self.timer2 = 0
 	
-	self.objtable = {"player", "goomba", "box", "koopa", "spikeball", "gel", "turret", "core", "enemy", "ice"}
+	self.objtable = {"player", "goomba", "box", "koopa", "spikeball", "gel", "turret", "enemy", "ice"}
 	
 	table.remove(self.r, 1)
 	table.remove(self.r, 1)
@@ -101,7 +101,7 @@ function funnel:update(dt)
 	if self.power then
 		self.timer = self.timer + dt
 		if self.timer > self.animationtime then
-			self.timer = math.mod(self.timer, self.animationtime)
+			self.timer = math.fmod(self.timer, self.animationtime)
 		end
 		
 		self.timer2 = self.timer2 + dt
@@ -165,77 +165,75 @@ function funnel:update(dt)
 			
 			for i = 1, #rectcol, 2 do
 				local w = objects[rectcol[i]][rectcol[i+1]]
-				
-				if w.ignorefunnels then
-					return
-				end
 
-				w.speedx = 0
-				w.speedy = 0
-				
-				if v.dir == "right" then
-					w.speedx = self.speed*self.reverse
+				if not w.ignorefunnels then
+					w.speedx = 0
+					w.speedy = 0
 					
-					local diff = (w.y+w.height/2)-y-1
-					w.speedy = -diff*funnelforce
-					
-					if rectcol[i] == "player" and w.controlsenabled then
-						if downkey(rectcol[i+1]) then
-							w.speedy = funnelmovespeed
-						elseif upkey(rectcol[i+1]) then
-							w.speedy = w.speedy-funnelmovespeed
+					if v.dir == "right" then
+						w.speedx = self.speed*self.reverse
+						
+						local diff = (w.y+w.height/2)-y-1
+						w.speedy = -diff*funnelforce
+						
+						if rectcol[i] == "player" and w.controlsenabled then
+							if downkey(rectcol[i+1]) then
+								w.speedy = funnelmovespeed
+							elseif upkey(rectcol[i+1]) then
+								w.speedy = w.speedy-funnelmovespeed
+							end
+						end
+						
+					elseif v.dir == "left" then
+						w.speedx = -self.speed*self.reverse
+						
+						local diff = (w.y+w.height/2)-y-1
+						w.speedy = -diff*funnelforce
+						
+						if rectcol[i] == "player" and w.controlsenabled then
+							if downkey(rectcol[i+1]) then
+								w.speedy = funnelmovespeed
+							elseif upkey(rectcol[i+1]) then
+								w.speedy = w.speedy-funnelmovespeed
+							end
+						end
+						
+					elseif v.dir == "up" then
+						w.speedy = -self.speed*self.reverse
+						
+						local diff = (w.x+w.width/2)-x-1
+						w.speedx = -diff*funnelforce
+						
+						if rectcol[i] == "player" and w.controlsenabled then
+							if leftkey(rectcol[i+1]) then
+								w.speedx = -funnelmovespeed
+							elseif rightkey(rectcol[i+1]) then
+								w.speedx = funnelmovespeed
+							end
+						end
+						
+					else
+						w.speedy = self.speed*self.reverse
+						
+						local diff = (w.x+w.width/2)-x-1
+						w.speedx = -diff*funnelforce
+						
+						if rectcol[i] == "player" and w.controlsenabled then
+							if leftkey(rectcol[i+1]) then
+								w.speedx = -funnelmovespeed
+							elseif rightkey(rectcol[i+1]) then
+								w.speedx = funnelmovespeed
+							end
 						end
 					end
 					
-				elseif v.dir == "left" then
-					w.speedx = -self.speed*self.reverse
-					
-					local diff = (w.y+w.height/2)-y-1
-					w.speedy = -diff*funnelforce
-					
-					if rectcol[i] == "player" and w.controlsenabled then
-						if downkey(rectcol[i+1]) then
-							w.speedy = funnelmovespeed
-						elseif upkey(rectcol[i+1]) then
-							w.speedy = w.speedy-funnelmovespeed
-						end
-					end
-					
-				elseif v.dir == "up" then
-					w.speedy = -self.speed*self.reverse
-					
-					local diff = (w.x+w.width/2)-x-1
-					w.speedx = -diff*funnelforce
-					
-					if rectcol[i] == "player" and w.controlsenabled then
-						if leftkey(rectcol[i+1]) then
-							w.speedx = -funnelmovespeed
-						elseif rightkey(rectcol[i+1]) then
-							w.speedx = funnelmovespeed
-						end
-					end
-					
-				else
-					w.speedy = self.speed*self.reverse
-					
-					local diff = (w.x+w.width/2)-x-1
-					w.speedx = -diff*funnelforce
-					
-					if rectcol[i] == "player" and w.controlsenabled then
-						if leftkey(rectcol[i+1]) then
-							w.speedx = -funnelmovespeed
-						elseif rightkey(rectcol[i+1]) then
-							w.speedx = funnelmovespeed
-						end
-					end
-				end
-				
-				w.funnel = true
-				w.gravity = 0
-				--w.gravitydirection = math.pi/2
+					w.funnel = true
+					w.gravity = 0
+					--w.gravitydirection = math.pi/2
 
-				if w.dofunnel then
-					w:dofunnel()
+					if w.dofunnel then
+						w:dofunnel()
+					end
 				end
 			end
 		end

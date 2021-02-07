@@ -268,6 +268,7 @@ table.insert(toenter, {name = "whenvariable",
 		}
 	}
 })
+
 --CONDITIONS:
 
 table.insert(toenter, {name = "noprevsublevel", 
@@ -1036,6 +1037,60 @@ table.insert(toenter, {name = "removepoints",
 	}
 })
 
+table.insert(toenter, {name = "addtime", 
+	t = {
+		t="action",
+		nicename="add time",
+		entries={
+			{
+				t="numinput",
+				default="100"
+			},
+			
+			{
+				t="text",
+				value="seconds"
+			}
+		}
+	}
+})
+
+table.insert(toenter, {name = "removetime", 
+	t = {
+		t="action",
+		nicename="remove time",
+		entries={
+			{
+				t="numinput",
+				default="100"
+			},
+			
+			{
+				t="text",
+				value="seconds"
+			}
+		}
+	}
+})
+
+table.insert(toenter, {name = "settime", 
+	t = {
+		t="action",
+		nicename="set time",
+		entries={
+			{
+				t="numinput",
+				default="100"
+			},
+			
+			{
+				t="text",
+				value="seconds"
+			}
+		}
+	}
+})
+
 table.insert(toenter, {name = "changebackgroundcolor", 
 	t = {
 		t="action",
@@ -1111,32 +1166,6 @@ table.insert(toenter, {name = "changetime",
 			{
 				t="numinput",
 				default="400"
-			}
-		}
-	}
-})
-
-table.insert(toenter, {name = "addtime", 
-	t = {
-		t="action",
-		nicename="change time left by",
-		entries={
-			{
-				t="numinput",
-				default="100"
-			}
-		}
-	}
-})
-
-table.insert(toenter, {name = "removetime", 
-	t = {
-		t="action",
-		nicename="remove time left by",
-		entries={
-			{
-				t="numinput",
-				default="100"
 			}
 		}
 	}
@@ -1780,6 +1809,16 @@ table.insert(toenter, {name = "setnumber",
 	}
 })
 
+table.insert(toenter, {name = "resetnumbers",
+	t= {
+	t="action",
+		nicename="reset numbers",
+		entries={
+		}
+	}
+})
+
+
 table.insert(toenter, {name = "setvariable",
 	t= {
 	t="action",
@@ -1802,15 +1841,6 @@ table.insert(toenter, {name = "setvariable",
 			{
 				t="input",
 			},
-		}
-	}
-})
-
-table.insert(toenter, {name = "resetnumbers",
-	t= {
-	t="action",
-		nicename="reset numbers",
-		entries={
 		}
 	}
 })
@@ -1892,10 +1922,10 @@ function animationguiline:init(tabl, t2)
 	self.deletebutton = guielement:new("button", 0, 0, "x", function() self:delete() end, nil, nil, nil, 8, 0.1)
 	self.deletebutton.textcolor = {200, 0, 0}
 	
-	self.downbutton = guielement:new("button", 0, 0, "]", function() self:movedown() end, nil, nil, nil, 8, 0.1)
+	self.downbutton = guielement:new("button", 0, 0, "↓", function() self:movedown() end, nil, nil, nil, 8, 0.1)
 	self.downbutton.textcolor = {255, 255, 255}
 	
-	self.upbutton = guielement:new("button", 0, 0, "[", function() self:moveup() end, nil, nil, nil, 8, 0.1)
+	self.upbutton = guielement:new("button", 0, 0, "↑", function() self:moveup() end, nil, nil, nil, 8, 0.1)
 	self.upbutton.textcolor = {255, 255, 255}
 	
 	self.elements[1].gui = guielement:new("dropdown", 0, 0, firstwidth, function(val) self:changemainthing(val) end, start, unpack(animationstrings[self.type]))
@@ -2058,16 +2088,19 @@ function animationguiline:init(tabl, t2)
 					dropwidth = 2
 					args = {"=", ">", "<"}
 					displayargs = {"=", ">", "<"}
+
 				elseif v.t == "operationselection" then
 					dropdown = true
 					dropwidth = 2
 					args = {"=", "+", "-"}
 					displayargs = {"=", "+", "-"}
+
 				elseif v.t == "noticecolor" then
 					dropdown = true
 					dropwidth = 5
 					args = {"white", "red"}
 					displayargs = {"white", "red"}
+
 				end
 				
 				if dropdown then

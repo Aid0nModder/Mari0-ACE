@@ -1,4 +1,5 @@
 local queuespritebatchupdate = false
+--continuesublevelmusic = false
 
 function game_load(suspended)
 	scrollfactor = 0
@@ -33,9 +34,7 @@ function game_load(suspended)
 	end
 	
 	oldjoystick = {}
-	
-	--LINK STUFF
-	
+
 	mariocoincount = 0
 	marioscore = 0
 	
@@ -46,7 +45,6 @@ function game_load(suspended)
 	dropshadow = false
 	realtime = false
 	nocoinlimit = false
-	gpack = "SMB"
 	setphysics(1)
 	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/settings.txt") and not dcplaying then
 		local s = love.filesystem.read( mappackfolder .. "/" .. mappack .. "/settings.txt" )
@@ -71,15 +69,16 @@ function game_load(suspended)
 				for i = 1, players do
 					setcustomplayer(s2[2], i)
 				end
-			elseif s2[1] == "graphics" then
-				currentgraphics = tonumber(s2[2]) or 1
-				setgraphics(currentgraphics)	
 			end
 		end
 	end
 	
 	if mariolivecount == 0 or dcplaying then
 		mariolivecount = false
+	end
+	
+	if InfiniteLivesMultiplayer and (not (SERVER or CLIENT)) and players > 1 then
+		infinitelives = true
 	end
 	
 	mariolives = {}
@@ -98,12 +97,12 @@ function game_load(suspended)
 	autoscrollx = true
 	autoscrolly = true
 	
-	inputs = {"door", "groundlight", "wallindicator", "cubedispenser", "walltimer", "notgate", "laser", "lightbridge", "delayer", "funnel", "portal1", "portal2", "text", "geldispenser", "tiletool", "enemytool", "randomizer", "musicchanger", "rocketturret", "checkpoint", "emancipationgrill", "belt", "animationtrigger", "faithplate", "animatedtiletrigger", "orgate", "andgate", "rsflipflop", "kingbill", "platform", "collectable", "skewer", "energylauncher", "camerastop", "laserfields", "track", "animationtrigger", "animationtransform", "faithplateup" }
-	inputsi = {28, 29, 30, 43, 44, 45, 46, 47, 48, 67, 74, 84, 52, 53, 54, 55, 36, 37, 38, 39, 186, 198, 197, 199, 61, 62, 63, 64, 65, 66, 71, 72, 73, 181, 182, 183, 201, 205, 206, 210, 194, 225, 226, 227, 229, 230, 231, 232, 100, 26, 27, 266, 271, 273, 274, 272, 105, 163, 248, 249, 18, 19, 259, 166, 167, 168, 169, 304, 309, 317, 306, 270, 321, 49}
-	
-	outputs = {"button", "laserdetector", "box", "pushbutton", "walltimer", "notgate", "energycatcher", "squarewave", "delayer", "regiontrigger", "randomizer", "tiletool", "orgate", "andgate", "rsflipflop", "flipblock", "doorsprite", "collectablelock", "collectable", "animationoutput" }
-	outputsi = {40, 56, 57, 58, 59, 20, 68, 69, 74, 84, 165, 170, 171, 172, 173, 185, 186, 200, 206, 201, 222, 267, 268, 273, 274, 272, 275, 163, 248, 249, 277, 276, 291}
-	
+	inputs = {"door", "groundlight", "wallindicator", "cubedispenser", "walltimer", "notgate", "laser", "lightbridge", "delayer", "funnel", "portal1", "portal2", "text", "geldispenser", "tiletool", "enemytool", "randomizer", "musicchanger", "rocketturret", "checkpoint", "emancipationgrill", "belt", "animationtrigger", "faithplate", "animatedtiletrigger", "orgate", "andgate", "rsflipflop", "kingbill", "platform", "collectable", "skewer", "energylauncher", "camerastop", "laserfields", "track", "animationtrigger", "animationtransform", "faithplateup", "groundlightver", "groundlighthor", "groundlightupright", "groundlightrightdown", "groundlightdownleft", "groundlightleftup"}
+	inputsi = {28, 29, 30, 43, 44, 45, 46, 47, 48, 67, 74, 84, 52, 53, 54, 55, 36, 37, 38, 39, 186, 198, 197, 199, 61, 62, 63, 64, 65, 66, 71, 72, 73, 181, 182, 183, 201, 205, 206, 210, 194, 225, 226, 227, 229, 230, 231, 232, 100, 26, 27, 266, 271, 273, 274, 272, 105, 163, 248, 249, 18, 19, 259, 166, 167, 168, 169, 304, 309, 317, 306, 270, 321, 49, 43, 44, 45, 46, 47, 48}
+
+	outputs = {"button", "laserdetector", "box", "pushbutton", "walltimer", "notgate", "energycatcher", "squarewave", "delayer", "regiontrigger", "randomizer", "tiletool", "orgate", "andgate", "rsflipflop", "flipblock", "doorsprite", "collectablelock", "collectable", "animationoutput", "pedestal", "turret", "commander"}
+	outputsi = {40, 56, 57, 58, 59, 20, 68, 69, 74, 84, 165, 170, 171, 172, 173, 185, 186, 200, 206, 201, 222, 267, 268, 273, 274, 272, 275, 163, 248, 249, 277, 276, 291, 196, 174, 323}
+
 	--purpose of enemies table:
 
 	--carried by platforms and such
@@ -111,15 +110,30 @@ function game_load(suspended)
 	--granted despawning immunity when mario goes through doors
 	--killed by rainboom
 	--deep copied by regiontrigger
+
 	enemies = {"goomba", "koopa", "hammerbro", "plant", "lakito", "bowser", "cheep", "squid", "flyingfish", "cheepwhite", "cheepred", "beetle", "spikey",
 		"sidestepper", "barrel", "icicle", "angrysun", "splunkin", "firebro", "fishbone", "drybones", "muncher", "bigbeetle", "meteor",
 		"boomerangbro", "ninji", "boo", "mole", "bigmole", "bomb", "bombhalf", "torpedoted", "parabeetle", "parabeetleright", "boomboom",
 		"pinksquid", "shell", "shyguy", "beetleshell", "spiketop",  "pokey", "snowpokey", "fighterfly", "chainchomp", "rockywrench", "tinygoomba", "koopaling", "bowser3", "icebro",
-		"squidnanny", "goombashoe", "wiggler", "magikoopa", "spike", "spikeball", "plantcreeper", "crowber"}
+		"squidnanny", "goombashoe", "wiggler", "magikoopa", "spike", "spikeball", "plantcreeper"}
+
 	--aren't spawned when player at checkpoint
-	checkpointignoreenemies = {"goomba", "koopa", "hammerbro", "plant", "lakito", "bowser", "cheep", "squid", "flyingfish", "goombahalf", "koopahalf", "cheepwhite", "cheepred", "koopared", "kooparedhalf", "kooparedflying", "beetle", "beetlehalf", "spikey", "spikeyhalf", "downplant", "paragoomba", "sidestepper", "barrel", "icicle", "angrysun", "splunkin", "biggoomba", "firebro", "redplant", "reddownplant", "fishbone", "drybones", "muncher", "dryboneshalf", "bigbeetle", "meteor", "drygoomba", "dryplant", "drydownplant", "boomerangbro", "ninji", "boo", "mole", "bigmole", "bomb", "bombhalf", "fireplant", "downfireplant", "torpedoted", "parabeetle", "parabeetleright", "boomboom", "koopablue", "koopabluehalf", "pinksquid", "shell", "shyguy", "shyguyhalf", "beetleshell", "spiketop", "spiketophalf", "pokey", "snowpokey", "fighterfly", "chainchomp", "bighammerbro", "rockywrench", "tinygoomba", "koopaling", "bowser3", "icebro", "squidnanny", "goombashoe", "wiggler", "magikoopa", "spike", "spikeball", "plantcreeper", "crowber"}
-	
-	jumpitems = {"mushroom", "oneup", "poisonmush" , "threeup", "minimushroom"}
+	checkpointignoreenemies = {"goomba", "koopa", "hammerbro", "plant", "lakito", "bowser", "cheep", "squid", "flyingfish", "goombahalf", "koopahalf", "cheepwhite", "cheepred", "koopared", "kooparedhalf", "kooparedflying", "beetle", "beetlehalf", "spikey", "spikeyhalf", "downplant", "paragoomba", "sidestepper", "barrel", "icicle", "angrysun", "splunkin", "biggoomba", "firebro", "redplant", "reddownplant", "fishbone", "drybones", "muncher", "dryboneshalf", "bigbeetle", "meteor", "drygoomba", "dryplant", "drydownplant", "boomerangbro", "ninji", "boo", "mole", "bigmole", "bomb", "bombhalf", "fireplant", "downfireplant", "torpedoted", "parabeetle", "parabeetleright", "boomboom", "koopablue", "koopabluehalf", "pinksquid", "shell", "shyguy", "shyguyhalf", "beetleshell", "spiketop", "spiketophalf", "pokey", "snowpokey", "fighterfly", "chainchomp", "bighammerbro", "rockywrench", "tinygoomba", "koopaling", "bowser3", "icebro", "squidnanny", "goombashoe", "wiggler", "magikoopa", "spike", "spikeball", "plantcreeper"}
+	jumpitems = {"mushroom", "oneup", "poisonmush", "threeup"}
+
+	for i = 1, #entitylist do
+		if entitylist[i].input then
+			table.insert(inputs, entitylist[i].t)
+			table.insert(inputsi, i)
+		end
+		if entitylist[i].output then
+			table.insert(outputs, entitylist[i].t)
+			table.insert(outputsi, i)
+		end
+		if entitylist[i].enemy then
+			table.insert(enemies, entitylist[i].t)
+		end
+	end
 	
 	marioworld = 1
 	mariolevel = 1	
@@ -146,75 +160,35 @@ function game_load(suspended)
 	--add custom tiles
 	local bla = love.timer.getTime()
 	if not dcplaying and love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/tiles.png") then
+		loadtiles("custom")
 		customtiles = true
-		customtilesimg = love.graphics.newImage(mappackfolder .. "/" .. mappack .. "/tiles.png")
-		local imgwidth, imgheight = customtilesimg:getWidth(), customtilesimg:getHeight()
-		local width = math.floor(imgwidth/17)
-		local height = math.floor(imgheight/17)
-		local imgdata = love.image.newImageData(mappackfolder .. "/" .. mappack .. "/tiles.png")
-		
-		for y = 1, height do
-			for x = 1, width do
-				table.insert(tilequads, quad:new(customtilesimg, imgdata, x, y, imgwidth, imgheight))
-				local r, g, b = getaveragecolor(imgdata, x, y)
-				table.insert(rgblist, {r, g, b})
-			end
-		end
-		customtilecount = width*height
 	else
 		customtiles = false
 		customtilecount = 0
 	end
-	print("Custom tileset loaded in: " .. round(love.timer.getTime()-bla, 5))
-
-	local files = love.filesystem.getDirectoryItems(mappackfolder .. "/" .. mappack .. "/tiles")
-	if files ~= 0 then
-		print("loaded " .. #files .. " tilesets")
-		modcustomtiles = #files
-		modcustomtilesimg = {}
-		modcustomtilecount = {}
-		for i = 1, modcustomtiles do
-			modcustomtilesimg[i] = love.graphics.newImage(mappackfolder .. "/" .. mappack .. "/tiles/" .. files[i])
-			local imgwidth, imgheight = modcustomtilesimg[i]:getWidth(), modcustomtilesimg[i]:getHeight()
-			local width = math.floor(imgwidth/17)
-			local height = math.floor(imgheight/17)
-			local imgdata = love.image.newImageData(mappackfolder .. "/" .. mappack .. "/tiles/" .. files[i])
-			
-			for y = 1, height do
-				for x = 1, width do
-					table.insert(tilequads, quad:new(modcustomtilesimg[i], imgdata, x, y, imgwidth, imgheight))
-					local r, g, b = getaveragecolor(imgdata, x, y)
-					table.insert(rgblist, {r, g, b})
-				end
-			end
-			modcustomtilecount[i] = (modcustomtilecount[i-1] or 0) + width*height
-		end
-	else
-		modcustomtiles = false
-		modcustomtilecount = {0}
-	end
+	print("-- TILESET LOAD TIME: " .. round(love.timer.getTime()-bla, 5))
 	
 	smbspritebatch = {}
 	portalspritebatch = {}
 	customspritebatch = {}
-	modcustomspritebatch = {}
 	spritebatchX = {}
 	spritebatchY = {}
 	for i = 1, players do
 		smbspritebatch[i] = love.graphics.newSpriteBatch( smbtilesimg, 1000 )
 		portalspritebatch[i] = love.graphics.newSpriteBatch( portaltilesimg, 1000 )
 		if customtiles then
-			customspritebatch[i] = love.graphics.newSpriteBatch( customtilesimg, 1000 )
-		end
-		if modcustomtiles then
-			modcustomspritebatch[i] = {}
-			for j = 1, modcustomtiles do
-				modcustomspritebatch[i][j] = love.graphics.newSpriteBatch( modcustomtilesimg[j], 1000 )
+			customspritebatch[i] = {}
+			for i2 = 1, #customtilesimg do
+				customspritebatch[i][i2] = love.graphics.newSpriteBatch( customtilesimg[i2], 1000 )
 			end
 		end
+		
 		spritebatchX[i] = 0
 		spritebatchY[i] = 0
 	end
+	
+	portaldotspritebatch = love.graphics.newSpriteBatch(portaldotimg, 1000, "dynamic" )
+	portalprojectilespritebatch = love.graphics.newSpriteBatch(portalprojectileparticleimg, 1000, "dynamic" )
 	
 	custommusic = false
 	
@@ -242,6 +216,8 @@ function game_update(dt)
 	--------
 	--GAME--
 	--------
+
+	nondt(dt)
 	
 	--pausemenu
 	if pausemenuopen and not (SERVER or CLIENT) then
@@ -296,6 +272,22 @@ function game_update(dt)
 	--animationS
 	animationsystem_update(dt)
 	
+	if love.keyboard.isDown("lalt") then
+		if love.keyboard.isDown("w") then
+			if resizable then
+			elseif scale < 5 then
+				changescale(scale+1)
+			end
+		elseif love.keyboard.isDown("s") then
+			if resizable then
+				changescale(4)
+			elseif scale > 1 then
+				changescale(scale-1)
+			end
+		end
+		generatespritebatch()
+	end
+	
 	--earthquake reset
 	if earthquake > 0 then
 		earthquake = math.max(0, earthquake-dt*earthquake*2-0.001)
@@ -320,6 +312,19 @@ function game_update(dt)
 	end	
 	
 	coinframe = math.max(1, math.floor(coinanimation))
+
+	--hud icon animation
+	for i = 1, #hudicondata do
+		local v = hudicondata[i]
+		v.timer = v.timer + dt
+		if v.timer > v.speed then
+			v.timer = v.timer - v.speed
+			v.frame = v.frame + 1
+			if v.frame > v.frames then
+				v.frame = 1
+			end
+		end
+	end
 
 	flaganimation = ((flaganimation-1 + dt*8)%4)+1
 	
@@ -375,13 +380,14 @@ function game_update(dt)
 				mariotime = mariotime - 2.5*dt
 			end
 			
-			if mariotime > 0 and mariotime + 2.5*dt >= 99 and mariotime < 99 and not dcplaying then
-				stopmusic()
-				love.audio.stop()
-				playsound(lowtimesound)
+			if queuelowtime then
+				queuelowtime = queuelowtime - 2.5*dt
+			end
+			if mariotime > 0 and mariotime + 2.5*dt >= 99 and mariotime < 99 and (not dcplaying) then
+				startlowtime()
 			end
 			
-			if mariotime > 0 and mariotime + 2.5*dt >= 99-7.5 and mariotime < 99-7.5 and not dcplaying then
+			if queuelowtime and queuelowtime < 0 then
 				local star = false
 				for i = 1, players do
 					if objects["player"][i].starred then
@@ -389,11 +395,16 @@ function game_update(dt)
 					end
 				end
 				
-				if not star then
-					playmusic()
+				if pbuttonsound:isPlaying() then
+					pbuttonsound:setVolume(1)
 				else
-					music:play("starmusic")
+					if not star then
+						playmusic()
+					else
+						music:play("starmusic")
+					end
 				end
+				queuelowtime = false
 			end
 			
 			if mariotime <= 0 then
@@ -569,7 +580,7 @@ function game_update(dt)
 	for i, v in pairs(platformspawners) do
 		v:update(dt)
 	end
-
+	
 	--Bubbles
 	local delete = {}
 	
@@ -805,6 +816,8 @@ function game_update(dt)
 				end
 
 				if stoptestinglevelsafe then
+					--stop testing level without crashing
+					--when an entity makes you go to a different level (glados)
 					stoptestinglevelsafe = nil
 					return
 				end
@@ -855,9 +868,14 @@ function game_update(dt)
 				v.fireenemyanim = false
 			else
 				if obj.x and obj.y then
-					v.x = obj.x + v.fireenemyoffsetx
-					v.y = obj.y + v.fireenemyoffsety
+					v.x = obj.x + (v.fireenemyoffsetx or 0)
+					v.y = obj.y + (v.fireenemyoffsety or 0)
 					v.active = v.fireenemyactive
+					if v.active then
+						v.speedx = obj.speedx or 0
+						v.speedy = obj.speedy or 0
+						v.falling = obj.falling or true
+					end
 					if v.fireenemycopyquadi then
 						v.fireenemyquadi = obj.quadi
 					end
@@ -1489,9 +1507,18 @@ function game_update(dt)
 	--minecraft stuff
 	if breakingblockX then
 		if not objects["tile"][tilemap(breakingblockX, breakingblockY)] then
-			breakingblockprogress = breakingblockprogress + dt*0.2
+			breakingblockprogress = breakingblockprogress + dt * 0.2
 		else
-			breakingblockprogress = breakingblockprogress + dt
+			local pass = true
+			for i = 1, #minecraftbreakingspeeds do
+				if map[breakingblockX][breakingblockY][1] == minecraftbreakingspeeds[i][1] then
+					pass = false
+					breakingblockprogress = breakingblockprogress + dt * minecraftbreakingspeeds[i][2]
+				end
+			end
+			if pass then
+				breakingblockprogress = breakingblockprogress + dt
+			end
 		end
 		if breakingblockprogress > minecraftbreaktime then
 			breakblock(breakingblockX, breakingblockY)
@@ -1530,15 +1557,15 @@ function game_draw()
 		if earthquake > 0 and sonicrainboom and #objects["glados"] == 0 then
 			local colortable = {{242, 111, 51}, {251, 244, 174}, {95, 186, 76}, {29, 151, 212}, {101, 45, 135}, {238, 64, 68}}
 			for i = 1, backgroundstripes do
-				local r, g, b = unpack(colortable[math.mod(i-1, 6)+1])
+				local r, g, b = unpack(colortable[math.fmod(i-1, 6)+1])
 				local a = earthquake/rainboomearthquake*255
 				
 				love.graphics.setColor(r, g, b, a)
 				
-				local alpha = math.rad((i/backgroundstripes + math.mod(sunrot/5, 1)) * 360)
+				local alpha = math.rad((i/backgroundstripes + math.fmod(sunrot/5, 1)) * 360)
 				local point1 = {width*8*scale+300*scale*math.cos(alpha), 112*scale+300*scale*math.sin(alpha)}
 				
-				local alpha = math.rad(((i+1)/backgroundstripes + math.mod(sunrot/5, 1)) * 360)
+				local alpha = math.rad(((i+1)/backgroundstripes + math.fmod(sunrot/5, 1)) * 360)
 				local point2 = {width*8*scale+300*scale*math.cos(alpha), 112*scale+300*scale*math.sin(alpha)}
 				
 				love.graphics.polygon("fill", width*8*scale, 112*scale, point1[1], point1[2], point2[1], point2[2])
@@ -1593,7 +1620,7 @@ function game_draw()
 				for x = 1, xtodraw do
 					local backgroundtile = bmapt(math.floor(xscroll)+x, math.floor(yscroll)+y, 1)
 					if backgroundtile and tilequads[backgroundtile] and not tilequads[backgroundtile].invisible then
-						love.graphics.draw(tilequads[backgroundtile].image, tilequads[backgroundtile].quad, math.floor((x-1-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1))*16-8)*scale), 0, scale, scale)
+						love.graphics.draw(tilequads[backgroundtile].image, tilequads[backgroundtile].quad, math.floor((x-1-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1))*16-8)*scale), 0, scale, scale)
 					end
 				end
 			end
@@ -1605,14 +1632,11 @@ function game_draw()
 			love.graphics.push()
 			love.graphics.translate(3*scale, 3*scale)
 			love.graphics.setColor(dropshadowcolor)
-			love.graphics.draw(smbspritebatch[split], math.floor((-math.mod(xscroll, 1)*16)*scale), math.floor((-math.mod(yscroll, 1)*16)*scale))
-			love.graphics.draw(portalspritebatch[split], math.floor((-math.mod(xscroll, 1)*16)*scale), math.floor((-math.mod(yscroll, 1)*16)*scale))
+			love.graphics.draw(smbspritebatch[split], math.floor((-math.fmod(xscroll, 1)*16)*scale), math.floor((-math.fmod(yscroll, 1)*16)*scale))
+			love.graphics.draw(portalspritebatch[split], math.floor((-math.fmod(xscroll, 1)*16)*scale), math.floor((-math.fmod(yscroll, 1)*16)*scale))
 			if customtiles then
-				love.graphics.draw(customspritebatch[split], math.floor((-math.mod(xscroll, 1)*16)*scale), math.floor((-math.mod(yscroll, 1)*16)*scale))
-			end
-			if modcustomtiles then
-				for j = 1, modcustomtiles do
-					love.graphics.draw(modcustomspritebatch[split][j], math.floor((-math.mod(xscroll, 1)*16)*scale), math.floor((-math.mod(yscroll, 1)*16)*scale))
+				for i = 1, #customspritebatch[split] do
+					love.graphics.draw(customspritebatch[split][i], math.floor((-math.fmod(xscroll, 1)*16)*scale), math.floor((-math.fmod(yscroll, 1)*16)*scale))
 				end
 			end
 			drawmaptiles("dropshadow", xscroll, yscroll, xtodraw, ytodraw)
@@ -1726,11 +1750,6 @@ function game_draw()
 			w:draw()
 		end
 		
-		--Mini Mushroom under tiles
-		for j, w in pairs(objects["minimushroom"]) do
-			w:draw()
-		end
-		
 		--Yoshi egg under tiles
 		for j, w in pairs(objects["yoshiegg"]) do
 			w:draw()
@@ -1762,14 +1781,11 @@ function game_draw()
 		
 		--TILES
 		if not _3DMODE then
-			love.graphics.draw(smbspritebatch[split], math.floor(-math.mod(xscroll, 1)*16*scale), math.floor(-math.mod(yscroll, 1)*16*scale))
-			love.graphics.draw(portalspritebatch[split], math.floor(-math.mod(xscroll, 1)*16*scale), math.floor(-math.mod(yscroll, 1)*16*scale))
+			love.graphics.draw(smbspritebatch[split], math.floor(-math.fmod(xscroll, 1)*16*scale), math.floor(-math.fmod(yscroll, 1)*16*scale))
+			love.graphics.draw(portalspritebatch[split], math.floor(-math.fmod(xscroll, 1)*16*scale), math.floor(-math.fmod(yscroll, 1)*16*scale))
 			if customtiles then
-				love.graphics.draw(customspritebatch[split], math.floor(-math.mod(xscroll, 1)*16*scale), math.floor(-math.mod(yscroll, 1)*16*scale))
-			end
-			if modcustomtiles then
-				for j = 1, modcustomtiles do
-					love.graphics.draw(modcustomspritebatch[split][j], math.floor((-math.mod(xscroll, 1)*16)*scale), math.floor((-math.mod(yscroll, 1)*16)*scale))
+				for i = 1, #customspritebatch[split] do
+					love.graphics.draw(customspritebatch[split][i], math.floor(-math.fmod(xscroll, 1)*16*scale), math.floor(-math.fmod(yscroll, 1)*16*scale))
 				end
 			end
 
@@ -1781,7 +1797,7 @@ function game_draw()
 		for j, w in pairs(objects["tilemoving"]) do
 			w:draw()
 		end
-
+		
 		for j, w in pairs(objects["tilegravity"]) do
 			w:draw()
 		end
@@ -1798,7 +1814,7 @@ function game_draw()
 				drawentity("enemy",nil,i,v,currentscissor)
 			end
 		end
-
+		
 		--conveyor belt
 		love.graphics.setColor(255, 255, 255)
 		for j, w in pairs(objects["belt"]) do
@@ -1811,10 +1827,10 @@ function game_draw()
 			w:draw()
 		end
 
-		--frozen coin
+		--[[frozen coin
 		for j, w in pairs(objects["frozencoin"]) do
 			w:draw()
-		end
+		end]]
 		
 		--door sprites
 		for j, w in pairs(objects["doorsprite"]) do
@@ -1868,26 +1884,6 @@ function game_draw()
 		love.graphics.setColor(255, 255, 255)
 		
 		if players > 1 then
-			local properprintfunc = properprint
-			if hudoutline then
-				properprintfunc = properprintbackground
-			end
-			for i = 1, players do
-				local x = (width*16)/players/2 + (width*16)/players*(i-1)
-				if mariolivecount ~= false then
-					properprintfunc("p" .. i .. " * " .. mariolives[i], (x-string.len("p" .. i .. " * " .. mariolives[i])*4+4)*scale, 25*scale)
-					if hudoutline then
-						love.graphics.setColor(0, 0, 0)
-						love.graphics.rectangle("fill", (x-string.len("p" .. i .. " * " .. mariolives[i])*4-4)*scale, 24*scale, 9*scale, 9*scale)
-					end
-					love.graphics.setColor(mariocolors[i][1])
-					love.graphics.rectangle("fill", (x-string.len("p" .. i .. " * " .. mariolives[i])*4-3)*scale, 25*scale, 7*scale, 7*scale)
-					love.graphics.setColor(255, 255, 255, 255)
-				end
-			end
-		end
-
-		if players > 1 then
 			drawmultiHUD()
 		end
 		
@@ -1917,7 +1913,7 @@ function game_draw()
 		for j, w in pairs(objects["platform"]) do
 			w:draw()
 		end
-
+		
 		love.graphics.setColor(255, 255, 255)
 		--platforms
 		for j, w in pairs(objects["seesawplatform"]) do
@@ -1952,7 +1948,7 @@ function game_draw()
 		for j, w in pairs(objects["rocketturret"]) do
 			w:draw()
 		end
-
+		
 		--flag
 		if flagx then
 			if flagimg:getHeight() == 16 then
@@ -1968,7 +1964,7 @@ function game_draw()
 		love.graphics.setColor(255, 255, 255)
 		--axe
 		if axex then
-			love.graphics.draw(axeimg, axequads[coinframe], math.floor((axex-1-xscroll)*16*scale), (axey-1.5-yscroll)*16*scale, 0, scale, scale)
+			love.graphics.draw(axeimg, axequads[spriteset][coinframe], math.floor((axex-1-xscroll)*16*scale), (axey-1.5-yscroll)*16*scale, 0, scale, scale)
 			
 			if showtoad then--marioworld ~= 8
 				love.graphics.draw(toadimg, math.floor((mapwidth-7-xscroll)*16*scale), (11.0625-yscroll)*16*scale, 0, scale, scale)
@@ -2042,7 +2038,6 @@ function game_draw()
 		for j, w in pairs(objects["lightbridgebody"]) do
 			w:draw()
 		end
-
 		
 		love.graphics.setColor(255, 255, 255)
 		--laser
@@ -2089,7 +2084,7 @@ function game_draw()
 		for j, w in pairs(bubbles) do
 			w:draw()
 		end
-
+		
 		for j, w in pairs(objects["icicledrop"]) do
 			w:draw()
 		end
@@ -2209,17 +2204,13 @@ function game_draw()
 				love.graphics.translate(i*scale, i*scale)
 				love.graphics.scale(1-(((2*scale)/(width*16*scale))*(i)), 1-(((2*scale)/(height*16*scale))*(i)))
 				love.graphics.setColor(color)
-				love.graphics.draw(smbspritebatch[split], math.floor((-math.mod(xscroll, 1)*16)*scale), math.floor((-math.mod(yscroll, 1)*16)*scale))
-				love.graphics.draw(portalspritebatch[split], math.floor((-math.mod(xscroll, 1)*16)*scale), math.floor((-math.mod(yscroll, 1)*16)*scale))
+				love.graphics.draw(smbspritebatch[split], math.floor((-math.fmod(xscroll, 1)*16)*scale), math.floor((-math.fmod(yscroll, 1)*16)*scale))
+				love.graphics.draw(portalspritebatch[split], math.floor((-math.fmod(xscroll, 1)*16)*scale), math.floor((-math.fmod(yscroll, 1)*16)*scale))
 				if customtiles then
-					love.graphics.draw(customspritebatch[split], math.floor((-math.mod(xscroll, 1)*16)*scale), math.floor((-math.mod(yscroll, 1)*16)*scale))
-				end
-				if modcustomtiles then
-					for j = 1, modcustomtiles do
-						love.graphics.draw(modcustomspritebatch[split][j], math.floor((-math.mod(xscroll, 1)*16)*scale), math.floor((-math.mod(yscroll, 1)*16)*scale))
+					for i = 1, #customspritebatch[split] do
+						love.graphics.draw(customspritebatch[split][i], math.floor((-math.fmod(xscroll, 1)*16)*scale), math.floor((-math.fmod(yscroll, 1)*16)*scale))
 					end
 				end
-
 				if i > 8 then
 					drawmaptiles("dropshadow", xscroll, yscroll, xtodraw, ytodraw)
 				else
@@ -2305,6 +2296,7 @@ function game_draw()
 		for j, w in pairs(objects["ice"]) do
 			w:draw()
 		end
+
 		
 		--[[for j, w in pairs(objects["trackcontroller"]) do
 			w:draw()
@@ -2424,7 +2416,6 @@ function game_draw()
 			v:draw()
 		end		
 		
-		
 		--cappy
 		for j, w in pairs(objects["cappy"]) do
 			w:draw()
@@ -2487,14 +2478,17 @@ function game_draw()
 								love.graphics.rectangle("line", math.floor((k.x+k.dontspawnenemydist[1]-xscroll)*16*scale)+.5, math.floor((k.y+k.dontspawnenemydist[2]-yscroll-.5)*16*scale)+.5, k.dontspawnenemydist[3]*16*scale-1, k.dontspawnenemydist[4]*16*scale-1)
 							end
 
-							--[[if k.pointingangle then
+							if k.pointingangle then
 								local xcenter = k.x + 6/16 - math.sin(k.pointingangle)*userange
 								local ycenter = k.y + 6/16 - math.cos(k.pointingangle)*userange
 							
 								love.graphics.setColor(0, 255, 255)
 								love.graphics.rectangle("line", math.floor((xcenter-usesquaresize/2-xscroll)*16*scale)+.5, math.floor((ycenter-usesquaresize/2-yscroll-.5)*16*scale)+.5, usesquaresize*16*scale-1, usesquaresize*16*scale-1)
-							end]]
+							end
 						end
+					end
+					if k.hitboxdraw then
+						k.hitboxdraw(k)
 					end
 				end
 			end
@@ -2570,6 +2564,7 @@ function game_draw()
 					
 					local dist = math.sqrt(((x-xscroll)*16*scale - (sourcex-xscroll)*16*scale)^2 + ((y-yscroll-.5)*16*scale - (sourcey-yscroll-.5)*16*scale)^2)/16/scale
 					
+					portaldotspritebatch:clear()
 					for i = 1, dist/portaldotsdistance+1 do
 						if((i-1+portaldotstimer/portaldotstime)/(dist/portaldotsdistance)) < 1 then
 							local xplus = ((x-xscroll)*16*scale - (sourcex-xscroll)*16*scale)*((i-1+portaldotstimer/portaldotstime)/(dist/portaldotsdistance))
@@ -2580,6 +2575,7 @@ function game_draw()
 						
 							local radius = math.sqrt(xplus^2 + yplus^2)/scale
 							
+							
 							local alpha = 255
 							if radius < portaldotsouter then
 								alpha = (radius-portaldotsinner) * (255/(portaldotsouter-portaldotsinner))
@@ -2587,17 +2583,16 @@ function game_draw()
 									alpha = 0
 								end
 							end
-							
-							
 							if portalpossible == false then
-								love.graphics.setColor(255, 0, 0, alpha)
+								portaldotspritebatch:setColor(255, 0, 0, alpha)
 							else
-								love.graphics.setColor(0, 255, 0, alpha)
+								portaldotspritebatch:setColor(0, 255, 0, alpha)
 							end
-						
-							love.graphics.draw(portaldotimg, math.floor(dotx-0.25*scale), math.floor(doty-0.25*scale), 0, scale, scale)
+							portaldotspritebatch:add(math.floor(dotx-0.25*scale), math.floor(doty-0.25*scale), 0, scale, scale)
 						end
 					end
+					
+					love.graphics.draw(portaldotspritebatch, 0,0)
 				
 					love.graphics.setColor(255, 255, 255, 255)
 					
@@ -2623,6 +2618,12 @@ function game_draw()
 		end
 		
 		--Portal projectile
+		portalprojectilespritebatch:clear()
+		for i, v in pairs(portalprojectiles) do
+			v:particledraw()
+		end
+		love.graphics.setColor(255,255,255)
+		love.graphics.draw(portalprojectilespritebatch,0,0)
 		for i, v in pairs(portalprojectiles) do
 			v:draw()
 		end
@@ -2643,6 +2644,9 @@ function game_draw()
 			w:draw()
 		end
 		
+		--custom foreground
+		rendercustomforeground(xscroll, yscroll, scrollfactor2, scrollfactor2y)
+		
 		--UI over everything
 		if hudsimple and ((not darkmode and not lightsout) or editormode) then
 			if hudvisible then
@@ -2651,7 +2655,7 @@ function game_draw()
 		end
 
 		--Player markers
-		if players > 1 then
+		if players > 1 then--playermarkers then
 			for i = 1, players do
 				local v = objects["player"][i]
 				if not v.dead and v.drawable and v.y < mapheight-.5 then
@@ -2698,7 +2702,7 @@ function game_draw()
 						end
 						local r = -math.atan2(angx, angy)-math.pi/2
 						--limit x or y if right angle
-						if math.mod(r, math.pi/2) == 0 then
+						if math.fmod(r, math.pi/2) == 0 then
 							if up or down then
 								x = math.max(x, 15/16)
 								x = math.min(x, width-15/16)
@@ -2797,29 +2801,9 @@ function game_draw()
 			
 			love.graphics.setColor(255, 255, 255, 200)
 			for i = 1, 9 do
-				--fuck minecraft, multiple tilesets are not supported >:(
-				--edit, im sowwy, now they are ^_^
 				local t = inventory[i].t
-				
 				if t ~= nil then
-					local img = smbtilesimg
-					if t > 90000 then
-						img = tilequads[t].image
-					elseif math.floor(t) <= smbtilecount then
-						img = smbtilesimg
-					elseif t <= smbtilecount+portaltilecount then
-						img = portaltilesimg
-					elseif t <= smbtilecount+portaltilecount+customtilecount then
-						img = customtilesimg
-					else
-						local max = smbtilecount+portaltilecount+customtilecount
-						for j = 1, modcustomtiles do
-							if t <= max+modcustomtilecount[j] and not t <= max+modcustomtilecount[j+1] then
-								img = modcustomtilesimg[j]
-							end
-						end
-					end
-					love.graphics.draw(img, tilequads[t].quad, (width*8-88+(i-1)*20)*scale, 205*scale, 0, scale, scale)
+					love.graphics.draw(tilequads[t].image, tilequads[t].quad, (width*8-88+(i-1)*20)*scale, 205*scale, 0, scale, scale)
 				end
 			end
 			
@@ -2833,7 +2817,6 @@ function game_draw()
 				end
 			end
 		end
-		
 		love.graphics.translate(-(split-1)*width*16*scale/#splitscreen, 0)
 	end
 	love.graphics.setScissor()
@@ -2871,7 +2854,7 @@ function game_draw()
 		end
 	elseif darkmode and not editormode then
 		--dark mode has fancy layers
-		love.graphics.setColor(0, 0, 0, 100)
+		love.graphics.setColor(0, 0, 0)
 		local stencil = function()
 			for j, w in pairs(objects["player"]) do
 				love.graphics.circle("fill", ((w.x+(w.width/2)-xscroll)*16)*scale, ((w.y+(w.height/2)-yscroll)*16-8)*scale, 70*scale, 18)
@@ -2895,17 +2878,17 @@ function game_draw()
 		love.graphics.stencil(stencil4)
 		love.graphics.setStencilTest("less", 1)
 		love.graphics.setColor(0, 0, 0, 255/4)
-		love.graphics.rectangle("fill", 0, 0, width*16*scale, 164*scale)
+		love.graphics.rectangle("fill", 0, 0, width*16*scale, 224*scale)
 		love.graphics.setStencilTest()
 		love.graphics.stencil(stencil3)
 		love.graphics.setStencilTest("less", 1)
 		love.graphics.setColor(0, 0, 0, 255/3)
-		love.graphics.rectangle("fill", 0, 0, width*16*scale, 184*scale)
+		love.graphics.rectangle("fill", 0, 0, width*16*scale, 224*scale)
 		love.graphics.setStencilTest()
 		love.graphics.stencil(stencil2)
 		love.graphics.setStencilTest("less", 1)
 		love.graphics.setColor(0, 0, 0, 255/2)
-		love.graphics.rectangle("fill", 0, 0, width*16*scale, 204*scale)
+		love.graphics.rectangle("fill", 0, 0, width*16*scale, 224*scale)
 		love.graphics.setStencilTest()
 		love.graphics.stencil(stencil)
 		love.graphics.setStencilTest("less", 1)
@@ -2980,16 +2963,16 @@ function game_draw()
 				properprint(">", (width*8*scale)-45*scale, (112*scale)-60*scale+(i-1)*25*scale)
 			end
 			if dcplaying and pausemenuoptions[i] == "suspend" then --restart instead of suspend
-				properprint("restart", (width*8*scale)-35*scale, (112*scale)-60*scale+(i-1)*25*scale)
+				properprintF(TEXT["restart"], (width*8*scale)-35*scale, (112*scale)-60*scale+(i-1)*25*scale)
 			elseif (collectablescount[1] > 0 or collectablescount[2] > 0 or collectablescount[3] > 0 or collectablescount[4] > 0 or
 			collectablescount[5] > 0 or collectablescount[6] > 0 or collectablescount[7] > 0 or collectablescount[8] > 0 or
 			collectablescount[9] > 0 or collectablescount[10] > 0)
 				and pausemenuoptions[i] == "suspend" then --make it more obvious that you can save your progress
-				properprint("save game", (width*8*scale)-35*scale, (112*scale)-60*scale+(i-1)*25*scale)
+				properprintF(TEXT["save game"], (width*8*scale)-35*scale, (112*scale)-60*scale+(i-1)*25*scale)
 			else
-				properprint(pausemenuoptions[i], (width*8*scale)-35*scale, (112*scale)-60*scale+(i-1)*25*scale)
+				properprintF(TEXT[pausemenuoptions[i]], (width*8*scale)-35*scale, (112*scale)-60*scale+(i-1)*25*scale)
 			end
-			properprint(pausemenuoptions2[i], (width*8*scale)-35*scale, (112*scale)-50*scale+(i-1)*25*scale)
+			properprintF(TEXT[pausemenuoptions2[i]], (width*8*scale)-35*scale, (112*scale)-50*scale+(i-1)*25*scale)
 			
 			if pausemenuoptions[i] == "volume" then
 				drawrectangle((width*8)-34, 68+(i-1)*25, 74, 1)
@@ -3004,19 +2987,19 @@ function game_draw()
 			love.graphics.rectangle("fill", (width*8*scale)-100*scale, (112*scale)-25*scale, 200*scale, 50*scale)
 			love.graphics.setColor(255, 255, 255, 255)
 			drawrectangle((width*8)-99, 112-24, 198, 48)
-			properprint("quit to menu?", (width*8*scale)-string.len("quit to menu?")*4*scale, (112*scale)-10*scale)
+			properprintF(TEXT["quit to menu?"], (width*8*scale)-string.len(TEXT["quit to menu?"])*4*scale, (112*scale)-10*scale)
 			if pausemenuselected2 == 1 then
-				properprint(">", (width*8*scale)-51*scale, (112*scale)+4*scale)
+				properprintF(">", (width*8*scale)-51*scale, (112*scale)+4*scale)
 				love.graphics.setColor(255, 255, 255, 255)
-				properprint("yes", (width*8*scale)-44*scale, (112*scale)+4*scale)
+				properprintF(TEXT["yes"], (width*8*scale)-44*scale, (112*scale)+4*scale)
 				love.graphics.setColor(100, 100, 100, 255)
-				properprint("no", (width*8*scale)+28*scale, (112*scale)+4*scale) 
+				properprintF(TEXT["no"], (width*8*scale)+28*scale, (112*scale)+4*scale) 
 			else
-				properprint(">", (width*8*scale)+20*scale, (112*scale)+4*scale)
+				properprintF(">", (width*8*scale)+20*scale, (112*scale)+4*scale)
 				love.graphics.setColor(100, 100, 100, 255)
-				properprint("yes", (width*8*scale)-44*scale, (112*scale)+4*scale)
+				properprintF(TEXT["yes"], (width*8*scale)-44*scale, (112*scale)+4*scale)
 				love.graphics.setColor(255, 255, 255, 255)
-				properprint("no", (width*8*scale)+28*scale, (112*scale)+4*scale)
+				properprintF(TEXT["no"], (width*8*scale)+28*scale, (112*scale)+4*scale)
 			end
 		end
 		
@@ -3025,19 +3008,19 @@ function game_draw()
 			love.graphics.rectangle("fill", (width*8*scale)-100*scale, (112*scale)-25*scale, 200*scale, 50*scale)
 			love.graphics.setColor(255, 255, 255, 255)
 			drawrectangle((width*8)-99, 112-24, 198, 48)
-			properprint("quit to desktop?", (width*8*scale)-string.len("quit to desktop?")*4*scale, (112*scale)-10*scale)
+			properprintF(TEXT["quit to desktop?"], (width*8*scale)-string.len(TEXT["quit to desktop?"])*4*scale, (112*scale)-10*scale)
 			if pausemenuselected2 == 1 then
-				properprint(">", (width*8*scale)-51*scale, (112*scale)+4*scale)
+				properprintF(">", (width*8*scale)-51*scale, (112*scale)+4*scale)
 				love.graphics.setColor(255, 255, 255, 255)
-				properprint("yes", (width*8*scale)-44*scale, (112*scale)+4*scale)
+				properprintF(TEXT["yes"], (width*8*scale)-44*scale, (112*scale)+4*scale)
 				love.graphics.setColor(100, 100, 100, 255)
-				properprint("no", (width*8*scale)+28*scale, (112*scale)+4*scale)
+				properprintF(TEXT["no"], (width*8*scale)+28*scale, (112*scale)+4*scale)
 			else
-				properprint(">", (width*8*scale)+20*scale, (112*scale)+4*scale)
+				properprintF(">", (width*8*scale)+20*scale, (112*scale)+4*scale)
 				love.graphics.setColor(100, 100, 100, 255)
-				properprint("yes", (width*8*scale)-44*scale, (112*scale)+4*scale)
+				properprintF(TEXT["yes"], (width*8*scale)-44*scale, (112*scale)+4*scale)
 				love.graphics.setColor(255, 255, 255, 255)
-				properprint("no", (width*8*scale)+28*scale, (112*scale)+4*scale)
+				properprintF(TEXT["no"], (width*8*scale)+28*scale, (112*scale)+4*scale)
 			end
 		end
 		
@@ -3049,24 +3032,24 @@ function game_draw()
 			if (collectablescount[1] > 0 or collectablescount[2] > 0 or collectablescount[3] > 0 or collectablescount[4] > 0 or
 			collectablescount[5] > 0 or collectablescount[6] > 0 or collectablescount[7] > 0 or collectablescount[8] > 0 or
 			collectablescount[9] > 0 or collectablescount[10] > 0) then --make it more obvious that you can save your progress
-				properprint("save game? this will", (width*8*scale)-string.len("save game? this will")*4*scale, (112*scale)-20*scale)
-				properprint("overwrite last save.", (width*8*scale)-string.len("overwrite last save.")*4*scale, (112*scale)-10*scale)
+				properprintF(TEXT["save game? this will"], (width*8*scale)-string.len(TEXT["save game? this will"])*4*scale, (112*scale)-20*scale)
+				properprintF(TEXT["overwrite last save."], (width*8*scale)-string.len(TEXT["overwrite last save."])*4*scale, (112*scale)-10*scale)
 			else
-				properprint("suspend game? this can", (width*8*scale)-string.len("suspend game? this can")*4*scale, (112*scale)-20*scale)
-				properprint("only be loaded once!", (width*8*scale)-string.len("only be loaded once!")*4*scale, (112*scale)-10*scale)
+				properprintF(TEXT["suspend game? this can"], (width*8*scale)-string.len(TEXT["suspend game? this can"])*4*scale, (112*scale)-20*scale)
+				properprintF(TEXT["only be loaded once!"], (width*8*scale)-string.len(TEXT["only be loaded once!"])*4*scale, (112*scale)-10*scale)
 			end
 			if pausemenuselected2 == 1 then
-				properprint(">", (width*8*scale)-51*scale, (112*scale)+4*scale)
+				properprintF(">", (width*8*scale)-51*scale, (112*scale)+4*scale)
 				love.graphics.setColor(255, 255, 255, 255)
-				properprint("yes", (width*8*scale)-44*scale, (112*scale)+4*scale)
+				properprintF(TEXT["yes"], (width*8*scale)-44*scale, (112*scale)+4*scale)
 				love.graphics.setColor(100, 100, 100, 255)
-				properprint("no", (width*8*scale)+28*scale, (112*scale)+4*scale)
+				properprintF(TEXT["no"], (width*8*scale)+28*scale, (112*scale)+4*scale)
 			else
-				properprint(">", (width*8*scale)+20*scale, (112*scale)+4*scale)
+				properprintF(">", (width*8*scale)+20*scale, (112*scale)+4*scale)
 				love.graphics.setColor(100, 100, 100, 255)
-				properprint("yes", (width*8*scale)-44*scale, (112*scale)+4*scale)
+				properprintF(TEXT["yes"], (width*8*scale)-44*scale, (112*scale)+4*scale)
 				love.graphics.setColor(255, 255, 255, 255)
-				properprint("no", (width*8*scale)+28*scale, (112*scale)+4*scale)
+				properprintF(TEXT["no"], (width*8*scale)+28*scale, (112*scale)+4*scale)
 			end
 		end
 	end
@@ -3103,7 +3086,7 @@ function drawentity(j, w, i, v, currentscissor)
 	end
 	
 	local oldoffsetx, oldoffsety
-	if v.supersized and (not v.dontmakebigwhensupersized) then
+	if v.supersized and (not v.dontmakebigwhensupersized)  then
 		oldoffsetx, oldoffsety = v.offsetX, v.offsetY
 		v.offsetX = v.offsetX*v.supersized
 		v.offsetY = (v.offsetY-8)*v.supersized+8
@@ -3166,7 +3149,18 @@ function drawentity(j, w, i, v, currentscissor)
 	if type(v.graphic) == "table" then
 		drawplayer(v.playernumber)
 	else
-		if v.graphic and v.quad then
+		if v.graphicarray and v.quad then
+			local playercolors = (objects["player"][1].colors or objects["player"][1].basecolors)
+			for key,value in pairs(v.graphicarray) do
+				if type(v.graphicarray[key]) == "table" then
+					love.graphics.setColor(255,255,255)
+					love.graphics.draw(v.graphicarray[key][1], v.quad, math.floor(((v.x-xscroll)*16+v.offsetX)*scale), math.floor(((v.y-yscroll)*16-v.offsetY)*scale), v.rotation, dirscale, horscale, v.quadcenterX, v.quadcenterY)
+				else
+					love.graphics.setColor((playercolors[key] or 255),(playercolors[key] or 255),(playercolors[key] or 255))
+					love.graphics.draw(v.graphicarray[key], v.quad, math.floor(((v.x-xscroll)*16+v.offsetX)*scale), math.floor(((v.y-yscroll)*16-v.offsetY)*scale), v.rotation, dirscale, horscale, v.quadcenterX, v.quadcenterY)
+				end
+			end
+		elseif v.graphic and v.quad then
 			if v.graphiccolor then
 				love.graphics.setColor(v.graphiccolor)
 			end
@@ -3239,6 +3233,10 @@ function drawentity(j, w, i, v, currentscissor)
 	--draw ice block on top
 	if v.frozen and v.iceblock then
 		v.iceblock:draw("enemylayer")
+	end
+
+	if j == "enemy" and enemyfunctionreal then
+		enemy_function_draw(v)
 	end
 end
 
@@ -3335,27 +3333,48 @@ function drawplayer(i, x, y, r, pad, drop)
 				if dirscale < 0 then
 					x = math.floor((px+(v.width/2)-xoffset-xscroll)*16*scale)-(v.yoshitoungewidth*16*scale)
 				end
-				love.graphics.setColor(255, 255, 255, a)
+				if drop then
+					love.graphics.setColor(dropshadowcolor)
+				else
+					love.graphics.setColor(255, 255, 255, a)
+				end
 				local e = v.yoshitoungeenemy
 				local size = math.min(.2, v.yoshitoungewidth)/.2
-				love.graphics.draw(e.graphic, e.quad, x+(((-(e.width/2))*16+e.offsetX)*scale), y+((-(e.height/2))*16-e.offsetY+8)*scale, 0, size*scale, size*scale, e.quadcenterX, e.quadcenterY)
+				local esx, esy = e.animationscalex or 1, e.animationscaley or 1
+				love.graphics.draw(e.graphic, e.quad, x+(((-(e.width/2))*16+e.offsetX)*scale), y+((-(e.height/2))*16-e.offsetY+8)*scale, 0, size*esx*scale, size*esy*scale, e.quadcenterX, e.quadcenterY)
 			end
 			--tounge
-			love.graphics.setColor(216, 40, 0, a)
+			if drop then
+				love.graphics.setColor(dropshadowcolor)
+			else
+				love.graphics.setColor(216, 40, 0, a)
+			end
 			if dirscale > 0 then
 				local x, y = math.floor((px+(v.width/2)+xoffset-xscroll)*16*scale), math.floor((py+v.height+yoffset-yscroll)*16*scale)
 				love.graphics.rectangle("fill", x, y, (v.yoshitoungewidth)*16*scale, (2/16)*16*scale)
-				love.graphics.setColor(255, 255, 255, a)
+				if drop then
+					love.graphics.setColor(dropshadowcolor)
+				else
+					love.graphics.setColor(255, 255, 255, a)
+				end
 				love.graphics.draw(yoshiimage, yoshiquad[v.yoshi.color][19], x+(v.yoshitoungewidth*16*scale), y, 0, scale, scale, 2, 1)
 			else
 				local x, y = math.floor((px+(v.width/2)-xoffset-xscroll)*16*scale), math.floor((py+v.height+yoffset-yscroll)*16*scale)
 				love.graphics.rectangle("fill", x, y, (-v.yoshitoungewidth)*16*scale, (2/16)*16*scale)
-				love.graphics.setColor(255, 255, 255, a)
+				if drop then
+					love.graphics.setColor(dropshadowcolor)
+				else
+					love.graphics.setColor(255, 255, 255, a)
+				end
 				love.graphics.draw(yoshiimage, yoshiquad[v.yoshi.color][19], x-(v.yoshitoungewidth*16*scale), y, 0, -scale, scale, 2, 1)
 			end
 		end
 		
-		love.graphics.setColor(255, 255, 255, a)
+		if drop then
+			love.graphics.setColor(dropshadowcolor)
+		else
+			love.graphics.setColor(255, 255, 255, a)
+		end
 		love.graphics.draw(yoshiimage, v.yoshiquad, math.floor(((px-xscroll)*16+offsetX)*scale), math.floor(((py-yscroll)*16-offsetY)*scale), pr, dirscale, horscale, 11, y)
 
 		if v.size == 12 then --skinny mario needs to be lower
@@ -3408,7 +3427,7 @@ function drawplayer(i, x, y, r, pad, drop)
 		end
 		
 		if not v.graphic then
-			print("missing player graphics! fuck this game!")
+			print("-- ERROR -- Missing player graphics!")
 			return false
 		end
 		for k = 1, #v.graphic do
@@ -3440,82 +3459,32 @@ function drawplayer(i, x, y, r, pad, drop)
 			local drawhats = true
 			local char = v.character
 			if v.graphic == v.biggraphic or v.graphic == v.capegraphic or v.animationstate == "grow" or v.graphic == v.raccoongraphic or v.graphic == v.hammergraphic or v.graphic == v.froggraphic or v.graphic == v.tinygraphic or v.graphic == v.tanookigraphic or v.graphic == v.shellgraphic or v.graphic == v.boomeranggraphic then
-				if v.yoshi then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", "climbing", 2) or bighatoffsets["climbing"][2]
-				elseif v.animationstate == "grow" then
+				if v.quadanim == "grow" then
 					offsets = customplayerhatoffsets(char, "hatoffsets", "grow") or hatoffsets["grow"]
-				elseif v.fireenemyanim then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", v.fireenemyanim, v.fireenemyquadi) or bighatoffsets["idle"]
-				elseif v.spinanimationtimer < raccoonspintime then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", "idle") or bighatoffsets["idle"]
-				elseif v.water and (v.animationstate == "jumping" or v.animationstate == "falling") then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", "swimming", v.swimframe) or bighatoffsets["swimming"][v.swimframe]
-				elseif v.fireanimationtimer < fireanimationtime and not v.ducking and not v.shoe then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", "fire") or bighatoffsets["fire"]
-				elseif v.ducking then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", "ducking") or bighatoffsets["ducking"]
-				elseif v.capefly then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", "capefly", v.capeflyframe) or bighatoffsets["capefly"][v.capeflyframe]
-				elseif v.animationstate == "running" or v.animationstate == "falling" then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", "running", v.runframe) or bighatoffsets["running"][v.runframe]
-				elseif v.animationstate == "climbing" then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", "climbing", v.climbframe) or bighatoffsets["climbing"][v.climbframe]
-				elseif v.animationstate == "fence" then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", "fence", v.fenceframe) or bighatoffsets["fence"][v.fenceframe]
-				elseif v.animationstate == "floating" then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", "jumping") or bighatoffsets["jumping"]
-				elseif v.animationstate == "jumping" then
-					if v.raccoonfly then
-						offsets = customplayerhatoffsets(char, "bighatoffsets", "flyjump") or bighatoffsets["flyjump"]
-					else
-						offsets = customplayerhatoffsets(char, "bighatoffsets", "jumping") or bighatoffsets["jumping"]
-					end
-				elseif bighatoffsets[v.animationstate] then
-					offsets = customplayerhatoffsets(char, "bighatoffsets", v.animationstate) or bighatoffsets[v.animationstate]
+				elseif v.graphic == v.capegraphic and v.quadanim == "fly" then
+					offsets = customplayerhatoffsets(char, "bighatoffsets", "capefly", v.quadframe) or bighatoffsets["idle"]
+				elseif v.graphic == v.capegraphic and v.quadanim == "fire" then
+					offsets = customplayerhatoffsets(char, "bighatoffsets", "flyjump", v.quadframe) or bighatoffsets["idle"]
+				else
+					offsets = customplayerhatoffsets(char, "bighatoffsets", v.quadanimi, v.quadframe) or bighatoffsets["idle"]
 				end
 				if v.graphic == v.shellgraphic and v.ducking then
 					drawhats = false
 				end
-				if v.graphic == v.hammergraphic or v.graphic == v.froggraphic --[[or v.graphic == v.tinygraphic]] or v.graphic == v.tanookigraphic or v.graphic == v.boomeranggraphic then
+				if v.graphic == v.hammergraphic or v.graphic == v.froggraphic or v.graphic == v.tinygraphic or v.graphic == v.tanookigraphic or v.graphic == v.boomeranggraphic then
 					drawhats = false
 				end
 			elseif v.graphic == v.skinnygraphic then
-				if v.yoshi then
-					offsets = customplayerhatoffsets(char, "skinnyhatoffsets", "climbing", 2) or skinnyhatoffsets["climbing"][2]
-				elseif v.animationstate == "grow" then
-					offsets = customplayerhatoffsets(char, "hatoffsets", "grow")
-				elseif v.fireenemyanim then
-					offsets =customplayerhatoffsets(char, "skinnyhatoffsets", v.fireenemyanim, v.fireenemyquadi) or bighatoffsets["idle"]
-				elseif v.water and (v.animationstate == "jumping" or v.animationstate == "falling") then
-					offsets = customplayerhatoffsets(char, "skinnyhatoffsets", "swimming", v.swimframe) or skinnyhatoffsets["swimming"][v.swimframe]
-				elseif v.ducking then
-					offsets = customplayerhatoffsets(char, "skinnyhatoffsets", "ducking") or skinnyhatoffsets["ducking"]
-				elseif v.animationstate == "running" or v.animationstate == "falling"  then
-					offsets = customplayerhatoffsets(char, "skinnyhatoffsets", "running", v.runframe) or skinnyhatoffsets["running"][v.runframe]
-				elseif v.animationstate == "climbing" then
-					offsets = customplayerhatoffsets(char, "skinnyhatoffsets", "climbing", v.climbframe) or skinnyhatoffsets["climbing"][v.climbframe]
-				elseif v.animationstate == "fence" then
-					offsets = customplayerhatoffsets(char, "skinnyhatoffsets", "fence", v.fenceframe) or skinnyhatoffsets["fence"][v.fenceframe]
+				if v.quadanim == "grow" then
+					offsets = customplayerhatoffsets(char, "hatoffsets", "grow") or hatoffsets["grow"]
 				else
-					offsets = customplayerhatoffsets(char, "skinnyhatoffsets", v.animationstate) or skinnyhatoffsets[v.animationstate]
+					offsets = customplayerhatoffsets(char, "skinnyhatoffsets", v.quadanimi, v.quadframe) or skinnyhatoffsets["idle"]
 				end
 			else
-				if v.yoshi then
-					offsets = customplayerhatoffsets(char, "hatoffsets", "climbing", 2) or hatoffsets["climbing"][2]
-				elseif v.fireenemyanim then
-					offsets =customplayerhatoffsets(char, "hatoffsets", v.fireenemyanim, v.fireenemyquadi) or bighatoffsets["idle"]
-				elseif v.water and (v.animationstate == "jumping" or v.animationstate == "falling") then
-					offsets = customplayerhatoffsets(char, "hatoffsets", "swimming", v.swimframe) or hatoffsets["swimming"][v.swimframe]
-				elseif v.ducking then
-					offsets = customplayerhatoffsets(char, "hatoffsets", "ducking") or hatoffsets["ducking"]
-				elseif v.animationstate == "running" or v.animationstate == "falling" then
-					offsets = customplayerhatoffsets(char, "hatoffsets", "running", v.runframe) or hatoffsets["running"][v.runframe]
-				elseif v.animationstate == "climbing" then
-					offsets = customplayerhatoffsets(char, "hatoffsets", "climbing", v.climbframe) or hatoffsets["climbing"][v.climbframe]
-				elseif v.animationstate == "fence" then
-					offsets = customplayerhatoffsets(char, "hatoffsets", "fence", v.fenceframe) or hatoffsets["fence"][v.fenceframe]
+				if v.quadanim == "grow" then
+					offsets = customplayerhatoffsets(char, "hatoffsets", "grow") or hatoffsets["grow"]
 				else
-					offsets = customplayerhatoffsets(char, "hatoffsets", v.animationstate) or hatoffsets[v.animationstate]
+					offsets = customplayerhatoffsets(char, "hatoffsets", v.quadanimi, v.quadframe) or hatoffsets[v.quadanimi] or hatoffsets["idle"]
 				end
 			end
 			if v.helmet then
@@ -3540,15 +3509,11 @@ function drawplayer(i, x, y, r, pad, drop)
 					end
 					local raccoonhat = false
 					local dirscale = dirscale
-					--if currenthat == 1 then
+					if currenthat == 1 then
 						if drop then
 							love.graphics.setColor(dropshadowcolor)
 						else
-							if currenthat == 1 then
-								love.graphics.setColor(v.colors[1])
-							else
-								love.graphics.setColor(255, 255, 255, a)
-							end
+							love.graphics.setColor(v.colors[1])
 						end
 						if v.graphic == v.raccoongraphic and not (v.character and v.characterdata and v.characterdata.noraccoonhat) then
 							--hat?
@@ -3562,13 +3527,13 @@ function drawplayer(i, x, y, r, pad, drop)
 								xadd = xadd + v.characterdata.raccoonhatspinoffsetX
 							end
 						end
-					--[[else
+					else
 						if drop then
 							love.graphics.setColor(dropshadowcolor)
 						else
 							love.graphics.setColor(255, 255, 255, a)
 						end
-					end]]
+					end
 					if v.graphic == v.raccoongraphic and not raccoonhat then
 						--don't show hat in raccoon mode!
 						break
@@ -3623,24 +3588,6 @@ function drawplayer(i, x, y, r, pad, drop)
 							end
 						end
 						yadd = yadd + bighat[currenthat].height
-					--hat hat hat hat
-					--[[elseif v.graphic == v.tinygraphic then
-						if bighat[currenthat].tinysliding and v.animationstate == "sliding" and not v.yoshi then --tilt hat when sliding
-							love.graphics.draw(bighat[currenthat].tinysliding, bighat[currenthat].quad[1], math.floor(((px-xscroll)*16+offsetX)*scale), math.floor(((py-yscroll)*16-offsetY)*scale), pr, dirscale, horscale, v.quadcenterX - hat[currenthat].x + offsets[1], v.quadcenterY - bighat[currenthat].y + offsets[2] + yadd)
-						elseif v.animationstate == "dead" then
-							if bighat[currenthat].directions then
-								local graphic = bighat[currenthat].tiny
-								if bighat[currenthat].death then
-									graphic = bighat[currenthat].death
-								end
-								love.graphics.draw(graphic, bighat[currenthat].quad[2], math.floor(((px-xscroll)*16+offsetX)*scale), math.floor(((py-yscroll)*16-offsetY)*scale), pr, dirscale, horscale, v.quadcenterX - hat[currenthat].x + offsets[1], v.quadcenterY - hat[currenthat].y + offsets[2] + yadd)
-							end
-						elseif v.fence then
-							love.graphics.draw(bighat[currenthat].tiny. bighat[currenthat].quad[3], math.floor(((px-xscroll)*16+offsetX)*scale), math.floor(((py-yscroll)*16-offsetY)*scale), pr, dirscale, horscale, v.quadcenterX - hat[currenthat].x + offsets[1], v.quadcenterY - hat[currenthat].y + offsets[2] + yadd)
-						else
-							love.graphics.draw(bighat[currenthat].tiny, bighat[currenthat].quad[1], math.floor(((px-xscroll)*16+offsetX)*scale), math.floor(((py-yscroll)*16-offsetY)*scale), pr, dirscale, horscale, v.quadcenterX - hat[currenthat].x + offsets[1], v.quadcenterY - hat[currenthat].y + offsets[2] + yadd)
-						end
-						yadd = yadd + bighat[currenthat].height]]
 					else
 						if hat[currenthat].sliding and v.animationstate == "sliding" and not v.yoshi then --tilt hat when sliding
 							love.graphics.draw(hat[currenthat].sliding, hat[currenthat].quad[1], math.floor(((px-xscroll)*16+offsetX)*scale), math.floor(((py-yscroll)*16-offsetY)*scale), pr, dirscale, horscale, v.quadcenterX - hat[currenthat].x + offsets[1], v.quadcenterY - hat[currenthat].y + offsets[2] + yadd)
@@ -3778,6 +3725,10 @@ function drawplayer(i, x, y, r, pad, drop)
 		love.graphics.setColor(255, 255, 255, a)
 		local angleframe = getAngleFrame(v.pointingangle+v.rotation, v)
 		love.graphics.draw(minecraftpickaxeimg, minecraftpickaxequad[angleframe], math.floor(((px+v.width/2-xscroll)*16)*scale), math.floor(((py+v.height/2-yscroll-.5)*16)*scale), pr, dirscale, horscale, 10, 10)
+	elseif v.portalgun and v.characterdata.nopointing and v.characterdata.portalgunoverlay then
+		love.graphics.setColor(255, 255, 255, a)
+		local angleframe = getAngleFrame(v.pointingangle+v.rotation, v)
+		love.graphics.draw(portalgunimg, minecraftpickaxequad[angleframe], math.floor(((px+v.width/2-xscroll)*16)*scale), math.floor(((py+v.height/2-yscroll-.5)*16)*scale), pr, dirscale, horscale, 10, 10)
 	end
 	
 	--goomba shoe & cloud
@@ -3806,12 +3757,17 @@ function drawplayer(i, x, y, r, pad, drop)
 
 			--i changed some stuff around so this joke no longer makes any sense but imma just leave it
 			frame = ((math.floor(coinanimation*(5/6)-1))%4)+1
-			v.lavasurfing = false
+			if not drop then
+				v.lavasurfing = false
+			end
 		end
 		if v.ducking then
+			local shakex = 0
 			frame = 4
 			if v.drybonesshelltimer > drybonesshelltime-0.2 or v.drybonesshelltimer < 0.2 then
 				frame = 3
+			elseif v.drybonesshelltimer < 1 then
+				shakex = math.floor((v.drybonesshelltimer*10)%3)-1
 			end
 			y = y + v.characterdata.drybonesshellimgduckingoffsetY
 			if v.animationscaley == 3 then
@@ -3819,22 +3775,116 @@ function drawplayer(i, x, y, r, pad, drop)
 			elseif v.animationscaley == 2 then
 				y = y + v.characterdata.drybonesshellimghugeclassicduckingoffsetY
 			end
-			love.graphics.draw(drybonesimage, drybonesquad[spriteset][frame], math.floor(((px-xscroll)*16+offsetX)*scale), math.floor(((py-yscroll)*16-offsetY)*scale), v.rotation, -dirscale, horscale, 8, y)
+			love.graphics.draw(drybonesimage, drybonesquad[spriteset][frame], math.floor(((px-xscroll)*16+offsetX+shakex)*scale), math.floor(((py-yscroll)*16-offsetY)*scale), v.rotation, -dirscale, horscale, 8, y)
 		else
 			love.graphics.draw(drybonesshellimg, starquad[spriteset][frame], math.floor(((px-xscroll)*16+offsetX)*scale), math.floor(((py-yscroll)*16-offsetY)*scale), v.rotation, -dirscale, horscale, 8, y)
 		end
 	elseif v.shoe and v.shoe ~= "yoshi" then
-		local frame = ((math.floor(coinanimation*(5/6)-4))%2)+4
-		if v.shoe == "heel" then
-			frame = 6
+		local frame;
+
+		if not v.wings then
+			frame = ((math.floor(coinanimation*(5/6)-4))%2)+4
 		end
+		if v.shoe == "heel" then
+			if not v.asdfgkillmelmao then v.saveframe = 7 end
+		else
+			if not v.asdfgkillmelmao then v.saveframe = 5 end
+		end
+		
+		frame = (frame or v.saveframe)
+
+		if not v.frametimer then
+			v.frametimer = 0
+		end
+		if v.wings and v.shoe ~= "heel" then
+			if v.asdfgkillmelmao then
+				v.frametimer = v.frametimer + nondt()
+				if v.frametimer > 0.05 then
+					if frame == 5 then
+						v.saveframe = 6
+					else
+						v.saveframe = 5
+					end
+					v.frametimer = 0
+				end
+			else
+				frame = ((math.floor(coinanimation*(5/6)-4))%2)+5
+			end
+		end
+		if v.shoe == "heel" then
+			if v.wings then
+				if v.asdfgkillmelmao then
+					v.frametimer = v.frametimer + nondt()
+					if v.frametimer > 0.5 then
+						v.frametimer = v.frametimer - 0.1
+						if frame == 7 then
+							v.saveframe = 8
+						else
+							v.saveframe = 7
+						end
+					end
+				else
+					frame = ((math.floor(coinanimation*(5/6)-4))%2)+7
+				end
+			else
+				frame = 6
+			end
+		end
+
 		local y = -offsetY - (v.height*16) + v.characterdata.shoeimgoffsetY
 		if v.animationscaley == 3 then
 			y = -offsetY - (v.height*16) + v.characterdata.shoeimghugeoffsetY
 		elseif v.animationscaley == 2 then
 			y = -offsetY - (v.height*16) + v.characterdata.shoeimghugeclassicoffsetY
 		end
-		love.graphics.draw(goombashoeimg, goombashoequad[spriteset][frame], math.floor(((px-xscroll)*16+offsetX)*scale), math.floor(((py-yscroll)*16-offsetY)*scale), v.rotation, -dirscale, horscale, 8, y)
+
+		if v.supersizedshoe and not v.animationscaley then
+
+			if v.size ~= v.savesize then
+				v.fuckvariables = false
+			end
+				v.savesize = v.size
+			v.supersizedshoescale = 2
+
+			if v.size == -1 then
+				v.supersizedshoeoffsety = -1.9*16
+				v.supersizedshoeoffsetx = 0*16
+			elseif v.size >= 2 and (v.size ~= 8 or v.size ~= 16) then
+				v.supersizedshoeoffsety = -1.4*16
+			else
+				v.supersizedshoeoffsety = -1.6*16
+			end
+
+			if not v.fuckvariables and v.animation ~= "grow1" and v.animation ~= "grow2" and v.animation ~= "shrink" then
+				--print("offseted")
+				if v.size == -1 then
+					v.offsetY = 2
+					v.offsetX = 12
+					v.y = v.y - 1.13
+				elseif v.size >= 2 and (v.size ~= 8 or v.size ~= 16) then
+					v.offsetY = 11
+					v.offsetX = 11
+				else
+					v.offsetX = 11
+				end
+				v.fuckvariables = true
+
+			end
+			--god damm for some reason i think this would be more ez than i think
+		else
+			v.supersizedshoescale = false
+			v.supersizedshoeoffsety = false
+			v.supersizedshoeoffsetx = false
+		end
+		--print(v.fuckvariables,v.offsetX)
+		--print(frame,v.saveframe,v.frametimer,nondt())
+
+		if v.wings then
+			frame = (frame or v.saveframe)
+			love.graphics.draw(goombashoewingsimg, goombashoewingsquad[spriteset][frame], math.floor((((px-xscroll)*16+offsetX)+(v.supersizedshoeoffsetx or 0))*scale), math.floor((((py-yscroll)*16-offsetY)+(v.supersizedshoeoffsety or 0))*scale), v.rotation, -dirscale*(v.supersizedshoescale or 1), horscale*(v.supersizedshoescale or 1), 8, y)
+		else
+			love.graphics.draw(goombashoeimg, goombashoequad[spriteset][frame], math.floor((((px-xscroll)*16+offsetX)+(v.supersizedshoeoffsetx or 0))*scale), math.floor((((py-yscroll)*16-offsetY)+(v.supersizedshoeoffsety or 0))*scale), v.rotation, -dirscale*(v.supersizedshoescale or 1), horscale*(v.supersizedshoescale or 1), 8, y)
+		end
 	end
 
 	--ice block
@@ -3895,295 +3945,213 @@ function drawplayer(i, x, y, r, pad, drop)
 end
 
 function drawHUD()
-	local cy = 32 --collectable coin ui y
-	local cx = 16 --collectable coin ui x (used only in custom)
-	local properprintfunc = properprint
+	local properprintfunc = properprintF
+	local cx, cy = 16, 32 --collectable coin ui y
 
-	if hudoverlay and not editormode then
-		love.graphics.setColor(255, 255, 255, 255)
-		if hudstuff.overlaycolor then
-			love.graphics.setColor(unpack(hudstuff.overlaycolor))
+	if customhud and not dcplaying then -- rewrote for AECE (your fuckin' welcome)
+		if not hudstuff.hud then
+			return
 		end
-		love.graphics.draw(hudoverlayimg, hudoverlayquad, 0, 0, 0, scale, scale)
-	end
 
-	if customhud and not dcplaying then --made by ya boi aid0n
 		cy = hudstuff.collectableoffsety or 32
 		cx = hudstuff.collectableoffsetx or 16
 		if hudstuff.hudoutline then
 			properprintfunc = properprintbackground
 		end
-		--where the fun happens
-		if hudstuff.hud then
-			local hide = 0 -- for hiding
-			if hudstuff.hidehud then
-				for hudhidepos = 1, #hudstuff.hidehud do
-					hudhidetemp = hudstuff.hidehud[hudhidepos]
-					if (hudhidetemp[1] == marioworld or hudhidetemp[1] == "all") and (hudhidetemp[2] == mariolevel or hudhidetemp[2] == "all") and (hudhidetemp[3] == mariosublevel or hudhidetemp[3] == "all") then
-						hide = 1
+
+		--why so many locals (edit: cut down on a few, why was i so bad back then!!!)
+		local xpos = 0
+		local thiccness = 8 --t h i c c
+		local aline = "none"
+		local allinmentpos = {} --better allinement
+
+		local c, p, health, maxhealth
+		if (not editormode) and gamestate == "game" then
+			c = objects["player"][1].characterdata or 0
+			p = objects["player"][1] or 0
+			health = p.health
+			maxhealth = c.health
+		end
+
+		for hudpos = 1, #hudstuff.hud do
+			local hudtemp = hudstuff.hud[hudpos]
+			if hudstuff.hudcolors then --sets colors
+				if hudpos > #hudstuff.hudcolors then
+					love.graphics.setColor(255, 255, 255)
+				else
+					love.graphics.setColor(unpack(hudstuff.hudcolors[hudpos]))
+				end
+			elseif hudstuff.hudcolor then
+				love.graphics.setColor(unpack(hudstuff.hudcolor))
+			else
+				love.graphics.setColor(255, 255, 255)
+			end
+
+			-- checks to see what allinment it should be and stuff
+			if hudtemp[1] == "left" then
+				aline, xpos = "left", 12
+			elseif hudtemp[1] == "right" then
+				aline, xpos = "right", 388+hudstuff.hudgaps
+			elseif hudtemp[1] == "middle" then
+				aline, xpos = "middle", 396
+			else
+				aline, xpos = "none", tonumber(hudtemp[1])
+			end
+
+			--i think i made hud allinment easier again, double yay
+			if aline ~= "none" and #allinmentpos ~= 0 then
+				for i = 1, #allinmentpos do
+					local pos = allinmentpos[i]
+					if pos[1] == hudtemp[1] and pos[2] == hudtemp[2] then
+						if aline == "left" then
+							xpos = xpos + pos[3]
+						elseif aline == "right" then
+							xpos = xpos - pos[3]
+						end
 					end
 				end
 			end
 
-			if hide == 0 then
-				local xvalue = 0
-				local aline = "none"
-				local push = 0
-				local thiccness = 8 -- t h i c c
-				local printed = 0
-				local text = "shit"
+			--Yanderedev moment
+			local t = hudtemp[3]
+			--print(t)
+			local value = false
+			if t == "text" then
+				value = hudtemp[5]
+			elseif t == "name" then
+				value =	playername
+			elseif t == "level" then
+				value = mariolevel
+			elseif t == "world" then --fucking world being weird
+				local world = marioworld
+				if hudworldletter and tonumber(world) and world > 9 and world <= 9+#alphabet then
+					world = alphabet:sub(world-9, world-9)
+				end
+				value = world
+			elseif t == "sub" then
+				value = mariosublevel
+			elseif t == "lives" then
+				value = mariolives[1]
+			elseif t == "health" then
+				value = health
+			elseif t == "maxhealth" then
+				value = maxhealth
+			elseif t == "score" then
+				value = marioscore
+			elseif t == "time" then
+				value = math.ceil(mariotime or 0)
+			elseif t == "toxin" then
+				value = toxintime
+			elseif t == "coin" then
+				value = mariocoincount
+			elseif t == "keys" then
+				value = objects["player"][1].key or 0
+			elseif t == "collectables" then
+				value = collectablescount[hudtemp[5]]
+			elseif t == "number" then
+				value = animationnumbers[hudtemp[5]]
+			end
 
-				local allinmentpos = {} -- better allinement
-				local templist = {}
+			if aline ~= "none" then -- sets thiccness (how long the string is) (BETTER!)
+				local gap = hudstuff.hudgaps or 8 --gap between hud elements
 
-				local c, p, health, maxhealth
-				if (not editormode) and gamestate == "game" then
-					c = objects["player"][1].characterdata or 0
-					p = objects["player"][1] or 0
-					health = p.health
-					maxhealth = c.health
+				--shit list with no value
+				if t == "collects" then
+					thiccness = (8+hudstuff.collectsstep or 0)*hudtemp[6]+gap
+				elseif t == "icon" then
+					local tt = hudtemp[5]
+					if tt == "coin" or tt == "collectable" or tt == "key" then
+						thiccness = 8+gap
+					elseif tt == "clock" then
+						thiccness = 10+gap
+					elseif tt == "custom" and hudicon then
+						thiccness = hudicondata[hudtemp[6]].quadwidth+gap
+					end
+				elseif t == "blank" then --
+					thiccness = hudtemp[5]
 				end
 
-				for hudpos = 1, #hudstuff.hud do
-					local hudtemp = hudstuff.hud[hudpos]
-					local hudtempcolor = hudstuff.hudcolors[hudpos]
-					if hudstuff.hudcolors then --sets colors
-						if hudpos > #hudstuff.hudcolors then
-							love.graphics.setColor(255, 255, 255)
-						else
-							love.graphics.setColor(unpack(hudtempcolor))
-						end
-					elseif hudstuff.hudcolor then
-						love.graphics.setColor(unpack(hudstuff.hudcolor))
+				--good boys with value
+				if value then
+					thiccness = string.len(value or "")*8+gap
+				end
+
+				--add 0's
+				if hudtemp[4] and t ~= "text" and t ~= "collects"and t ~= "icon" and t ~= "blank" then
+					if string.len(value or "") > hudtemp[4] then
+						thiccness = string.len(value or "")*8+gap
 					else
-						love.graphics.setColor(255, 255, 255)
-					end
-				
-					if hudtemp[1] == "left" then -- checks to see what allinment it should be and stuff
-						aline = "left"
-						push = 12
-					elseif hudtemp[1] == "right" then
-						aline = "right"
-						push = 388+hudstuff.hudgaps
-					elseif hudtemp[1] == "middle" then --remove?
-						aline = "middle"
-						push = 396
-					else
-						aline = "none"
-						push = tonumber(hudtemp[1])
-					end
-
-					--i think i made hud allinment easier again, double yay
-					if aline ~= "none" and #allinmentpos ~= 0 then
-						for i = 1, #allinmentpos do
-							local pos = allinmentpos[i]
-							if pos[1] == hudtemp[1] and pos[2] == hudtemp[2] then
-								if aline == "left" then
-									push = push + pos[3]
-								elseif aline == "right" then
-									push = push - pos[3]
-								end
-							end
-						end
-					end
-					xvalue = push
-
-					if aline ~= "none" then -- sets thiccness (how long the string is)
-						local gap = hudstuff.hudgaps or 8
-						if hudtemp[3] == "text" then
-							thiccness = string.len(hudtemp[4])*8+gap
-						elseif hudtemp[3] == "name" then
-							thiccness =	string.len(playername)*8+gap
-						elseif hudtemp[3] == "level" then
-							thiccness = string.len(mariolevel)*8+gap
-						elseif hudtemp[3] == "world" then
-							thiccness = string.len(world)*8+gap
-						elseif hudtemp[3] == "sub" then
-							thiccness = string.len(mariosublevel)*8+gap
-						elseif hudtemp[3] == "lives" then
-							if string.len(mariolives[1] or 0) > hudtemp[4] then
-								thiccness = string.len(mariolives[1] or 0)*8+gap
-							else
-								thiccness = hudtemp[4]*8+gap
-							end
-						elseif hudtemp[3] == "health" then
-							thiccness = string.len(health or 1)*8+gap
-						elseif hudtemp[3] == "maxhealth" then
-							thiccness = string.len(maxhealth or 1)*8+gap
-						elseif hudtemp[3] == "score" then
-							if string.len(math.ceil(marioscore or 0)) > hudtemp[4] then
-								thiccness = string.len(math.ceil(marioscore or 0))*8+gap
-							else
-								thiccness = hudtemp[4]*8+gap
-							end
-						elseif hudtemp[3] == "time" then
-							if string.len(math.ceil(mariotime or 0)) > hudtemp[4] then
-								thiccness = string.len(math.ceil(mariotime or 0))*8+gap
-							else
-								thiccness = hudtemp[4]*8+gap
-							end
-						elseif hudtemp[3] == "toxin" then
-							if string.len(toxintime or 0) > hudtemp[4] then
-								thiccness = string.len(toxintime or 0)*8+gap
-							else
-								thiccness = hudtemp[4]*8+gap
-							end
-						elseif hudtemp[3] == "coin" then
-							if string.len(mariocoincount or 0) > hudtemp[4] then
-								thiccness = string.len(mariocoincount or 0)*8+gap
-							else
-								thiccness = hudtemp[4]*8+gap
-							end
-						elseif hudtemp[3] == "keys" then
-							if gamestate == "game" then
-								if string.len(objects["player"][1].key or 0) > hudtemp[4] then
-									thiccness = string.len(objects["player"][1].key or 0)*8+gap
-								else
-									thiccness = hudtemp[4]*8+gap
-								end
-							else
-								thiccness = hudtemp[4]*8+gap
-							end
-						elseif hudtemp[3] == "collectables" then
-							if string.len(collectablescount[hudtemp[4]] or 0) > hudtemp[5] then
-								thiccness = string.len(collectablescount[hudtemp[4]] or 0)*8+gap
-							else
-								thiccness = hudtemp[5]*8+gap
-							end
-						elseif hudtemp[3] == "number" then
-							if string.len(animationnumbers[hudtemp[4]] or 0) > hudtemp[5] then
-								thiccness = string.len(animationnumbers[hudtemp[4]] or 0)*8+gap
-							else
-								thiccness = hudtemp[5]*8+gap
-							end
-						elseif hudtemp[3] == "change" then
-							for hudpos = 1, #hudstuff.hudchange do
-								hudchangetemp = hudstuff.hudchange[hudpos]
-								if printed == 0 then
-									if (hudchangetemp[1] == marioworld or hudchangetemp[1] == "all") and (hudchangetemp[2] == mariolevel or hudchangetemp[2] == "all") and (hudchangetemp[3] == mariosublevel or hudchangetemp[3] == "all") then
-										printed = 1
-										text = hudchangetemp[4]
-										thiccness = string.len(hudchangetemp[4])*8+gap
-									end
-								end
-							end
-							if printed == 0 then
-								thiccness = 0
-							end
-						elseif hudtemp[3] == "collects" then
-							thiccness = (8+hudstuff.collectsstep or 0)*hudtemp[5]+gap
-						elseif hudtemp[3] == "icon" then
-							if hudtemp[4] == "coin" or hudtemp[4] == "collectable" or hudtemp[4] == "key" then
-								thiccness = 8+gap
-							elseif hudtemp[4] == "clock" then
-								thiccness = 10+gap
-							elseif hudtemp[4] == "custom" then
-								thiccness = 16+gap
-							end
-						elseif hudtemp[3] == "blank" then --
-							thiccness = hudtemp[4]
-						end
-						if aline == "right" then
-							xvalue = xvalue - thiccness
-						elseif aline == "middle" then
-							xvalue = (200-((thiccness-8)/2))
-						end
-						templist = {hudtemp[1], hudtemp[2], thiccness}
-						--print(templist)
-						table.insert(allinmentpos, templist)
-					end
-
-					-- draws the stuffs
-					if hudtemp[3] == "text" then 
-						if not hudtemp[5] or hudtemp[5] == "toxin" and neurotoxin then
-							properprintfunc(hudtemp[4], xvalue*scale, hudtemp[2]*scale)
-						end
-					elseif hudtemp[3] == "name" then
-						properprintfunc(playername, xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "level" then
-						properprintfunc((mariolevel or 1), xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "world" then
-						local world = marioworld
-						if hudworldletter and tonumber(world) and world > 9 and world <= 9+#alphabet then
-							world = alphabet:sub(world-9, world-9)
-						end
-						properprintfunc((world or 1), xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "sub" then
-						properprintfunc((mariosublevel or 1), xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "lives" then
-						properprintfunc(addzeros((mariolives[1] or 0), hudtemp[4]), xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "health" then
-						properprintfunc((health or 0), xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "maxhealth" then
-						properprintfunc((maxhealth or 0), xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "score" then
-						properprintfunc(addzeros((marioscore or 0), hudtemp[4]), xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "time" then
-						if not (hudstuff.hidetimerwheninf and (infinitetime or mariotime == 0)) then
-							if gamestate == "game" then
-								if mariotime < 99 and hudstuff.changetimercoloronlow then
-									love.graphics.setColor(unpack(hudstuff.changetimercoloronlow))
-								end
-								properprintfunc(addzeros(math.ceil(mariotime), hudtemp[4]), xvalue*scale, hudtemp[2]*scale)
-							else
-								properprintfunc(addzeros("400", hudtemp[4]), xvalue*scale, hudtemp[2]*scale)
-							end
-						end
-					elseif hudtemp[3] == "toxin" then
-						if neurotoxin then
-							properprintfunc(addzeros(math.ceil(toxintime), hudtemp[4]), xvalue*scale, hudtemp[2]*scale)
-						end
-					elseif hudtemp[3] == "coin" then
-						properprintfunc(addzeros((mariocoincount or 0), hudtemp[4]), xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "keys" then --i fixed keys (yay)
-						if gamestate == "game" then
-							properprintfunc(addzeros((objects["player"][1].key or 0), hudtemp[4]), xvalue*scale, hudtemp[2]*scale)
-						else
-							properprintfunc(addzeros("0", hudtemp[4]), xvalue*scale, hudtemp[2]*scale)
-						end
-					elseif hudtemp[3] == "collectables" then
-						properprintfunc(addzeros((collectablescount[hudtemp[4]] or 0), hudtemp[5]), xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "number" then
-						properprintfunc(addzeros((animationnumbers[hudtemp[4]] or 0), hudtemp[5]), xvalue*scale, hudtemp[2]*scale)
-					elseif hudtemp[3] == "change" then
-						if printed == 1 then
-							properprintfunc(text, xvalue*scale, hudtemp[2]*scale)
-						end
-					elseif hudtemp[3] == "collects" then --newer mario games (think star coins)
-						local step = xvalue
-						for x = 1, hudtemp[5] do
-							local qi = 1
-							if x <= collectablescount[hudtemp[4]] then
-								qi = 2
-							end
-							love.graphics.draw(collectsimg, collectsquad[hudtemp[4]][coinframe or 1][qi], step*scale, hudtemp[2]*scale, 0, scale, scale)
-							step = step + (8+hudstuff.collectsstep or 0)
-						end
-					elseif hudtemp[3] == "icon" then --icons
-						love.graphics.setColor(255, 255, 255)
-						if hudtemp[4] == "coin" then
-							love.graphics.draw(coinanimationimage, coinanimationquads[spriteset or 1][coinframe or 1], xvalue*scale, hudtemp[2]*scale, 0, scale, scale)
-						elseif hudtemp[4] == "collectable" then
-							love.graphics.draw(collectableuiimg, collectableuiquad[spriteset or 1][hudtemp[5]][coinframe or 1], xvalue*scale, hudtemp[2]*scale, 0, scale, scale)
-						elseif hudtemp[4] == "key" then
-							love.graphics.draw(keyuiimg, keyuiquad[spriteset or 1][coinframe or 1], xvalue*scale, hudtemp[2]*scale, 0, scale, scale)
-						elseif hudtemp[4] == "clock" then
-							if not (hudstuff.hidetimerwheninf and (infinitetime or mariotime == 0)) then
-								if gamestate == "game" then
-									if mariotime < 99 and hudstuff.changetimercoloronlow then
-										love.graphics.setColor(unpack(hudstuff.changetimercoloronlow))
-									end
-								end
-								love.graphics.draw(hudclockimg, hudclockquad[hudstuff.hudoutline], xvalue*scale, (hudtemp[2]-1)*scale, 0, scale, scale)
-							end
-						elseif hudtemp[4] == "custom" then
-							love.graphics.draw(hudiconsimg, hudiconsquad[hudtemp[5]][coinframe or 1], xvalue*scale, hudtemp[2]*scale, 0, scale, scale)
-						end
-					end
-					if aline == "left" then
-						xvalue = xvalue + thiccness
+						thiccness = hudtemp[4]*8+gap
 					end
 				end
+
+				--aline shit
+				if aline == "right" then
+					xpos = xpos - thiccness
+				elseif aline == "middle" then
+					xpos = (200-((thiccness-8)/2))
+				end
+				table.insert(allinmentpos, {hudtemp[1], hudtemp[2], thiccness})
+			end
+			
+			-- draws the stuffs
+			if value then
+				local show = true --if it should appear
+				if t == "text" then
+					if hudtemp[6] == "toxin" and (not neurotoxin) then
+						show = false
+					elseif hudtemp[6] == "health" and (not health) then
+						show = false
+					end
+				elseif t == "time" and mariotime then
+					if hudstuff.hidetimerwheninf and (infinitetime or mariotime == 0) then
+						show = false
+					end
+					if mariotime < 99 and hudstuff.changetimercoloronlow then
+						love.graphics.setColor(unpack(hudstuff.changetimercoloronlow))
+					end
+				elseif t == "toxin" and (not neurotoxin) then
+					show = false
+				end
+				if show then
+					properprintfunc(addzeros((value or ""), hudtemp[4]), xpos*scale, hudtemp[2]*scale)
+				end
+			end
+
+			--other disapointments
+			if hudtemp[3] == "collects" then --newer mario games (think star coins)
+				local step = xpos
+				for x = 1, hudtemp[6] do
+					if x <= collectablescount[hudtemp[5]] then
+						love.graphics.draw(collectableuiimg, collectableuiquad[spriteset or 1][hudtemp[5]][coinframe or 1], step*scale, hudtemp[2]*scale, 0, scale, scale)
+					else
+						love.graphics.draw(collectableuiblankimg, collectableuiblankquad[hudtemp[5]][coinframe or 1], step*scale, hudtemp[2]*scale, 0, scale, scale)
+					end
+					step = step + (8+hudstuff.collectsstep or 0)
+				end
+			elseif hudtemp[3] == "icon" then --icons
+				love.graphics.setColor(255, 255, 255)
+				if hudtemp[5] == "coin" then
+					love.graphics.draw(coinanimationimage, coinanimationquads[spriteset or 1][coinframe or 1], xpos*scale, hudtemp[2]*scale, 0, scale, scale)
+				elseif hudtemp[5] == "collectable" then
+					love.graphics.draw(collectableuiimg, collectableuiquad[spriteset or 1][hudtemp[6]][coinframe or 1], xpos*scale, hudtemp[2]*scale, 0, scale, scale)
+				elseif hudtemp[5] == "key" then
+					love.graphics.draw(keyuiimg, keyuiquad[spriteset or 1][coinframe or 1], xpos*scale, hudtemp[2]*scale, 0, scale, scale)
+				elseif hudtemp[5] == "clock" then
+					if not (hudstuff.hidetimerwheninf and (infinitetime or mariotime == 0)) then
+						if gamestate == "game" and mariotime < 99 and hudstuff.changetimercoloronlow then
+							love.graphics.setColor(unpack(hudstuff.changetimercoloronlow))
+						end
+						love.graphics.draw(hudclockimg, hudclockquad[hudstuff.hudoutline], xpos*scale, (hudtemp[2]-1)*scale, 0, scale, scale)
+					end
+				elseif hudtemp[5] == "custom" and hudicon then
+					local id = hudtemp[6]
+					local v = hudicondata[id]
+					love.graphics.draw(hudiconimg[id], hudiconquad[id][v.frame or 1][spriteset or 1], (xpos+v.offsetx)*scale, (hudtemp[2]+v.offsety)*scale, 0, scale, scale)
+				end
+			end
+			if aline == "left" then
+				xpos = xpos + thiccness
 			end
 		end
 	else
@@ -4207,8 +4175,9 @@ function drawHUD()
 			end
 		else
 			if hudoutline then
-				properprintfunc = properprintbackground
+				properprintfunc = properprintFbackground
 			end
+
 			love.graphics.setColor(unpack(hudtextcolor))
 			love.graphics.translate(0, -yoffset*scale)
 			if yoffset < 0 then
@@ -4217,45 +4186,46 @@ function drawHUD()
 		
 			if hudsimple then
 				cy = 22
-
-				--properprintfunc(playername .. " * " .. tostring(mariolives[1]), 16*scale, 8*scale)
+				
 				love.graphics.setColor(255, 255, 255)
 				love.graphics.draw(coinanimationimage, coinanimationquads[spriteset or 1][coinframe or 1], 16*scale, 12*scale, 0, scale, scale)
 				love.graphics.setColor(unpack(hudtextcolor))
 				properprintfunc("*" .. addzeros((mariocoincount or 0), 2), 24*scale, 12*scale)
-			
+				
 				properprintfunc(addzeros((marioscore or 0), 9), (width*16-56-(9*8))*scale, 12*scale)
-		
+				
 				love.graphics.draw(hudclockimg, hudclockquad[hudoutline], (width*16-49)*scale, 11*scale, 0, scale, scale)
 				if gamestate == "game" then
 					properprintfunc(addzeros(math.ceil(mariotime), 3), (width*16-40)*scale, 12*scale)
 				else
-				properprintfunc("000", (width*16-40)*scale, 12*scale)
+					properprintfunc("000", (width*16-40)*scale, 12*scale)
 				end
 			else
 				properprintfunc(playername, uispace*.5 - 24*scale, 8*scale)
 				properprintfunc(addzeros((marioscore or 0), 6), uispace*0.5-24*scale, 16*scale)
-				
+					
 				properprintfunc("*", uispace*1.5-8*scale, 16*scale)
 				
 				love.graphics.setColor(255, 255, 255)
 				love.graphics.draw(coinanimationimage, coinanimationquads[spriteset or 1][coinframe or 1], uispace*1.5-16*scale, 16*scale, 0, scale, scale)
 				love.graphics.setColor(unpack(hudtextcolor))
 				properprintfunc(addzeros((mariocoincount or 0), 2), uispace*1.5-0*scale, 16*scale)
-			
-				properprintfunc("world", uispace*2.5 - 20*scale, 8*scale)
+				
+				properprintfunc(TEXT["world"], uispace*2.5 - 20*scale, 8*scale)
 				local world = marioworld
 				if hudworldletter and tonumber(world) and world > 9 and world <= 9+#alphabet then
 					world = alphabet:sub(world-9, world-9)
+				elseif world == "M" then
+					world = " "
 				end
 				properprintfunc((world or 1) .. "-" .. (mariolevel or 1), uispace*2.5 - 12*scale, 16*scale)
-		
-				properprintfunc("time", uispace*3.5 - 16*scale, 8*scale)
+				
+				properprintfunc(TEXT["time"], uispace*3.5 - 16*scale, 8*scale)
 				if editormode then
 					if linktool then
-						properprintfunc("link", uispace*3.5 - 16*scale, 16*scale)
+						properprintfunc(TEXT["link"], uispace*3.5 - 16*scale, 16*scale)
 					else
-						properprintfunc("edit", uispace*3.5 - 16*scale, 16*scale)
+						properprintfunc(TEXT["edit"], uispace*3.5 - 16*scale, 16*scale)
 					end
 				elseif gamestate == "game" then
 					properprintfunc(addzeros(math.ceil(mariotime), 3), uispace*3.5-8*scale, 16*scale)
@@ -4338,9 +4308,6 @@ function drawHUD()
 							step = step + c.healthimg:getHeight()
 						end
 					end
-				--these are future me's problem
-				--elseif hudstuff.healthcountdirection == "left" then
-				--elseif hudstuff.healthcountdirection == "right" then
 				end
 			elseif not customhud then
 				for y = 1, maxhealth do
@@ -4358,9 +4325,9 @@ end
 
 function drawmultiHUD()
 	--multiplayer hud
-	local properprintfunc = properprint
+	local properprintfunc = properprintF
 	if hudoutline then
-		properprintfunc = properprintbackground
+		properprintfunc = properprintFbackground
 	end
 	
 	local livesdisplay = (mariolivecount ~= false)
@@ -4447,10 +4414,22 @@ function updatesplitscreen()
 	end
 end
 
-function startlevel(level)
+function startlevel(level, reason)
 	skipupdate = true
 	love.keyboard.setKeyRepeat(false)
-	love.audio.stop()
+	local oldmusici, oldcustommusic
+	if continuesublevelmusic and reason and reason == "sublevel" then
+		if pbuttonsound:isPlaying() then
+			love.audio.stop()
+		else
+			for i, v in pairs(soundlist) do
+				v:stop()
+			end
+			oldmusici, oldcustommusic = musici, custommusic
+		end
+	else
+		love.audio.stop()
+	end
 	animationsystem_load()
 
 	local sublevel = false
@@ -4545,12 +4524,12 @@ function startlevel(level)
 	mazeinprogress = false
 	earthquake = 0
 	sunrot = 0
+	gelcannontimer = 0
 	pausemenuselected = 1
 	coinblocktimers = {}
 	autoscroll = true
 	autoscrollx = true
 	autoscrolly = true
-	gelcannontimer = 0
 	
 	portaldelay = {}
 	for i = 1, players do
@@ -4708,7 +4687,6 @@ function startlevel(level)
 	objects["longfire"] = {}
 	objects["cannonball"] = {}
 	objects["cannonballcannon"] = {}
-	objects["minimushroom"] = {}
 	objects["rocketturret"] = {}
 	objects["turretrocket"] = {}
 	objects["glados"] = {}
@@ -4738,7 +4716,6 @@ function startlevel(level)
 	objects["belt"] = {}
 	objects["animationtrigger"] = {}
 	objects["animationoutput"] = {}
-	objects["animationtransform"] = {}
 	objects["animatedtiletrigger"] = {}
 	objects["rsflipflop"] = {}
 	objects["orgate"] = {}
@@ -4763,8 +4740,8 @@ function startlevel(level)
 	objects["grinder"] = {}
 	objects["claw"] = {}
 	objects["rouletteblock"] = {}
-	objects["crowber"] = {}
-
+	objects["commander"] = {}
+	
 	objects["cappy"] = {}
 	
 	objects["screenboundary"] = {}
@@ -4808,7 +4785,6 @@ function startlevel(level)
 	spriteset = 1
 	backgroundrgb = {0, 0, 0}
 	breakoutmode = nil
-	frozencoinmode = nil
 	
 	--GLaDOS
 	neurotoxin = false
@@ -4816,67 +4792,34 @@ function startlevel(level)
 
 	setphysics(currentphysics)
 	setcamerasetting(camerasetting)
-	setgraphics(currentgraphics)
-
+	
 	--LOAD THE MAP
 	if level == "dc" then --create daily challenge
 		createdailychallenge()
 	elseif loadmap(level) == false then --make one up
 		mapwidth = width
-			originalmapwidth = mapwidth
-			mapheight = 15
-			map = {}
-			bmap_on = false --enabled?
-		if randomnewlevels then
-			local sets = math.random(1, 4)
-			local height = math.random(10, 13)
-			local lowheight = math.random(5, 2)
-			spriteset = sets
-			local tilessets = {2, 50, 29, 98}
-			local backgroundsets = {1, 2, 2, 3}
-			local ceiling = {false, true, true, false}
-			if sets == 4 then
-				underwater = true
-			end
-			for x = 1, width do
-				map[x] = {}
-				for y = 1, mapheight do
-					if y > height or (ceiling[sets] and y < lowheight) then
-						map[x][y] = {tilessets[sets]}
-						objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
-						map[x][y]["gels"] = {}
-						map[x][y]["portaloverride"] = {}
-					else
-						map[x][y] = {1}
-						map[x][y]["gels"] = {}
-						map[x][y]["portaloverride"] = {}
-					end
-					if x == 3 and y == height then
-						map[x][y][2] = 8
-					end
+		originalmapwidth = mapwidth
+		mapheight = 15
+		map = {}
+		bmap_on = false --enabled?
+		for x = 1, width do
+			map[x] = {}
+			for y = 1, mapheight do
+				if y > 13 then
+					map[x][y] = {2}
+					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
+					map[x][y]["gels"] = {}
+					map[x][y]["portaloverride"] = {}
+				else
+					map[x][y] = {1}
+					map[x][y]["gels"] = {}
+					map[x][y]["portaloverride"] = {}
 				end
 			end
-			background = backgroundsets[sets]
-			backgroundrgbon = false
-		else
-			for x = 1, width do
-				map[x] = {}
-				for y = 1, mapheight do
-					if y > 13 then
-						map[x][y] = {2}
-						objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
-						map[x][y]["gels"] = {}
-						map[x][y]["portaloverride"] = {}
-					else
-						map[x][y] = {1}
-						map[x][y]["gels"] = {}
-						map[x][y]["portaloverride"] = {}
-					end
-				end
-			end
-			background = 1
-			backgroundrgbon = false
 		end
+		
+		background = 1
+		backgroundrgbon = false
 	else
 		if sublevel == false and mariosublevel ~= 0 then
 			level = marioworld .. "-" .. mariolevel
@@ -4943,7 +4886,7 @@ function startlevel(level)
 			mazegates[i] = maxgate
 		end
 	else
-		print("Mazenumber doesn't fit!")
+		print("-- ERROR -- Mazenumber doesn't fit!")
 	end
 	
 	--background
@@ -5018,7 +4961,7 @@ function startlevel(level)
 					startx = p.x
 				end
 			else
-				print("no exit pipe entity found! ", pipestartx, " ", pipestarty)
+				print("-- ERROR -- No exit pipe entity found! ", pipestartx, " ", pipestarty)
 			end
 		end
 	end
@@ -5113,13 +5056,27 @@ function startlevel(level)
 	end
 	
 	--PLAY BGM
-	if intermission == false then
-		playmusic()
-	else
-		if musici == 7 and custommusic then
+	local doplaymusic = true
+	if continuesublevelmusic then
+		if (not intermission) and musici == oldmusici and custommusic == oldcustommusic then
+			local playing, source = music:getPlaying()
+			if (not (musici ~= 6 and playing == "starmusic")) then
+				doplaymusic = false
+			end
+		end
+		if doplaymusic then
+			stopmusic()
+		end
+	end
+	if doplaymusic then
+		if intermission == false then
 			playmusic()
 		else
-			playsound(intermissionsound)
+			if musici == 7 and custommusic then
+				playmusic()
+			else
+				playsound(intermissionsound)
+			end
 		end
 	end
 	
@@ -5149,10 +5106,11 @@ function startlevel(level)
 end
 
 function loadmap(filename)
-	print("Loading " .. mappackfolder .. "/" .. mappack .. "/" .. filename .. ".txt")
+	--print("Loading " .. mappackfolder .. "/" .. mappack .. "/" .. filename .. ".txt")
+	print("-- LOADING LEVEL (" .. mappackfolder .. "/" .. mappack .. "/" .. filename .. ")")
 	
 	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/" .. filename .. ".txt") == false then
-		print(mappackfolder .. "/" .. mappack .. "/" .. filename .. ".txt not found!")
+		print("-- ERROR -- " .. mappackfolder .. "/" .. mappack .. "/" .. filename .. " not found!")
 		return false
 	end
 	local s = love.filesystem.read( mappackfolder .. "/" .. mappack .. "/" .. filename .. ".txt" )
@@ -5170,8 +5128,8 @@ function loadmap(filename)
 	--MAP ITSELF
 	local t = s2[1]:split(",")
 	
-	if math.mod(#t, mapheight) ~= 0 then
-		print("Incorrect number of entries: " .. #t)
+	if math.fmod(#t, mapheight) ~= 0 then
+		print("-- ERROR -- Incorrect number of entries: " .. #t)
 		return false
 	end
 	
@@ -5202,10 +5160,9 @@ function loadmap(filename)
 				r[1] = tiles[1]
 				nr = tonumber(r[1])
 				map[x][y]["back"] = tonumber(tiles[2])
-				if (nr > smbtilecount+portaltilecount+customtilecount+(modcustomtilecount[modcustomtiles] or 0) and nr <= 90000) or nr > 90000+animatedtilecount then
-					--tile doesn't exist
-					r[1] = 1
-				end
+			elseif (nr > smbtilecount+portaltilecount+customtilecount and nr <= 90000) or nr > 90000+animatedtilecount then
+				--tile doesn't exist
+				r[1] = 1
 			end
 
 			--entity argument
@@ -5222,14 +5179,14 @@ function loadmap(filename)
 					map[x][y][i] = r[i]
 					--check if custom enemy doesn't exist
 					if editormode and i == 2 and not tablecontains(customenemies, r[i]) then
-						print("custom enemy " .. r[i] .. " does not exist")
+						print("-- ERROR -- Custom enemy " .. r[i] .. " does not exist")
 						map[x][y][i] = 1
 					end
 				end
 			end
 			
 			--create object for block
-			if tilequads[tonumber(r[1])].collision == true then
+			if tilequads[tonumber(r[1])].collision then
 				objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 			end
 		end
@@ -5407,6 +5364,9 @@ function loadmap(filename)
 	for i, v in pairs(emancipationgrills) do
 		v:link()
 	end
+	for i, v in pairs(laserfields) do
+		v:link()
+	end
 	for i, v in pairs(kingbilllaunchers) do
 		v:link()
 	end
@@ -5519,21 +5479,11 @@ function updatespritebatch()
 		if customtiles then
 			custommsb = customspritebatch[split]
 		end
-		local modcustommsb = {}
-		if modcustomtiles then
-			for j = 1, modcustomtiles do
-				modcustommsb[j] = modcustomspritebatch[split][j]
-			end
-		end
-
 		smbmsb:clear()
 		portalmsb:clear()
 		if customtiles then
-			custommsb:clear()
-		end
-		if modcustomtiles then
-			for j = 1, modcustomtiles do
-				modcustommsb[j]:clear()
+			for i = 1, #custommsb do
+				custommsb[i]:clear()
 			end
 		end
 		
@@ -5567,7 +5517,7 @@ function updatespritebatch()
 				end
 				if draw == true then
 					if (not lmap[math.floor(splitxscroll[split])+x]) then
-						print("spritebatch tile doesnt exist " .. math.floor(splitxscroll[split])+x)
+						print("-- ERROR -- Spritebatch tile doesnt exist " .. math.floor(splitxscroll[split])+x)
 					else
 						local t = lmap[math.floor(splitxscroll[split])+x][math.floor(splityscroll[split])+y]
 						
@@ -5580,17 +5530,7 @@ function updatespritebatch()
 								elseif tilenumber <= smbtilecount+portaltilecount then
 									portalmsb:add( tilequads[tilenumber].quad, (x-1)*16*scale, ((y-1)*16-8)*scale, 0, scale, scale )
 								elseif tilenumber <= smbtilecount+portaltilecount+customtilecount then
-									custommsb:add( tilequads[tilenumber].quad, (x-1)*16*scale, ((y-1)*16-8)*scale, 0, scale, scale )
-								else
-									--FUCK THIS WHY ISMT THIS SHIT WORKING
-									local max = smbtilecount+portaltilecount+customtilecount
-									local loop = true
-									for j = 1, modcustomtiles do		
-										if tilenumber <= max+modcustomtilecount[j] and loop then
-											modcustommsb[j]:add( tilequads[tilenumber].quad, (x-1)*16*scale, ((y-1)*16-8)*scale, 0, scale, scale )
-											loop = false
-										end
-									end
+									custommsb[tilequads[tilenumber].ts]:add( tilequads[tilenumber].quad, (x-1)*16*scale, ((y-1)*16-8)*scale, 0, scale, scale )
 								end
 							end
 						end
@@ -6384,7 +6324,7 @@ function getTile(x, y, portalable, portalcheck, facing, ignoregrates, dir) --ret
 			return true
 		end
 	end
-
+	
 	--bonusstage thing for keeping it from fucking up by allowing portals to be shot next to the vine in 4-2_2 for example
 	if bonusstage then
 		if y == mapheight and (x == 4 or x == 6) then
@@ -6634,9 +6574,11 @@ function nextlevel()
 	stopmusic()
 	love.audio.stop()
 	mariolevel = mariolevel + 1
-	if mariolevel > (#mappacklevels[marioworld] or 4) and tonumber(marioworld) then
-		mariolevel = 1
-		marioworld = marioworld + 1
+	if tonumber(marioworld) then
+		if mariolevel > (#mappacklevels[marioworld] or 4) then
+			mariolevel = 1
+			marioworld = marioworld + 1
+		end
 	end
 	
 	if dcplaying then
@@ -6798,11 +6740,11 @@ function savemap(filename)
 		end
 	end
 	
-	print("Map saved as " .. mappackfolder .. "/" .. filename .. ".txt")
+	print("-- SAVING LEVEL  (" .. mappackfolder .. "/" .. mappack .. "/".. filename .. ")")
 	if success then
 		notice.new("Map saved!", notice.white, 2)
 	else
-		notice.new("Could not save map!|" .. message, notice.red, 4)
+		notice.new("Could not save map!\n" .. message, notice.red, 4)
 	end
 end
 
@@ -7023,13 +6965,13 @@ function traceline(sourcex, sourcey, radians, reportal)
 	
 		--get tendency
 		if side == "down" or side == "up" then
-			if math.mod(x, 1) > 0.5 then
+			if math.fmod(x, 1) > 0.5 then
 				tendency = 1
 			else
 				tendency = -1
 			end
 		elseif side == "left" or side == "right" then
-			if math.mod(y, 1) > 0.5 then
+			if math.fmod(y, 1) > 0.5 then
 				tendency = 1
 			else
 				tendency = -1
@@ -7058,13 +7000,16 @@ function loadentity(t, x, y, r, id)
 		pipes[tilemap(x,y)] = pipe:new("warppipe", x, y, r)
 	elseif t == "pipe" then
 		if not (ismaptile(x, y) and map[x][y][1] and tilequads[map[x][y][1]].noteblock) then
-			pipes[tilemap(x,y)] = pipe:new("pipe", x, y, r)	
+			pipes[tilemap(x,y)] = pipe:new("pipe", x, y, r)
 		end
 	elseif t == "pipe2" then
 		pipes[tilemap(x,y)] = pipe:new("pipe2", x, y, r)
 	elseif t == "pipespawn" then
-		if inmap(x+1, y) and entityquads[map[x+1][y][2]] and entityquads[map[x+1][y][2]].t == "pipe" then
+		local offseted = false
+		if inmap(x+1, y) and entityquads[map[x+1][y][2]] and entityquads[map[x+1][y][2]].t == "pipe" 
+		and (not (map[x][y][3] and type(map[x][y][3]) == "string" and not (map[x][y][3]:find("up") or map[x][y][3]:find("down"))) ) then
 			x = x+1
+			offseted = true
 		end
 		exitpipes[tilemap(x,y)] = pipe:new("pipespawn", x, y, r)
 	elseif t == "pipespawndown" then
@@ -7099,14 +7044,6 @@ function loadentity(t, x, y, r, id)
 			else
 				showcastleflag = true
 			end
-		end
-
-		flagimgx = flagx+8/16
-		flagimgy = flagy-10+1/16
-		if not flagborder then
-			objects["screenboundary"]["flag"] = screenboundary:new(mapwidth)
-		else
-			objects["screenboundary"]["flag"] = screenboundary:new(flagx+6/16)
 		end
 	elseif t == "manycoins" then
 		map[x][y][3] = 7
@@ -7303,32 +7240,21 @@ function spawnentity(t, x, y, r, id)
 		table.insert(objects["pushbutton"], pushbutton:new(x, y, "right", r))
 		
 	elseif t == "wallindicator" then
-		table.insert(objects["wallindicator"], wallindicator:new(x, y, r))
+		table.insert(objects["wallindicator"], wallindicator:new(x, y, "wallindicator", r))
 		
 	elseif t == "groundlightver" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 1, r))
+		table.insert(objects["groundlight"], wallindicator:new(x, y, 1, r))
 	elseif t == "groundlighthor" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 2, r))
+		table.insert(objects["groundlight"], wallindicator:new(x, y, 2, r))
 	elseif t == "groundlightupright" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 3, r))
+		table.insert(objects["groundlight"], wallindicator:new(x, y, 3, r))
 	elseif t == "groundlightrightdown" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 4, r))
+		table.insert(objects["groundlight"], wallindicator:new(x, y, 4, r))
 	elseif t == "groundlightdownleft" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 5, r))
+		table.insert(objects["groundlight"], wallindicator:new(x, y, 5, r))
 	elseif t == "groundlightleftup" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 6, r))
-	elseif t == "groundlighttright" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 7, r))
-	elseif t == "groundlighttdown" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 8, r))
-	elseif t == "groundlighttleft" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 9, r))
-	elseif t == "groundlighttup" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 10, r))
-	elseif t == "groundlightcross" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 11, r))
-	elseif t == "groundlightcircle" then
-		table.insert(objects["groundlight"], groundlight:new(x, y, 12, r))
+		table.insert(objects["groundlight"], wallindicator:new(x, y, 6, r))
+	-- extra antlines was an old wives tale...
 		
 	elseif t == "faithplateup" then
 		table.insert(objects["faithplate"], faithplate:new(x, y, "up", r[3], r))
@@ -7512,10 +7438,17 @@ function spawnentity(t, x, y, r, id)
 		table.insert(kingbilllaunchers, kingbilllauncher:new(x, y, r[3], r))
 		
 	elseif t == "spring" then --change to enemy? (be wary of region triggers)
-		table.insert(objects["spring"], spring:new(x, y))
+		if r[3] == "true" then
+			table.insert(objects["spring"], spring:new(x, y, nil, true))
+		else
+			table.insert(objects["spring"], spring:new(x, y))
+		end
 	elseif t == "springgreen" then
-		table.insert(objects["spring"], spring:new(x, y, "green"))
-		
+		if r[3] == "true" then
+			table.insert(objects["spring"], spring:new(x, y, "green", true))
+		else
+			table.insert(objects["spring"], spring:new(x, y, "green"))
+		end
 	elseif t == "seesaw" then
 		table.insert(seesaws, seesaw:new(x, y, r[3]))
 		
@@ -7603,6 +7536,9 @@ function spawnentity(t, x, y, r, id)
 
 	elseif t == "rouletteblock" then
 		table.insert(objects["rouletteblock"] , rouletteblock:new(x, y, r[3]))	
+
+	elseif t == "commander" then
+		table.insert(objects["commander"] , commander:new(x, y, r, r[3]))	
 	end
 end
 
@@ -7703,7 +7639,11 @@ function spawnenemy(t, x, y, r, spawner)
 		elseif t == "kooparedhalf" then
 			objtable, obj = "koopa", koopa:new(x, y-1/16, "red")
 		elseif t == "beetle" then
-			objtable, obj = "koopa", koopa:new(x-0.5, y-1/16, "beetle")
+			if r[3] and r[3] == "up" then
+				objtable, obj = "koopa", koopa:new(x-0.5, y-4/16, "downbeetle")
+			else
+				objtable, obj = "koopa", koopa:new(x-0.5, y-1/16, "beetle")
+			end
 		elseif t == "beetlehalf" then
 			objtable, obj = "koopa", koopa:new(x, y-1/16, "beetle")
 		elseif t == "downbeetle" then
@@ -7724,7 +7664,11 @@ function spawnenemy(t, x, y, r, spawner)
 		elseif t == "cheepwhite" then
 			objtable, obj = "cheep", cheepcheep:new(x-.5, y-1/16, 2)
 		elseif t == "spikey" then
-			objtable, obj = "goomba", goomba:new(x-0.5, y-1/16, "spikey")
+			if r[3] and r[3] == "up" then
+				objtable, obj = "koopa", koopa:new(x-0.5, y-4/16, "downspikey")
+			else
+				objtable, obj = "goomba", goomba:new(x-0.5, y-1/16, "spikey")
+			end
 		elseif t == "spikeyhalf" then
 			objtable, obj = "goomba", goomba:new(x, y-1/16, "spikey")
 		elseif t == "downspikey" then
@@ -7736,7 +7680,14 @@ function spawnenemy(t, x, y, r, spawner)
 		elseif t == "lakito" then
 			objtable, obj = "lakito", lakito:new(x, y-1/16)
 		elseif t == "squid" then
-			objtable, obj = "squid", squid:new(x, y-1/16)
+			objtable = "squid"
+			if r[3] and r[3] == "ground" then
+				obj = squid:new(x, y-1/16, "pink")
+			elseif r[3] and r[3] == "nanny" then
+				obj = squid:new(x, y-1/16, "nanny")
+			else
+				obj = squid:new(x, y-1/16)
+			end
 		elseif t == "paragoomba" then
 			objtable, obj = "goomba", goomba:new(x-0.5, y-1/16, "paragoomba")
 		elseif t == "sidestepper" then
@@ -7802,7 +7753,21 @@ function spawnenemy(t, x, y, r, spawner)
 		elseif t == "donutlast" then
 			objtable, obj = "donut", donut:new(x, y, "donutlast", nil, r[3])
 		elseif t == "parabeetle" then
-			objtable, obj = "parabeetle", parabeetle:new(x-0.5, y-1/16)
+			local v = convertr(r[3], {"string", "string"})
+			if v[1] == "red" then
+				if v[2] == "left" then
+					obj = parabeetle:new(x-0.5, y-1/16)
+				elseif v[2] == "right" then
+					obj = parabeetle:new(x-0.5, y-1/16, "parabeetleright")
+				end
+			elseif v[1] == "green" then
+				if v[2] == "left" then
+					obj = parabeetle:new(x-0.5, y-1/16, "parabeetlegreen")
+				elseif v[2] == "right" then
+					obj = parabeetle:new(x-0.5, y-1/16, "parabeetlegreenright")
+				end
+			end
+			objtable = "parabeetle"
 		elseif t == "ninji" then
 			objtable, obj = "ninji", ninji:new(x-0.5, y-1/16)
 		elseif t == "boo" then
@@ -7897,7 +7862,12 @@ function spawnenemy(t, x, y, r, spawner)
 		elseif t == "wigglerangry" then
 			objtable, obj = "goomba", goomba:new(x-0.5, y-1/16, "wigglerangry")
 		elseif t == "wiggler" then
-			objtable, obj = "goomba", goomba:new(x-0.5, y-1/16, "wiggler")
+			objtable = "goomba"
+			if r[3] and r[3] == "angry" then
+				obj = goomba:new(x-0.5, y-1/16, "wigglerangry")
+			else
+				obj = goomba:new(x-0.5, y-1/16, "wiggler")
+			end
 		elseif t == "magikoopa" then
 			objtable, obj = "magikoopa", magikoopa:new(x-0.5, y-1/16)
 		elseif t == "spike" then
@@ -7992,8 +7962,6 @@ function spawnenemy(t, x, y, r, spawner)
 			table.insert(rocketlaunchers, rocketlauncher:new(x, y, "homing"))
 		elseif t == "cannonballcannon" then
 			objtable, obj = "cannonballcannon", cannonballcannon:new(x, y, r[3])
-		elseif t == "crowber" then
-			objtable, obj = "crowber", crowber:new(x, y)
 			
 		elseif t == "upfire" then
 			objtable, obj = "upfire", upfire:new(x, y, r[3])
@@ -8013,10 +7981,34 @@ function spawnenemy(t, x, y, r, spawner)
 			end
 		elseif t == "goombashoe" then
 			if (not tilequads[r[1]]["collision"]) or spawner then
-				if r[3] == 2 then
-					objtable, obj = "goomba", goomba:new(x-0.5, y-1/16, "goombaheel")
+				local v = convertr(r[3], {"num", "bool", "bool"})
+				if v[3] then
+					local type
+					if v[1] == 2 then
+						if v[2] then
+							type =  "goombaheelwings"
+						else
+							type =  "goombaheel"
+						end
+					else
+						if v[2] then
+							type = "goombashoewings"
+						else
+							type = "goombashoe"
+						end
+					end
+					objtable, obj = "goomba", goomba:new(x-0.5, y-1/16, type)
 				else
-					objtable, obj = "goomba", goomba:new(x-0.5, y-1/16, "goombashoe")
+					local heel, wings = false, false
+					if v[1] == 2 then
+						heel = true
+					end
+					if v[2] then
+						wings = true
+					end
+					obj = mushroom:new(x-0.5, y-1/16, "goombashoe", nil, heel, wings)
+					obj.uptimer = mushroomtime+0.00001
+					objtable = "mushroom"
 				end
 			end
 		elseif t == "bigcloud" then
@@ -8100,10 +8092,10 @@ function spawnenemy(t, x, y, r, spawner)
 			obj = leaf:new(x-0.5, y)
 			objtable = "leaf"
 		elseif t == "minimushroom" and ((not tilequads[r[1]].collision) or spawner) then
-			obj = minimushroom:new(x-0.5, y+5/16)
+			obj = mushroom:new(x-0.5, y+5/16, "mini")
 			obj.uptimer = mushroomtime+0.00001
 			obj.speedx = mushroomspeed
-			objtable = "minimushroom"
+			objtable = "mushroom"
 		elseif t == "iceflower" and ((not tilequads[r[1]].collision) or spawner) then
 			obj = flower:new(x-0.5, y+14/16, "ice")
 			obj.uptimer = mushroomtime+0.00001
@@ -8233,7 +8225,7 @@ function item(i, x, y, size)
 			table.insert(objects["mushroom"], mushroom:new(x-0.5, y-2/16))
 		end
 	elseif i == "minimushroom" then
-		table.insert(objects["minimushroom"], minimushroom:new(x-0.5, y-2/16))
+		table.insert(objects["mushroom"], mushroom:new(x-0.5, y-2/16, "mini"))
 	elseif i == "iceflower" then
 		if size and size > 1 then
 			table.insert(objects["flower"], flower:new(x-0.5, y-2/16, "ice"))
@@ -8311,7 +8303,8 @@ function item(i, x, y, size)
 	elseif i == "levelball" then
 		playsound(boomsound)
 		makepoof(x-.5, y-1.5, "boom")
-		local obj = levelball:new(x-0.5, y-1.5, map[x][y][3])
+		local obj = levelball:new(x-0.5, y-17/16)
+		obj.speedy = -10
 		table.insert(objects["levelball"], obj)
 	elseif i == "powblock" then
 		local obj = powblock:new(x, y, map[x][y][3])
@@ -8398,10 +8391,14 @@ function makepoof(x, y, t, color)
 end
 
 function addzeros(s, i)
-	for j = string.len(s)+1, i do
-		s = "0" .. s
+	if i then
+		for j = string.len(s)+1, i do
+			s = "0" .. s
+		end
+		return s
+	else
+		return s
 	end
-	return s
 end
 
 function properprint2(s, x, y)
@@ -8791,7 +8788,24 @@ function updateplayerproperties(reset)
 		for i = 1, players do
 			marioproperties[i] = {}
 			if objects and objects["player"] and objects["player"][i] then
+				--[[if objects["player"][i].shoe then
+					if objects["player"][i].shoe == "yoshi" then
+						if objects["player"][i].yoshi.color then
+							marioproperties[i].shoe = {"yoshi", objects["player"][i].yoshi.color}
+						else
+							marioproperties[i].shoe = {"yoshi", 1}
+						end
+					else
+						marioproperties[i].shoe = objects["player"][i].shoe
+					end
+				end]]
 				if objects["player"][i].shoe then
+					if objects["player"][i].wings then
+						marioproperties[i].wings = "wings"
+					end
+					if objects["player"][i].supersizedshoe then
+						marioproperties[i].supersizedshoe = "big"
+					end
 					marioproperties[i].shoe = objects["player"][i].shoe
 				end
 				if objects["player"][i].helmet then
@@ -8809,6 +8823,15 @@ function updateplayerproperties(reset)
 				end
 				if objects["player"][i].health then
 					marioproperties[i].health = objects["player"][i].health
+				end
+				--print(objects["player"][i].characterdata.changestats,"changeshit")
+				if objects["player"][i].characterdata.changestats then
+					marioproperties[i].changestats = objects["player"][i].characterdata.changestats
+					marioproperties[i].changedstats = objects["player"][i].characterdata.changedstats
+					marioproperties[i].keepstatsongrow = objects["player"][i].keepstatsongrow
+					marioproperties[i].keepstatsonshrink = objects["player"][i].characterdata.keepstatsonshrink
+					marioproperties[i].keepstatsonwin = objects["player"][i].characterdata.keepstatsonwin
+					--print(marioproperties[i].changestats, marioproperties[i].changedstats, marioproperties[i].keepstatsongrow, marioproperties[i].keepstatsonshrink, marioproperties[i].keepstatsonwin, "aaaaaaaaaaaaaaaaaaaaa")
 				end
 			end
 		end
@@ -9157,17 +9180,6 @@ function setcamerasetting(i)
 	end
 end
 
-function setgraphics(i)
-	if i == 1 then --centered
-		gpack = "SMB"
-	elseif i == 2 then
-		gpack = "ALLSTARS"
-	elseif i == 3 then
-		gpack = "SMM"
-	end
-	updategraphics()
-end
-
 function createedgewrap() --create blocks on borders for edge wrapping
 	if edgewrapping then
 		objects["edgewrap"] = {}
@@ -9209,7 +9221,7 @@ end
 function getcollectable(x, y)
 	local c = objects["collectable"][tilemap(x, y)]
 	if not c then
-		print("collectable not found", x, y)
+		print("-- ERROR -- Collectable not found", x, y)
 		return false
 	end
 	local t = tonumber(c.t)
@@ -9359,9 +9371,13 @@ function rendercustombackground(xscroll, yscroll, scrollfactor, scrollfactory)
 				end
 				if custombackgroundanim[i].staticx or custombackgroundanim[i].static then
 					xscroll = 0
+				elseif custombackgroundanim[i].clamptolevelwidth then
+					xscroll = (xscroll/(mapwidth-width)) * (custombackgroundwidth[i]-width)
 				end
 				if custombackgroundanim[i].staticy or custombackgroundanim[i].static then
 					yscroll = 0
+				elseif custombackgroundanim[i].clamptolevelheight then
+					yscroll = (yscroll/(mapheight-1-height)) * (custombackgroundheight[i]-height)
 				end
 			end
 
@@ -9369,14 +9385,21 @@ function rendercustombackground(xscroll, yscroll, scrollfactor, scrollfactory)
 			if xscroll < 0 or yscroll < 0 then
 				min = 0
 			end
-			for y = min, math.ceil(height/custombackgroundheight[i])+1 do
-				for x = min, math.ceil(width/custombackgroundwidth[i])+1 do
-					local x1, y1 = math.floor(((x-1)*custombackgroundwidth[i])*16*scale) - math.floor(math.mod(xscroll, custombackgroundwidth[i])*16*scale), math.floor(((y-1)*custombackgroundheight[i])*16*scale) - math.floor(math.mod(yscroll, custombackgroundheight[i])*16*scale)
-					if ondrawscreen(x1, y1, custombackgroundwidth[i]*16*scale, custombackgroundheight[i]*16*scale) then
-						if quad then
-							love.graphics.draw(custombackgroundimg[i], quad, x1, y1, 0, scale, scale)
-						else
-							love.graphics.draw(custombackgroundimg[i], x1, y1, 0, scale, scale)
+			if custombackgroundquad[i] then --optimized static background
+				local x1, y1 = math.floor(xscroll*16*scale)/scale, math.floor(yscroll*16*scale)/scale
+				local qx, qy, qw, qh, sw, sh = custombackgroundquad[i]:getViewport()
+				custombackgroundquad[i]:setViewport( x1, y1, qw, qh, sw, sh )
+				love.graphics.draw(custombackgroundimg[i], custombackgroundquad[i], 0, 0, 0, scale, scale)
+			else
+				for y = min, math.ceil(height/custombackgroundheight[i])+1 do
+					for x = min, math.ceil(width/custombackgroundwidth[i])+1 do
+						local x1, y1 = math.floor(((x-1)*custombackgroundwidth[i])*16*scale) - math.floor(math.fmod(xscroll, custombackgroundwidth[i])*16*scale), math.floor(((y-1)*custombackgroundheight[i])*16*scale) - math.floor(math.fmod(yscroll, custombackgroundheight[i])*16*scale)
+						if ondrawscreen(x1, y1, custombackgroundwidth[i]*16*scale, custombackgroundheight[i]*16*scale) then
+							if quad then
+								love.graphics.draw(custombackgroundimg[i], quad, x1, y1, 0, scale, scale)
+							else
+								love.graphics.draw(custombackgroundimg[i], x1, y1, 0, scale, scale)
+							end
 						end
 					end
 				end
@@ -9409,9 +9432,13 @@ function rendercustomforeground(xscroll, yscroll, scrollfactor, scrollfactory)
 				end
 				if customforegroundanim[i].staticx or customforegroundanim[i].static then
 					xscroll = 0
+				elseif customforegroundanim[i].clamptolevelwidth then
+					xscroll = (xscroll/(mapwidth-width)) * (customforegroundwidth[i]-width)
 				end
 				if customforegroundanim[i].staticy or customforegroundanim[i].static then
 					yscroll = 0
+				elseif customforegroundanim[i].clamptolevelheight then
+					yscroll = (yscroll/(mapheight-1-height)) * (customforegroundheight[i]-height)
 				end
 			end
 
@@ -9421,7 +9448,7 @@ function rendercustomforeground(xscroll, yscroll, scrollfactor, scrollfactory)
 			end
 			for y = min, math.ceil(height/customforegroundheight[i])+1 do
 				for x = min, math.ceil(width/customforegroundwidth[i])+1 do
-					local x1, y1 = math.floor(((x-1)*customforegroundwidth[i])*16*scale) - math.floor(math.mod(xscroll, customforegroundwidth[i])*16*scale), math.floor(((y-1)*customforegroundheight[i])*16*scale) - math.floor(math.mod(yscroll, customforegroundheight[i])*16*scale)
+					local x1, y1 = math.floor(((x-1)*customforegroundwidth[i])*16*scale) - math.floor(math.fmod(xscroll, customforegroundwidth[i])*16*scale), math.floor(((y-1)*customforegroundheight[i])*16*scale) - math.floor(math.fmod(yscroll, customforegroundheight[i])*16*scale)
 					--if ondrawscreen(x1, y1, customforegroundwidth[i]*16*scale, customforegroundheight[i]*16*scale) then
 						if quad then
 							love.graphics.draw(customforegroundimg[i], quad, x1, y1, 0, scale, scale)
@@ -9446,7 +9473,6 @@ function trackobject(x, y, obj, objtable) --grab entity onto track
 			obj.trackedfast = true
 			fast = true
 		end
-		print("not suc")
 		table.insert(objects["trackcontroller"], trackcontroller:new(x,y,objtable,obj,dir,force))
 		return true
 	end
@@ -9496,9 +9522,9 @@ function drawmaptiles(drawtype, xscroll, yscroll, xtodraw, ytodraw)
 			--actual tile
 			if (not lmap[math.floor(xscroll)+x]) then
 				if fore then
-					print("foreground tile doesnt exist " .. math.floor(xscroll)+x)
+					print("-- ERROR -- Foreground tile doesnt exist " .. math.floor(xscroll)+x)
 				else
-					print("drawable tile doesnt exist " .. math.floor(xscroll)+x)
+					print("-- ERROR -- Drawable tile doesnt exist " .. math.floor(xscroll)+x)
 				end
 				break
 			end
@@ -9520,6 +9546,10 @@ function drawmaptiles(drawtype, xscroll, yscroll, xtodraw, ytodraw)
 				--switch blocks
 				if objects and objects["buttonblock"][coord] and ((not drop) or objects["buttonblock"][coord].active) then
 					objects["buttonblock"][coord]:draw()
+				end
+				--frozen coins
+				if objects and objects["frozencoin"][coord] and ((not drop) or objects["frozencoin"][coord].active) then
+					objects["frozencoin"][coord]:draw()
 				end
 			end
 			
@@ -9549,25 +9579,25 @@ function drawmaptiles(drawtype, xscroll, yscroll, xtodraw, ytodraw)
 			if fore or drop or menudraw then
 				if tilequads[tilenumber]:getproperty("foreground", cox, coy) then
 					if tilenumber > 90000 then
-						love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber]:getquad(math.floor(xscroll)+x, math.floor(yscroll)+y), math.floor((x-1-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1)-bounceyoffset)*16-8)*scale), 0, scale, scale)
+						love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber]:getquad(math.floor(xscroll)+x, math.floor(yscroll)+y), math.floor((x-1-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16-8)*scale), 0, scale, scale)
 					else
-						love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber].quad, math.floor((x-1-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1)-bounceyoffset)*16-8)*scale), 0, scale, scale)
+						love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber].quad, math.floor((x-1-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16-8)*scale), 0, scale, scale)
 					end
 				end
 			end
 			if (not fore) or drop or menudraw then
 				if not tilequads[tilenumber]:getproperty("foreground", cox, coy) then
 					if tilequads[tilenumber].coinblock and tilenumber < 90000 and not tilequads[tilenumber].invisible then --coinblock
-						love.graphics.draw(coinblockimage, coinblockquads[spriteset][coinframe], math.floor((x-1-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1)-bounceyoffset)*16-8)*scale), 0, scale, scale)
+						love.graphics.draw(coinblockimage, coinblockquads[spriteset][coinframe], math.floor((x-1-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16-8)*scale), 0, scale, scale)
 					elseif (tilequads[tilenumber].coin and tilenumber < 90000) or (menudraw and t[2] == "187") then --coin
-						love.graphics.draw(coinimage, coinquads[spriteset][coinframe], math.floor((x-1-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1)-bounceyoffset)*16-8)*scale), 0, scale, scale)
+						love.graphics.draw(coinimage, coinquads[spriteset][coinframe], math.floor((x-1-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16-8)*scale), 0, scale, scale)
 					elseif tilenumber > 90000 then --same as below, but keeps animated tiles on grid
 						if not tilequads[tilenumber].invisible then
-							love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber]:getquad(math.floor(xscroll)+x, math.floor(yscroll)+y), math.floor((x-1-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1)-bounceyoffset)*16-8)*scale), 0, scale, scale)
+							love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber]:getquad(math.floor(xscroll)+x, math.floor(yscroll)+y), math.floor((x-1-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16-8)*scale), 0, scale, scale)
 						end
 					elseif bounceyoffset ~= 0 or menudraw or (_3DMODE and (((not collision) and (not tilequads[tilenumber].collision))) or ((collision and tilequads[tilenumber].collision and bounceyoffset ~= 0))) then
 						if not tilequads[tilenumber].invisible then
-							love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber].quad, math.floor((x-1-math.mod(xscroll, 1))*16*scale), ((y-1-math.mod(yscroll, 1)-bounceyoffset)*16-8)*scale, 0, scale, scale)
+							love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber].quad, math.floor((x-1-math.fmod(xscroll, 1))*16*scale), ((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16-8)*scale, 0, scale, scale)
 						end
 					end
 				end
@@ -9593,15 +9623,15 @@ function drawmaptiles(drawtype, xscroll, yscroll, xtodraw, ytodraw)
 					end
 					
 					if t["gels"][dir] == 1 then
-						love.graphics.draw(gel1ground, math.floor((x-.5-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1)-bounceyoffset)*16)*scale), r, scale, scale, 8, 8)
+						love.graphics.draw(gel1ground, math.floor((x-.5-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16)*scale), r, scale, scale, 8, 8)
 					elseif t["gels"][dir] == 2 then
-						love.graphics.draw(gel2ground, math.floor((x-.5-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1)-bounceyoffset)*16)*scale), r, scale, scale, 8, 8)
+						love.graphics.draw(gel2ground, math.floor((x-.5-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16)*scale), r, scale, scale, 8, 8)
 					elseif t["gels"][dir] == 3 then
-						love.graphics.draw(gel3ground, math.floor((x-.5-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1)-bounceyoffset)*16)*scale), r, scale, scale, 8, 8)
+						love.graphics.draw(gel3ground, math.floor((x-.5-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16)*scale), r, scale, scale, 8, 8)
 					elseif t["gels"][dir] == 4 then
-						love.graphics.draw(gel4ground, math.floor((x-.5-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1)-bounceyoffset)*16)*scale), r, scale, scale, 8, 8)
+						love.graphics.draw(gel4ground, math.floor((x-.5-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16)*scale), r, scale, scale, 8, 8)
 					elseif t["gels"][dir] == 6 then
-						love.graphics.draw(gel6ground, math.floor((x-.5-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1)-bounceyoffset)*16)*scale), r, scale, scale, 8, 8)
+						love.graphics.draw(gel6ground, math.floor((x-.5-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1)-bounceyoffset)*16)*scale), r, scale, scale, 8, 8)
 					end
 				end
 			end
@@ -9621,37 +9651,36 @@ function drawmaptiles(drawtype, xscroll, yscroll, xtodraw, ytodraw)
 			
 			if editormode and (((not fore) and not tilequads[tilenumber].foreground) or (fore and tilequads[tilenumber].foreground)) and (not drop) then
 				if tilequads[t[1]].invisible and t[1] ~= 1 then
-					love.graphics.draw(tilequads[t[1]].image, tilequads[t[1]].quad, math.floor((x-1-math.mod(xscroll, 1))*16*scale), ((y-1-math.mod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+					love.graphics.draw(tilequads[t[1]].image, tilequads[t[1]].quad, math.floor((x-1-math.fmod(xscroll, 1))*16*scale), ((y-1-math.fmod(yscroll, 1))*16-8)*scale, 0, scale, scale)
 				end
 				
 				if #t > 1 and t[2] ~= "link" then
 					tilenumber = t[2]
 					if tablecontains(customenemies, tilenumber) and enemiesdata[tilenumber] and (enemiesdata[tilenumber].width and enemiesdata[tilenumber].height) then --ENEMY PREVIEW THING
 						local v = enemiesdata[tilenumber]
-
+						local xoff, yoff = ((0.5-v.width/2+(v.spawnoffsetx or 0))*16 + v.offsetX - v.quadcenterX)*scale, (((v.spawnoffsety or 0)-v.height+1)*16-v.offsetY - v.quadcenterY)*scale
+						
 						local mx, my = getMouseTile(love.mouse.getX(), love.mouse.getY()+8*scale)
 						local alpha = 150
 						if math.floor(xscroll)+x == mx and math.floor(yscroll)+y == my then
 							alpha = 255
 						end
-
+						
 						if v.showiconineditor and v.icongraphic then
 							love.graphics.setColor(255, 255, 255, alpha)
-							love.graphics.draw(entplaceimg, entplacequad[1], math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-8*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-8*scale, 0, scale, scale)
-							love.graphics.draw(v.icongraphic, math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-8*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-8*scale, 0, scale, scale)
+							love.graphics.draw(entplaceimg, entplacequad[1], math.floor((x-1-math.fmod(xscroll, 1))*16*scale)+8*scale-8*scale, math.floor((y-1-math.fmod(yscroll, 1))*16-8)*scale+8*scale-8*scale, 0, scale, scale)
+							love.graphics.draw(v.icongraphic, math.floor((x-1-math.fmod(xscroll, 1))*16*scale)+8*scale-8*scale, math.floor((y-1-math.fmod(yscroll, 1))*16-8)*scale+8*scale-8*scale, 0, scale, scale)
 						else
 							local xoff, yoff = ((0.5-v.width/2+(v.spawnoffsetx or 0))*16 + v.offsetX - v.quadcenterX)*scale, (((v.spawnoffsety or 0)-v.height+1)*16-v.offsetY - v.quadcenterY)*scale
 							love.graphics.setColor(255, 255, 255, alpha)
-							love.graphics.draw(entplaceimg, entplacequad[1], math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-8*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-8*scale, 0, scale, scale)
-							love.graphics.draw(v.graphic, v.quad, math.floor((x-1-math.mod(xscroll, 1))*16*scale+xoff), math.floor(((y-1-math.mod(yscroll, 1))*16)*scale+yoff), 0, scale, scale)
-						end
-						if t["argument"] and t["argument"] == "b" then --supersize
-							love.graphics.setColor(255, 255, 255, 200)
-							love.graphics.draw(entityquads[313].image, entityquads[313].quad, math.floor((x-1-math.mod(xscroll, 1))*16*scale), ((y-1-math.mod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+							love.graphics.draw(entplaceimg, entplacequad[1], math.floor((x-1-math.fmod(xscroll, 1))*16*scale)+8*scale-8*scale, math.floor((y-1-math.fmod(yscroll, 1))*16-8)*scale+8*scale-8*scale, 0, scale, scale)
+							love.graphics.draw(v.graphic, v.quad, math.floor((x-1-math.fmod(xscroll, 1))*16*scale+xoff), math.floor(((y-1-math.fmod(yscroll, 1))*16)*scale+yoff), 0, scale, scale)
 						end
 					elseif entityquads[tilenumber] and entityquads[tilenumber].t then
 						local i = entityquads[tilenumber].t
-						if (i == "pipe" or i == "pipespawn" or i == "warppipe") and t[3] then
+						if i == "testobj" then
+							love.graphics.draw(testimgimg, math.floor((x-1-math.fmod(xscroll, 1))*16*scale), ((y-1-math.fmod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+						elseif (i == "pipe" or i == "pipespawn" or i == "warppipe") and t[3] then
 							--pipe display
 							local qs = 1
 							if i == "pipespawn" then
@@ -9664,84 +9693,126 @@ function drawmaptiles(drawtype, xscroll, yscroll, xtodraw, ytodraw)
 								local s = t[3]:split("|")
 								if s[3] then
 									local dir = s[3] or "down"
-									love.graphics.draw(pipesimg, pipesquad[qs][dir], math.floor((x-1-math.mod(xscroll, 1))*16*scale), ((y-1-math.mod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+									love.graphics.draw(pipesimg, pipesquad[qs][dir], math.floor((x-1-math.fmod(xscroll, 1))*16*scale), ((y-1-math.fmod(yscroll, 1))*16-8)*scale, 0, scale, scale)
 								else
-									love.graphics.draw(pipesimg, pipesquad[qs]["default"], math.floor((x-1-math.mod(xscroll, 1))*16*scale), ((y-1-math.mod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+									love.graphics.draw(pipesimg, pipesquad[qs]["default"], math.floor((x-1-math.fmod(xscroll, 1))*16*scale), ((y-1-math.fmod(yscroll, 1))*16-8)*scale, 0, scale, scale)
 								end
 							else
-								love.graphics.draw(pipesimg, pipesquad[qs]["default"], math.floor((x-1-math.mod(xscroll, 1))*16*scale), ((y-1-math.mod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+								love.graphics.draw(pipesimg, pipesquad[qs]["default"], math.floor((x-1-math.fmod(xscroll, 1))*16*scale), ((y-1-math.fmod(yscroll, 1))*16-8)*scale, 0, scale, scale)
 							end
-						else 
+						elseif i == "enemytool" then
+							--enemy tool display
+							love.graphics.setColor(255, 255, 255, 150)
+							local s = t[3]:split("|")
+							if s[5] then
+								local type = s[5] or "none"
+								love.graphics.draw(pipesimg, pipesquad[4][type], math.floor((x-1-math.fmod(xscroll, 1))*16*scale), ((y-1-math.fmod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+							else
+								love.graphics.draw(pipesimg, pipesquad[4]["none"], math.floor((x-1-math.fmod(xscroll, 1))*16*scale), ((y-1-math.fmod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+							end
+						elseif i == "text" then
+							local a = t[3]:split("|")
+							if a[1] then
+								local textx, texty = ((x-1))-math.fmod(xscroll, 1), (y-1-(3/16)-math.fmod(yscroll, 1))
+								local size, sizesep = 1, 8/16
+								if a[6] and tostring(a[6]) == "true" then --big
+									size, sizesep = 2, 1
+									texty = texty - 4/16
+								end
+								if a[5] and tostring(a[5]) == "true" then --centered
+									textx = textx - ((#a[1]*sizesep)/2)+.5
+								end
+								love.graphics.setColor(0,0,0,255)
+								if a[3] and tostring(a[3]) == "true" then
+									properprintbackground(a[1], textx*16*scale, texty*16*scale, nil, nil, size)
+								end
+								if a[2] and a[2] == "rgb" then
+									love.graphics.setColor(a[7], a[8], a[9], a[10])
+								elseif a[2] then
+									local col = textcolors[a[2]] or textcolors["white"]
+									love.graphics.setColor(unpack(col))
+								end
+								properprint(a[1], textx*16*scale, texty*16*scale, size)
+							end
+							love.graphics.setColor(255, 255, 255, 150)
+							if not extremenooutline or (compactentity and not nooutline) then
+								love.graphics.draw(entplaceimg, entplacequad[1], math.floor((x-1-math.fmod(xscroll, 1))*16*scale)+8*scale-8*scale, math.floor((y-1-math.fmod(yscroll, 1))*16-8)*scale+8*scale-8*scale, 0, scale, scale)
+							end
+						elseif string.find(i, "groundlight") and t[3] then
+							if string.find(t[3], "|") then
+								love.graphics.setColor(255, 255, 255, 150)
+								local a = t[3]:split("|")
+								local id = 1
+								for ox = 1, 3 do
+									for oy = 1, 3 do
+										id = id + 1
+										local exist = (a[id] == "true")
+										if exist then
+											love.graphics.draw(antlineimg, antlinequad[spriteset][1], math.floor((x+((ox-1)*0.3125)-1-math.fmod(xscroll, 1))*16*scale), ((y+((oy-1)*0.3125)-1-math.fmod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+										end
+									end
+								end
+								if not extremenooutline or (compactentity and not nooutline) then
+									love.graphics.draw(entplaceimg, entplacequad[1], math.floor((x-1-math.fmod(xscroll, 1))*16*scale)+8*scale-8*scale, math.floor((y-1-math.fmod(yscroll, 1))*16-8)*scale+8*scale-8*scale, 0, scale, scale)
+								end
+							end
+						else
 							--offset
 							local offsetx = 0
 							if t["argument"] and t["argument"] == "o" then --offset
 								offsetx = .5
-								love.graphics.setScissor(math.floor((x-1-math.mod(xscroll, 1))*16*scale), math.floor(((y-1-math.mod(yscroll, 1))*16-8)*scale), 16*scale, 16*scale)
+								love.graphics.setScissor(math.floor((x-1-math.fmod(xscroll, 1))*16*scale), math.floor(((y-1-math.fmod(yscroll, 1))*16-8)*scale), 16*scale, 16*scale)
 							end
 							--entity
 							love.graphics.setColor(255, 255, 255, 150)
 							if not editorstuff[i] or compactentity then
-								love.graphics.draw(entityquads[tilenumber].image, entityquads[tilenumber].quad, math.floor((x-1-math.mod(xscroll, 1)+offsetx)*16*scale), ((y-1-math.mod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+								love.graphics.draw(entityquads[tilenumber].image, entityquads[tilenumber].quad, math.floor((x-1-math.fmod(xscroll, 1)+offsetx)*16*scale), ((y-1-math.fmod(yscroll, 1))*16-8)*scale, 0, scale, scale)
 								if offsetx > 0 then
 									love.graphics.setScissor()
 								end
 							else
-								local w = editorstuff[entityquads[tilenumber].t]:getWidth()
-								if w > 112 then
-									if entityquads[tilenumber].t == "doorver" then
-										if type(t[3]) == "string" then
-											local s = t[3]:split("|")
-											if s[2] then
-												local dir = s[2] or "ver"
-												love.graphics.draw(editorstuff[entityquads[tilenumber].t], editorstuffquad[dir], math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-56*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-56*scale, 0, scale, scale)
-											else
-												love.graphics.draw(editorstuff[entityquads[tilenumber].t], editorstuffquad["off"], math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-56*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-56*scale, 0, scale, scale)
-											end
-										end
+								local e = entitylist[tilenumber] --entity values
+								local v = t[3] or ""
+								v = v:split("|") --rightclickvalues
+								local quad
+								if e.displaytype == "bool" then
+									if v[e.displayval] == "true" then
+										quad = "yes"
 									else
-										if type(t[3]) == "string" then
-											local s = t[3]:split("|")
-											local dir = "down"
-											if s[1] and entityquads[tilenumber].t ~= "funnelright" then
-												if entityquads[tilenumber].t == "grinder" then
-													dir = s[1] or "grinder"
-													if dir == "grinder" then
-														dir = "ver"
-													else
-														dir = "hor"
-													end
-													love.graphics.draw(editorstuff[entityquads[tilenumber].t], editorstuffquad[dir], math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-56*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-56*scale, 0, scale, scale)
-												else
-													dir = s[1] or "down"
-													love.graphics.draw(editorstuff[entityquads[tilenumber].t], editorstuffquad[dir], math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-56*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-56*scale, 0, scale, scale)
-												end
-											elseif s[3] and entityquads[tilenumber].t == "funnelright" then
-												dir = s[3] or "right"
-												love.graphics.draw(editorstuff[entityquads[tilenumber].t], editorstuffquad[dir], math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-56*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-56*scale, 0, scale, scale)
-											else
-												love.graphics.draw(editorstuff[entityquads[tilenumber].t], editorstuffquad["off"], math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-56*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-56*scale, 0, scale, scale)
-											end
+										quad = "no"
+									end
+								elseif e.displaytype == "dir" then
+									quad = "down"
+									if v[e.displayval] == "down" or v[e.displayval] == "up" or v[e.displayval] == "left" or v[e.displayval] == "right" then --weird bug?
+										quad = v[e.displayval]
+									end
+								elseif e.displaytype == "custom" then
+									quad = e.displaycustomquad[1]
+									for i = 1, #e.displaycustomcondition do
+										if v[e.displayval] == e.displaycustomcondition[i] then
+											quad = e.displaycustomquad[i]
 										end
 									end
-								else
-									love.graphics.draw(editorstuff[entityquads[tilenumber].t], editorstuffquad["off"], math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-56*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-56*scale, 0, scale, scale)
+								else --just the one
+									quad = "none"
+								end
+								if quad then
+									love.graphics.draw(editorstuff[entityquads[tilenumber].t], editorstuffquad[quad], math.floor((x-1-math.fmod(xscroll, 1))*16*scale)+8*scale-56*scale, math.floor((y-1-math.fmod(yscroll, 1))*16-8)*scale+8*scale-56*scale, 0, scale, scale)
 								end
 							end
 							if ((not editorstuff[i] and not nooutline) or editorstuff[i]) or compactentity then
 								if not extremenooutline or (compactentity and not nooutline) then
-									love.graphics.draw(entplaceimg, entplacequad[1], math.floor((x-1-math.mod(xscroll, 1))*16*scale)+8*scale-8*scale, math.floor((y-1-math.mod(yscroll, 1))*16-8)*scale+8*scale-8*scale, 0, scale, scale)
+									love.graphics.draw(entplaceimg, entplacequad[1], math.floor((x-1-math.fmod(xscroll, 1))*16*scale)+8*scale-8*scale, math.floor((y-1-math.fmod(yscroll, 1))*16-8)*scale+8*scale-8*scale, 0, scale, scale)
 								end
 							end
-							--supersize
-							if t["argument"] and t["argument"] == "b" then --supersize
-								love.graphics.setColor(255, 255, 255, 200)
-								love.graphics.draw(entityquads[313].image, entityquads[313].quad, math.floor((x-1-math.mod(xscroll, 1)+offsetx)*16*scale), ((y-1-math.mod(yscroll, 1))*16-8)*scale, 0, scale, scale)
-							end
-							--track
-							if entityquads[tilenumber].t == "track" and not trackpreviews then
-								generatetrackpreviews()
-							end
 						end
+					end
+					if t["argument"] and t["argument"] == "b" then --supersize
+						love.graphics.setColor(255, 255, 255, 200)
+						love.graphics.draw(entityquads[313].image, entityquads[313].quad, math.floor((x-1-math.fmod(xscroll, 1))*16*scale), ((y-1-math.fmod(yscroll, 1))*16-8)*scale, 0, scale, scale)
+					end
+					if entityquads[tilenumber].t == "track" and not trackpreviews then --track
+						generatetrackpreviews()
 					end
 					if not drop then
 						love.graphics.setColor(255, 255, 255, 255)
@@ -9766,7 +9837,7 @@ function drawtile(tilenumber, x, y, r, sx, sy, ox, oy)
 			love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber].quad, x, y, r, sx, sy, ox, oy)
 		end
 	else
-		love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber].quad, math.floor((x-1-math.mod(xscroll, 1))*16*scale), ((y-1-math.mod(yscroll, 1)-bounceyoffset)*16-8)*scale, 0, scale, scale)
+		love.graphics.draw(tilequads[tilenumber].image, tilequads[tilenumber].quad, x, y, r, sx, sy, ox, oy)
 	end
 end
 
@@ -9811,10 +9882,22 @@ end
 
 function checkfortileincoord(x, y)
 	--used for enemies that turn around ledges
-	return tilequads[map[x][y][1]]:getproperty("collision", x, y)
+	return ((tilequads[map[x][y][1]]:getproperty("collision", x, y) and (not tilequads[map[x][y][1]]:getproperty("invisible", x, y)))
 		or (objects["flipblock"][tilemap(x, y)] and objects["flipblock"][tilemap(x, y)].active)
 		or (objects["buttonblock"][tilemap(x, y)] and objects["buttonblock"][tilemap(x, y)].active)
-		or objects["clearpipesegment"][tilemap(x, y)]
+		or (objects["frozencoin"][tilemap(x, y)])
+		or objects["clearpipesegment"][tilemap(x, y)])
+end
+
+function startlowtime()
+	if pbuttonsound:isPlaying() then
+		pbuttonsound:setVolume(0)
+	else
+		stopmusic()
+		love.audio.stop()
+	end
+	playsound(lowtimesound)
+	queuelowtime = 7.5
 end
 
 -------------------
@@ -9859,5 +9942,13 @@ function createtilegroups(properties)
 		for a = 1, #v do
 			tilegroups[num][a] = v[a]
 		end
+	end
+end
+
+function nondt(dt)
+	if dt then
+		ndt = dt
+	else
+		return tonumber(ndt)
 	end
 end

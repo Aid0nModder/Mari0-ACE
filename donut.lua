@@ -18,8 +18,10 @@ function donut:init(x, y, t, respawn, r)
 	
 	self.mask = {true}
 	
-	self.emancipatecheck = true
+	self.emancipatecheck = false
 	self.autodelete = true
+
+	self.PLATFORM = true
 	
 	--IMAGE STUFF
 	self.drawable = true
@@ -191,7 +193,6 @@ function donut:floorcollide(a, b)
 	if self:globalcollide(a, b) then
 		return false
 	end
-	
 	return false
 end
 

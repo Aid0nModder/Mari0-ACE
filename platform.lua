@@ -6,6 +6,9 @@ function platform:init(x, y, dir, size, r)
 	if dir == "justright" then
 		self.size = size or 3
 	end
+	if type(self.size) == "string" then
+		self.size = tonumber(self.size) or 2
+	end
 
 	--variables
 	self.cox = x
@@ -246,9 +249,9 @@ function platform:update(dt)
 							local x1, y1 = math.ceil(w.x+0.01), math.ceil(self.y+self.height)
 							local x2, y2 = math.ceil(w.x+w.width), math.ceil(self.y+self.height)
 							local maxy, col = math.huge, false
-							if (inmap(x1, y1) and tilequads[map[x1][y1][1]]:getproperty("collision", x1, y1) and not tilequads[map[x1][y1][1]]:getproperty("invisible", x1, y1)) then
+							if (inmap(x1, y1) and checkfortileincoord(x1, y1)) then
 								maxy = y1-1-w.height
-							elseif (inmap(x2, y2) and tilequads[map[x2][y2][1]]:getproperty("collision", x2, y2) and not tilequads[map[x2][y2][1]]:getproperty("invisible", x2, y2)) then
+							elseif (inmap(x2, y2) and checkfortileincoord(x2, y2)) then
 								maxy = y2-1-w.height
 							end
 							w.y = math.min(maxy, self.y - w.height + self.speedy*dt)

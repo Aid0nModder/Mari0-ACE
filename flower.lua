@@ -148,7 +148,6 @@ function flower:jump(x)
 end
 
 function flower:use(b)
-	self.claw = false
 	if self.t == "ice" then
 		b:grow(7)
 	elseif self.t == "tanooki" then

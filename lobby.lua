@@ -56,7 +56,7 @@ function lobby_load()
 	magicdns_delay = 30
 
 	if SERVER and not onlinenotice then
-		notice.new("online multiplayer|will not work if|you don't port forward!|look up a tutorial!!!", notice.white, 12)
+		notice.new("online multiplayer\nwill not work if\nyou don't port forward!\nlook up a tutorial!!!", notice.white, 12)
 		onlinenotice = true
 		--[[
 			Hi alexan99 i cant play multiplayer on android. Can you help me?	
@@ -95,18 +95,18 @@ function lobby_draw()
 	love.graphics.rectangle("fill", 3*scale, 3*scale, 233*scale, 104*scale)
 	
 	love.graphics.setColor(255, 255, 255, 255)
-	properprint("settings", 9*scale, 9*scale)
+	properprintF("settings", 9*scale, 9*scale)
 	guielements.infinitelives:draw()
 	guielements.infinitetime:draw()
-	properprint("mappack", 9*scale, 46*scale)
+	properprintF("mappack", 9*scale, 46*scale)
 	guielements.mappack:draw()
 	guielements.mappackleft:draw()
 	guielements.mappackright:draw()
 	
 	if usemagic and adjective and noun then
-		properprintbackground("magicdns: " .. adjective .. " " .. noun, 4*scale, 98*scale, true)
+		properprintFbackground("magicdns: " .. adjective .. " " .. noun, 4*scale, 98*scale, true)
 	else
-		properprintbackground("port: " .. net_getport(), 4*scale, 98*scale, true)
+		properprintFbackground("port: " .. net_getport(), 4*scale, 98*scale, true)
 	end
 	if SERVER then
 		guielements.startbutton:draw()
@@ -188,8 +188,6 @@ function lobby_drawchat()
 		if pid ~= 0 then
 			local nick = playerlist[pid].nick
 			
-			local background = {255, 255, 255}
-			
 			local adds = 0
 			for i = 1, 3 do
 				adds = adds + playerlist[pid].colors[1][i]
@@ -200,10 +198,10 @@ function lobby_drawchat()
 			end
 			
 			love.graphics.setColor(unpack(playerlist[pid].colors[1]))
-			properprintbackground(nick, 8*scale, (196-(height*10))*scale, true, background)
+			properprintFbackground(nick, 8*scale, (196-(height*10))*scale, true)
 			
 			love.graphics.setColor(255, 255, 255)
-			properprint(":" .. chatmessages[i].message, (8+(string.len(nick))*8)*scale, (196-(height*10))*scale)
+			properprintF(":" .. chatmessages[i].message, (8+(string.len(nick))*8)*scale, (196-(height*10))*scale)
 			height = height + 1
 		end
 	end

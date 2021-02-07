@@ -1,6 +1,6 @@
 levelball = class:new()
 
-function levelball:init(x, y)
+function levelball:init(x, y, t)
 	--PHYSICS STUFF
 	self.x = x-6/16
 	self.y = y-11/16
@@ -11,6 +11,7 @@ function levelball:init(x, y)
 	self.static = false
 	self.active = true
 	self.category = 6
+	self.t = t or 1
 	
 	self.mask = {	true,
 					false, false, true, true, true,
@@ -27,7 +28,7 @@ function levelball:init(x, y)
 	--IMAGE STUFF
 	self.drawable = true
 	self.graphic = levelballimg
-	self.quad = levelballquad[1]
+	self.quad = levelballquad[self.t]
 	self.offsetX = 6
 	self.offsetY = 3
 	self.quadcenterX = 8
@@ -93,7 +94,7 @@ function levelball:update(dt)
 	end
 	
 	--rotate back to 0 (portals)
-	self.rotation = math.mod(self.rotation, math.pi*2)
+	self.rotation = math.fmod(self.rotation, math.pi*2)
 	if self.rotation > 0 then
 		self.rotation = self.rotation - portalrotationalignmentspeed*dt
 		if self.rotation < 0 then

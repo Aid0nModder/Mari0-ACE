@@ -2,10 +2,9 @@
 
 hat = {}
 bighat = {}
---tinyhat = {}
 
 hatcount = 0
-local hati = 42+1 --defaulthats + 1 (makes sure hats are loaded in the correct order (defaults then customs))
+local hati = 33+1 --defaulthats + 1 (makes sure hats are loaded in the correct order (defaults then customs))
 function loadhat(path, imgpath)
 	local imgpath = imgpath or "alesans_entities"
 	local d
@@ -45,7 +44,6 @@ function loadhat(path, imgpath)
 		t.quad[2] = t.quad[1]
 		t.quad[3] = t.quad[1]
 	end
-
 	--LOAD THE BIG HAT
 	bighat[i] = {}
 	local t = bighat[i]
@@ -62,19 +60,12 @@ function loadhat(path, imgpath)
 	if d.bigslidingemblem then
 		t.slidingemblem = love.graphics.newImage(imgpath .. "/hats/" .. d.bigslidingemblem .. ".png")
 	end
-	--if sombody mencions a weird crash tell them to reload
 	if d.raccoon then
 		t.raccoon = love.graphics.newImage(imgpath .. "/hats/" .. d.raccoon .. ".png")
 	end
 	if d.raccoonsliding then
 		t.raccoonsliding = love.graphics.newImage(imgpath .. "/hats/" .. d.raccoonsliding .. ".png")
 	end
-	--[[if d.tanooki then
-		t.tanooki = love.graphics.newImage(imgpath .. "/hats/" .. d.tanooki .. ".png")
-	end
-	if d.tanookisliding then
-		t.tanookisliding = love.graphics.newImage(imgpath .. "/hats/" .. d.tanookisliding .. ".png")
-	end]]
 	t.directions = d.directions
 	t.quad = {} --side, front, back
 	if d.directions then
@@ -86,28 +77,6 @@ function loadhat(path, imgpath)
 		t.quad[2] = t.quad[1]
 		t.quad[3] = t.quad[1]
 	end
-
-	--LOAD THE TINY HAT
-	--[[tinyhat[i] = {}
-	local t = tinyhat[i]
-	t.x = d.tinyx
-	t.y = d.tinyy
-	t.height = d.tinyheight
-	t.graphic = love.graphics.newImage(imgpath .. "/hats/" .. d.tiny .. ".png")
-	if d.tinysliding then
-		t.tinysliding = love.graphics.newImage(imgpath .. "/hats/" .. d.tinysliding .. ".png")
-	end
-	t.directions = d.directions
-	t.quad = {} --side, front, back
-	if d.directions then
-		for q = 1, 3 do
-			t.quad[q] = love.graphics.newQuad((t.graphic:getWidth()/3)*(q-1), 0, t.graphic:getWidth()/3, t.graphic:getHeight(), t.graphic:getWidth(), t.graphic:getHeight())
-		end
-	else
-		t.quad[1] = love.graphics.newQuad(0, 0, t.graphic:getWidth(), t.graphic:getHeight(), t.graphic:getWidth(), t.graphic:getHeight())
-		t.quad[2] = t.quad[1]
-		t.quad[3] = t.quad[1]
-	end]]
 
 	if not d.i then
 		--custom hats

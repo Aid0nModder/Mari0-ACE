@@ -32,7 +32,7 @@
 --20: HAMMERBROS
 --21: LAKITO
 
---22: BUTTON --Not used anymore (now emancipation grill body)
+--22: BUTTON --Not used anymore
 --23: CASTLEFIRE
 --24: CHEEP CHEEP
 --25: DOOR
@@ -231,7 +231,7 @@ function physicsupdate(dt)
 					--Check for emancipation grill
 					if v.emancipatecheck then
 						for h, u in pairs(emancipationgrills) do
-							if u.active and ((j == "player" and u.clearportals) or (j == "gel" and u.blockgel) or (j ~= "player" and j ~= "gel" and u.fizzleitems)) then
+							if u.active and v.emancipate then
 								if u.dir == "hor" then
 									if inrange(v.x+6/16, u.startx-1, u.endx, true) and inrange(u.y-14/16, v.y, v.y+v.speedy*dt, true) then
 										v:emancipate(h)
@@ -530,6 +530,9 @@ function vercollision(v, t, h, g, j, i, dt)
 		--move object DOWN (because it was moving up)
 		if t.floorcollide then
 			if t:floorcollide(j, v) ~= false then
+				if t.postfloorcollide then
+					t:postfloorcollide(j, v)
+				end
 				if t.speedy and t.speedy > 0 then
 					t.speedy = 0
 				end
@@ -574,6 +577,9 @@ function vercollision(v, t, h, g, j, i, dt)
 			return false
 		elseif v.floorcollide then
 			if v:floorcollide(h, t, dt) ~= false then
+				if v.postfloorcollide then
+					v:postfloorcollide(h, t, dt)
+				end
 				if v.speedy > 0 then
 					v.speedy = 0
 				end
@@ -659,6 +665,10 @@ function checkrect(x, y, width, height, list, statics, condition)
 								if w.y < y then
 									skip = true
 								end
+							end
+						elseif condition == "laser" then
+							if w.dontstoplasers then
+								skip = true
 							end
 						end
 					end
@@ -1311,7 +1321,7 @@ end
 function unrotate(rotation, gravitydirection, dt)
 	local rotation, gravitydirection = rotation or 0, gravitydirection or 0
 	--rotate back to gravitydirection (portals)
-	rotation = math.mod(rotation, math.pi*2)
+	rotation = math.fmod(rotation, math.pi*2)
 	
 	if rotation < -math.pi then
 		rotation = rotation + math.pi*2

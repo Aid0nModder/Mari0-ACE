@@ -21,8 +21,8 @@ function notgate:init(x, y, r)
 	self.loops = 0
 end
 
-function geldispenser:link()
-	if #self.r > 2 then
+function notgate:link()
+	if #self.r >= 3 then
 		for j, w in pairs(outputs) do
 			for i, v in pairs(objects[w]) do
 				if tonumber(self.r[2]) == v.cox and tonumber(self.r[3]) == v.coy then

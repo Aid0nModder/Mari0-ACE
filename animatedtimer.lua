@@ -13,7 +13,7 @@ function animatedtimer:init(x, y, tileno)
 	self.length = 0
 	for i = 1, #self.delays do
 		if not self.delays[i] then
-			notice.new("Animated Tile " .. tileno-90000 .. " doesn't|have delay for frame " .. i .. "!", notice.red, 4)
+			notice.new("Animated Tile " .. tileno-90000 .. " doesn't\nhave delay for frame " .. i .. "!", notice.red, 4)
 			break
 		end
 		self.length = self.length + self.delays[i]

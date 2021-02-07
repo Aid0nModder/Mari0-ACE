@@ -43,7 +43,7 @@ function animatedquad:init(imgpath, s, t)
 		
 		local delaycount = #self.delays
 		for j = #self.delays+1, #self.quadlist do
-			self.delays[j] = self.delays[math.mod(j-1, delaycount)+1]
+			self.delays[j] = self.delays[math.fmod(j-1, delaycount)+1]
 		end
 	else
 		self.quadlist = {}
@@ -78,7 +78,7 @@ function animatedquad:init(imgpath, s, t)
 					if tonumber(s4[j]) then
 						self.delays[j] = tonumber(s4[j])/1000
 					else
-						notice.new("bad animated tile delay " .. j .. "|" .. tostring(t-90000) .. ".txt", notice.red, 10)
+						notice.new("bad animated tile delay " .. j .. "\n" .. tostring(t-90000) .. ".txt", notice.red, 10)
 					end
 				end
 			else

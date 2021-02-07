@@ -15,7 +15,7 @@ pswitchtrigger:on/off				when p switch is pressed or done
 switchblocktrigger:i				when switch block is used
 playerlandsonground:i				when player lands on ground
 playerhurt:i						when player gets hurt
-whennumber:i:>/</=:v				when a variable turns something
+whennumber:i:>/</=:v				when a number turns something
 --]]
 
 --[[ CONDITIONS:
@@ -30,7 +30,7 @@ requirecollectables:i				requires i collectables to trigger (will not remove coi
 requirepoints:i						requires i points
 buttonhelddown:button				only if button is held down
 requirekeys[:player]:i				requires i keys
-ifnumber:i:>/</=:v				if a variable is equal/greater than something
+ifnumber:i:>/</=:v				    if a number is equal/greater/less than something
 --]]
 
 --[[ ACTIONS:
@@ -98,7 +98,27 @@ removekeys[:player]:amount			removes keys
 setnumber:name:=/+:v				change number by something
 resetnumbers						resets all animation numbers
 launchplayer[:player]:x:y			launches player at defined speed
-triggerswitchblock:color	 		changes switch state
+addtime:time						adds <seconds> time
+removetime:time						removes <seconds> time
+settime:time						sets time
+--]]
+
+-- AECE --
+
+--[[ TRIGGERS:
+whennumber:name:value              when a variable turns something
+--]]
+
+--[[ CONDITIONS:
+ifvariable:name:value              if a variable is equal/greater/less than something 
+--]]
+
+--[[ ACTIONS:
+notice:text:color:time             create notice
+toggleswitchblock:color            changes switch state
+togglepswitch:state                change p-switch state
+setvariable:name:value             sets variable
+setgravity[:player]:dir                     sets gravity
 --]]
 
 function animation:init(path, name)
@@ -113,6 +133,7 @@ function animation:init(path, name)
 	self.running = false
 	self.sleep = 0
 	self.enabled = true
+	self.arg = false
 end
 
 function animation:decode(s)
@@ -150,11 +171,19 @@ function animation:addtrigger(v)
 		table.insert(animationtriggerfuncs[v[2] ], self)
 
 	elseif v[1] == "buttonpressed" then
+		local name = v[2]
+		if name:find("player ") then
+			name = tonumber(string.sub(v[2], -1))
+		end
 		if not animationbuttontriggerfuncs[v[2]] then --player
 			animationbuttontriggerfuncs[v[2]] = {}
 		end
 		table.insert(animationbuttontriggerfuncs[v[2]], {self, v[3]})
 	elseif v[1] == "buttonreleased" then
+		local name = v[2]
+		if name:find("player ") then
+			name = tonumber(string.sub(v[2], -1))
+		end
 		if not animationbuttonreleasetriggerfuncs[v[2]] then --player
 			animationbuttonreleasetriggerfuncs[v[2]] = {}
 		end
@@ -165,11 +194,19 @@ function animation:addtrigger(v)
 	elseif v[1] == "pswitchtrigger" then
 		table.insert(animationswitchtriggerfuncs, {self, "pswitch-" .. v[2]})
 	elseif v[1] == "playerlandsonground" then
-		if not animationplayerlandtriggerfuncs[v[2]] then --player
-			animationplayerlandtriggerfuncs[v[2]] = {}
+		local name = v[2]
+		if name:find("player ") then
+			name = tonumber(string.sub(v[2], -1))
 		end
-		table.insert(animationplayerlandtriggerfuncs[v[2]], self)
+		if not animationplayerlandtriggerfuncs[name] then --player
+			animationplayerlandtriggerfuncs[name] = {}
+		end
+		table.insert(animationplayerlandtriggerfuncs[name], self)
 	elseif v[1] == "playerhurt" then
+		local name = v[2]
+		if name:find("player ") then
+			name = tonumber(string.sub(v[2], -1))
+		end
 		if not animationplayerhurttriggerfuncs[v[2]] then --player
 			animationplayerhurttriggerfuncs[v[2]] = {}
 		end
@@ -188,89 +225,14 @@ end
 function animation:update(dt)
 	--check my triggers for triggering, yo
 	for i, v in pairs(self.triggers) do
-	--[[
-			v = deepcopy(v)
-		--print(v[1].."----"..v[2].."----"..(v[3] or "nothing").."----"..(v[4] or "nothing").."----"..(v[5] or "nothing").." type "..type(v[2]))
 
-		if v[2] and v[2]:sub(1, #"nv.") == "nv." and animationnumbers then
-
-			v[2] = string.gsub(v[2], "nv.", "")
-			--print(v[2])
-			--print(animationnumbers[v[2] ])
-			local num = tonumber(animationnumbers[v[2] ])
-			v[2] = tostring(num)
-			--print(v[2])
-		elseif v[2] and v[2]:sub(1, #"sv.") == "sv." and animationnumbers then
-
-			v[2] = string.gsub(v[2], "sv.", "")
-			--print(v[2])
-			--print(animationnumbers[v[2] ])
-			local num = tostring(animationnumbers[v[2] ])
-			v[2] = tostring(num)
-			--print(v[2])
-		end
-
-		if v[3] and v[3]:sub(1, #"nv.") == "nv." and animationnumbers then
-
-			v[3] = string.gsub(v[3], "nv.", "")
-			--print(v[3])
-			--print(animationnumbers[v[3] ])
-			local num = tonumber(animationnumbers[v[3] ])
-			v[3] = tostring(num)
-			--print(v[3])
-		elseif v[3] and v[3]:sub(1, #"sv.") == "sv." and animationnumbers then
-
-			v[3] = string.gsub(v[3], "sv.", "")
-			--print(v[3])
-			--print(animationnumbers[v[3] ])
-			local num = tostring(animationnumbers[v[3] ])
-			v[3] = tostring(num)
-			--print(v[3])
-		end
-
-		if v[4] and v[4]:sub(1, #"nv.") == "nv." and animationnumbers then
-
-			v[4] = string.gsub(v[4], "nv.", "")
-			--print(v[4])
-			--print(animationnumbers[v[4] ])
-			local num = tonumber(animationnumbers[v[4] ])
-			v[4] = tostring(num)
-			--print(v[4])
-		elseif v[4] and v[4]:sub(1, #"sv.") == "sv." and animationnumbers then
-
-			v[4] = string.gsub(v[4], "sv.", "")
-			--print(v[4])
-			--print(animationnumbers[v[4] ])
-			local num = tostring(animationnumbers[v[4] ])
-			v[4] = tostring(num)
-			--print(v[4])
-		end
-
-		if v[5] and v[5]:sub(1, #"nv.") == "nv." and animationnumbers then
-
-			v[5] = string.gsub(v[5], "nv.", "")
-			--print(v[5])
-			--print(animationnumbers[v[5] ])
-			local num = tonumber(animationnumbers[v[5] ])
-			v[5] = tostring(num)
-			--print(v[5])
-		elseif v[5] and v[5]:sub(1, #"sv.") == "sv." and animationnumbers then
-
-			v[5] = string.gsub(v[5], "sv.", "")
-			--print(v[5])
-			--print(animationnumbers[v[5] ])
-			local num = tostring(animationnumbers[v[5] ])
-			v[5] = tostring(num)
-			--print(v[5])
-		end
-		]]
 		if v[1] == "mapload" then
 			if self.firstupdate then
 				self:trigger()
 			end
 		elseif v[1] == "timepassed" then
 			self.timer = self.timer + dt
-			if self.timer >= tonumber(v[2]) and self.timer - dt < tonumber(v[2]) then
+			if tonumber(v[2]) and self.timer >= tonumber(v[2]) and self.timer - dt < tonumber(v[2]) then
 				self:trigger()
 			end
 		elseif v[1] == "mariotimeless" then
@@ -349,7 +311,6 @@ function animation:update(dt)
 			if trig then
 				self:trigger()
 			end
-
 		elseif v[1] == "whenvariable" then
 			local trig = false
 			local name = tostring(v[2])
@@ -367,7 +328,6 @@ function animation:update(dt)
 		end
 	end
 	
-
 	self.firstupdate = false
 	
 	if self.running then
@@ -376,63 +336,26 @@ function animation:update(dt)
 		end
 		
 		while self.sleep == 0 and self.currentaction <= #self.actions do
-			local v = deepcopy(self.actions[self.currentaction])
+			local v = deepcopy(self.actions[self.currentaction]) --i hope this dousn't break shit :haa:
 
-		--print(v[1].."----"..v[2].."----"..(v[3] or "nothing").."----"..(v[4] or "nothing").." type "..type(v[2]))
+			for a = 1, #v do --arg
+				if v[a] == "{arg}" and self.arg then
+					v[a] = self.arg
+				end
+			end
 
-		if v[2] and v[2]:sub(1, #"nv.") == "nv." and animationnumbers and v[1] ~= "setnumber" and v[1] ~= "setvariable" then
+			for a = 1, #v do --animation numbers
+				if v[a]:sub(1, #"nv.") == "nv." and animationnumbers and v[a] ~= "setnumber" and v[a] ~= "setvariable" then
+					v[a] = string.gsub(v[a], "nv.", "")
+					local num = tostring(animationnumbers[v[a]])
+					v[a] = num
+				elseif v[a]:sub(1, #"sv.") == "sv." and animationnumbers and v[a] ~= "setnumber" and v[a] ~= "setvariable" then
+					v[a] = string.gsub(v[a], "sv.", "")
+					local num = tostring(animationnumbers[v[a]])
+					v[a] = num
+				end
+			end
 
-			v[2] = string.gsub(v[2], "nv.", "")
-			--print(v[2])
-			--print(animationnumbers[v[2]])
-			local num = tonumber(animationnumbers[v[2]])
-			v[2] = tostring(num)
-			--print(v[2])
-		elseif v[2] and v[2]:sub(1, #"sv.") == "sv." and animationnumbers and v[1] ~= "setnumber" and v[1] ~= "setvariable" then
-
-			v[2] = string.gsub(v[2], "sv.", "")
-			--print(v[2])
-			--print(animationnumbers[v[2]])
-			local num = tostring(animationnumbers[v[2]])
-			v[2] = tostring(num)
-			--print(v[2])
-		end
-
-		if v[3] and v[3]:sub(1, #"nv.") == "nv." and animationnumbers and v[1] ~= "setnumber" and v[1] ~= "setvariable" then
-
-			v[3] = string.gsub(v[3], "nv.", "")
-			--print(v[3])
-			--print(animationnumbers[v[3]])
-			local num = tonumber(animationnumbers[v[3]])
-			v[3] = tostring(num)
-			--print(v[3])
-		elseif v[3] and v[3]:sub(1, #"sv.") == "sv." and animationnumbers and v[1] ~= "setnumber" and v[1] ~= "setvariable" then
-
-			v[3] = string.gsub(v[3], "sv.", "")
-			--print(v[3])
-			--print(animationnumbers[v[3]])
-			local num = tostring(animationnumbers[v[3]])
-			v[3] = tostring(num)
-			--print(v[3])
-		end
-
-		if v[4] and v[4]:sub(1, #"nv.") == "nv." and animationnumbers and v[1] ~= "setnumber" and v[1] ~= "setvariable" then
-
-			v[4] = string.gsub(v[4], "nv.", "")
-			--print(v[4])
-			--print(animationnumbers[v[4]])
-			local num = tonumber(animationnumbers[v[4]])
-			v[4] = tostring(num)
-			--print(v[4])
-		elseif v[4] and v[4]:sub(1, #"sv.") == "sv." and animationnumbers and v[1] ~= "setnumber" and v[1] ~= "setvariable" then
-
-			v[4] = string.gsub(v[4], "sv.", "")
-			--print(v[4])
-			--print(animationnumbers[v[4]])
-			local num = tostring(animationnumbers[v[4]])
-			v[2] = tostring(num)
-			--print(v[4])
-		end
 			if v[1] == "disablecontrols" then
 				if v[2] == "everyone" then
 					for i = 1, players do
@@ -629,6 +552,28 @@ function animation:update(dt)
 				addpoints(tonumber(v[2]) or 1)
 			elseif v[1] == "removepoints" then
 				marioscore = math.max(0, marioscore - (tonumber(v[2]) or 1))
+			elseif v[1] == "addtime" then
+				local oldtime = mariotime
+				mariotime = mariotime + (tonumber(v[2]) or 0)
+				if oldtime < 100 and mariotime > 100 and not lowtimesound:isPlaying() then
+					music:stopall()
+					playmusic()
+				end
+			elseif v[1] == "removetime" then
+				local oldtime = mariotime
+				mariotime = math.max(0.01, mariotime - (tonumber(v[2]) or 0))
+				if oldtime > 100 and mariotime < 100 then
+					startlowtime()
+				end
+			elseif v[1] == "settime" then
+				local oldtime = mariotime
+				mariotime = math.max(0.01, tonumber(v[2]) or mariotime)
+				if oldtime > 100 and mariotime < 100 then
+					startlowtime()
+				elseif oldtime < 100 and mariotime > 100 and not lowtimesound:isPlaying() then
+					music:stopall()
+					playmusic()
+				end
 			elseif v[1] == "changebackgroundcolor" then
 				love.graphics.setBackgroundColor(tonumber(v[2]) or 255, tonumber(v[3]) or 255, tonumber(v[4]) or 255)
 			elseif v[1] == "killplayer" then
@@ -657,10 +602,6 @@ function animation:update(dt)
 				end
 			elseif v[1] == "changetime" then
 				mariotime = (tonumber(v[2]) or 400)
-			elseif v[1] == "addtime" then
-				mariotime = mariotime + (tonumber(v[2]) or 100)
-			elseif v[1] == "removetime" then
-				mariotime = mariotime - (tonumber(v[2]) or 100)
 			elseif v[1] == "loadlevel" or v[1] == "loadlevelinstant" then
 				love.audio.stop()
 				
@@ -717,7 +658,7 @@ function animation:update(dt)
 				end
 				
 			elseif v[1] == "makeplayerlook" then
-				local ang = math.mod(math.mod(tonumber(v[3]), 360)+360, 360)
+				local ang = math.fmod(math.fmod(tonumber(v[3]), 360)+360, 360)
 				
 				if v[2] == "everyone" then
 					for i = 1, players do
@@ -1012,9 +953,7 @@ function animation:update(dt)
 					elseif operation == "-" then
 						animationnumbers[name] = animationnumbers[name] - value
 					end
-				self.animationnumbers = animationnumbers
 				end
-
 			elseif v[1] == "setvariable" then
 				local name = tostring(v[2])
 				local value = tostring(v[3]) or "nothing"
@@ -1053,12 +992,20 @@ function animation:update(dt)
 	end
 end
 
-function animation:trigger()
+function animation:trigger(arg)
 	if self.enabled then
 		--check conditions
 		local pass = true
+		self.arg = arg
 		
 		for i, v in pairs(self.conditions) do
+			local v = deepcopy(v) --i hope this dousn't break shit :haa:
+			for a = 1, #v do
+				if v[a] == "{arg}" and self.arg then
+					v[a] = self.arg
+				end
+			end
+
 			if v[1] == "noprevsublevel" then
 				if prevsublevel then
 					pass = false

@@ -88,9 +88,6 @@ end
 
 function frozencoin:meltice(destroy)
 	self.active = false
-	if frozencoinmode then
-		lowpointscount = lowpointscount - 1
-	end
 
 	if self.t == "mushroom" then
 		--stupid animation

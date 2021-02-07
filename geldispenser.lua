@@ -38,8 +38,8 @@ function geldispenser:init(x, y, id, dir, r)
 	end
 
 	self.count = 0
-
 	self.on = self.defaulton
+	
 	self.outtable = {}
 end
 

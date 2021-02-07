@@ -3,12 +3,12 @@ mariohammer = class:new()
 function mariohammer:init(x, y, dir, v)
 	--PHYSICS STUFF
 	self.y = y+4/16
-	self.speedy = -math.sqrt(2*yacceleration*3.5) --bobthelawyer?
+	self.speedy = (-math.sqrt(2*yacceleration*3.5))+v.speedy --bobthelawyer?
 	if dir == "right" then
-		self.speedx = hammerspeed
+		self.speedx = hammerspeed+v.speedx
 		self.x = x+3/16
 	else
-		self.speedx = -hammerspeed
+		self.speedx = (-hammerspeed)+v.speedx
 		self.x = x-24/16
 	end
 	self.width = 16/16
@@ -104,6 +104,9 @@ end
 
 function mariohammer:hitstuff(a, b)
 	if mariohammerkill[a] then
+		if a == "koopaling" and b.t == 9 and not (b.hittimer and b.hittimer > 0) then
+			addpoints(100, self.x, self.y)
+		end
 		b:shotted("right")
 		if a ~= "bowser" then
 			addpoints(firepoints[a], self.x, self.y)

@@ -1,6 +1,6 @@
 --[[
 	STEAL MY SHIT AND I'LL FUCK YOU UP
-	PRETTY MUCH EVERYTHING BY MAURICE GUÉGAN AND IF SOMETHING ISN'T BY ME THEN IT SHOULD BE OBVIOUS OR NOBODY CARES
+	PRETTY MUCH EVERYTHING BY MAURICE GU�GAN AND IF SOMETHING ISN'T BY ME THEN IT SHOULD BE OBVIOUS OR NOBODY CARES
 
 	Please keep in mind that for obvious reasons, I do not hold the rights to artwork, audio or trademarked elements of the game.
 	This license only applies to the code and original other assets. Obviously. Duh.
@@ -20,9 +20,8 @@
 			DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 	TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
-	0. You just DO WHAT THE FUCK YOU WANT TO.]]
-	
---[[
+	0. You just DO WHAT THE FUCK YOU WANT TO.
+
 	-----------------------------------------------------------------------------
 	"AWESOME" mod by Alesan99
 	
@@ -44,25 +43,41 @@
 	-Critfish for overgrown portal sprites
 	-Aidan for general bugtesting
 	-MadNyle for propeller sound effect and mega mushroom
+	-fußmatte for helping create a TON of new characters for the font and Esperanto Translation
+	-HugoBDesigner for Portugese-Br translation
+	-Los for Russian Translation
+
 	-----------------------------------------------------------------------------
-	"ok i suppose" mod by the ACE crew
+	"ok i suppose" mod by the AECE Team
 
-	Most technical changes by Aidan and Kant
-	Most graphical changes by Evan.F, Subpixel and NH1507
+		- Aidan
+		- BetterDonutGamer
+		- Evan.F
+		- Hellfire
+		- Kant
+		- Mari0_Bot
+		- Megabound
+		- Nathan Silver
+		- NH1507
+		 -WilliamFrog
 
-	other cool people
-	-critfish for emancipation grill ends for all types
-	-Oxsy for some better graphics for small icicle and huge icicle
-	-HansAgain for improved Box/Gel Dispenser, Pellet Launcher/Catcher and Faith Plate
+	Aidan and Kant for most technical changes
+	Evan.F and NH1507 for most graphical changes.
+
+	Other helpers
+
+	- Subpixel for some entity graphics and ripping some SMM2 sounds.
+	- Critfish for emancipation grill ends for all types.
+	- Oxsy for some better graphics for small icicle and huge icicle.
+	- HansAgain for improved Box/Gel Dispenser, Pellet Launcher/Catcher and Faith Plate.
 ]]
 
-debugconsole = false --debug
+
+local debugconsole = false --debug
 if debugconsole then debuginputon = true; debuginput = "print()"; print("DEBUG ON") end
 
-VERSION = 13.0100
-VERSIONSTRING = " alpha"
-
-if not math.mod then math.mod = math.fmod end --lets not talk about this
+VERSION = 13.0114
+VERSIONSTRING = "beta (edition 5)"
 
 android = (love.system.getOS() == "Android" or love.system.getOS() == "iOS") --[DROID]
 androidtest = false --testing android on pc
@@ -71,7 +86,6 @@ local touchkey = {}
 local touchrunlock = false
 local antiandroidkeyrepeat = false --fucking stupid android keyboards
 local androidbuttons, aeditorbuttons, aeditorbuttonsw, aeditorbuttonsimg, aeditorbuttonsq
-local candroidbuttons, acorruptbuttons, acorruptbuttonsw, acorruptbuttonsimg, acorruptbuttonsq
 local getandroidbutton
 
 local updatesoundlist
@@ -83,18 +97,30 @@ local loadingbardraw = function(add)
 	if android then
 		love.graphics.scale(winwidth/(width*16*scale), winheight/(224*scale))
 	end
+	love.graphics.setColor(20, 20, 20)
+	love.graphics.rectangle("fill", 0, 4*scale, 400*scale, 20*scale)
+	love.graphics.rectangle("fill", 0, 201*scale, 400*scale, 20*scale)
 	love.graphics.setColor(150, 150, 150)
-	properprint("loading ace...", ((width*16)*scale)/2-string.len("loading ace...")*4*scale, 20*scale)
-	love.graphics.setColor(50, 50, 50)
-	local scale2 = scale
-	if scale2 <= 1 then
-		scale2 = 0.5
-	else
-		scale2 = 1
+	properprint("loading aece...", 10*scale, 10*scale)
+	if loadingtext[3] == "red" then love.graphics.setColor(100, 50, 50) else love.graphics.setColor(50, 50, 50) end
+	local scale2 = scale / 3
+	properprint(loadingtext[1], ((width*16)*scale)/2-string.len(loadingtext[1])*4*scale, ((height*16)*scale)/2+160*scale2)
+	properprint(loadingtext[2], ((width*16)*scale)/2-string.len(loadingtext[2])*4*scale, ((height*16)*scale)/2+190*scale2)
+	if loadingtext[3] == "abode" then
+		local offset = 0
+		for i = 1, 5 do
+			offset = offset + 30
+			properprint(loadingtext[1], ((width*16)*scale)/2-string.len(loadingtext[1])*4*scale, ((height*16)*scale)/2+190+offset*scale2)
+		end
 	end
-	properprint(loadingtext, ((width*16)*scale)/2-string.len(loadingtext)*4*scale, ((height*16)*scale)/2+165*scale2)
-	love.graphics.setColor(255, 255, 255)
-	love.graphics.draw(logo, ((width*16)*scale)/2, ((height*16)*scale)/2, 0, scale2, scale2, 142, 150)
+
+	if FamilyFriendly then
+		love.graphics.setColor(255, 255, 255)
+		properprint("stys.eu", ((width*16)*scale)/2-string.len("stys.eu")*4*scale, 110*scale)
+	else
+		love.graphics.setColor(255, 255, 255)
+		love.graphics.draw(logo, ((width*16)*scale)/2, ((height*16)*scale)/2, 0, scale2, scale2, 142, 150)
+	end
 
 	loadingbarv = loadingbarv + add
 	for i = 1, 8 do
@@ -103,7 +129,7 @@ local loadingbardraw = function(add)
 		else
 			love.graphics.setColor(50, 50, 50)
 		end
-		love.graphics.rectangle("fill", ((i*10)-5)*scale, ((height*16)-10)*scale, 5*scale, 5*scale)
+		love.graphics.rectangle("fill", ((i*10)-5)*scale, ((height*16)-15)*scale, 5*scale, 5*scale)
 	end
 	--love.graphics.rectangle("fill", 0, (height*16-3)*scale, (width*16*loadingbarv)*scale, 3*scale)
 
@@ -144,14 +170,14 @@ function love.load()
 	currentshaderi2 = 1
 	
 	if android then
-		love.filesystem.setIdentity("mari0ace_android") --[DROID]
+		love.filesystem.setIdentity("mari0aece_android") --[DROID]
 	else
-		love.filesystem.setIdentity("mari0ACE")
+		love.filesystem.setIdentity("mari0AECE")
 	end
 	
 	local ok, result = pcall(loadconfig)
 	if not ok then
-		print("Corrupt settings: " .. tostring(result))
+		print("-- ERROR -- Corrupt settings: " .. tostring(result))
 		players = 1
 		defaultconfig()
 	end
@@ -171,7 +197,8 @@ function love.load()
 		changescale(scale, fullscreen)
 	end
 
-	love.window.setTitle( "Mari0: AE - COMMUNITY EDITION" )
+	love.window.setTitle( "Mari0: AECE" )
+	print("----- LOADING " .. love.window.getTitle() .. " -----")
 	
 	--version check by checking for a const that was added in 0.8.0
 	if love._version_major == nil then error("You have an outdated version of Love! Get 0.10.0 or higher and retry.") end
@@ -184,45 +211,174 @@ function love.load()
 	
 	logo = love.graphics.newImage("graphics/stabyourself.png")
 	logoblood = love.graphics.newImage("graphics/stabyourselfblood.png")
-	
+	logooil = love.graphics.newImage("graphics/stabyourselfoil.png")
+	logosmithley = love.graphics.newImage("graphics/stabyourselfsmithley.png")
+
+	crashscreen = love.graphics.newImage("graphics/crashscreen.png")
+
+	--UTF8 Font
 	fontimage = love.graphics.newImage("graphics/SMB/font.png")
 	fontbackimage = love.graphics.newImage("graphics/SMB/fontback.png")
-	fontglyphs = "0123456789abcdefghijklmnopqrstuvwxyz.:/,\"C-_>* !{}?+'()=><#%[]"
+	
+	font = love.graphics.newFont("font.fnt", "graphics/SMB/font.png")
+	fontback = love.graphics.newFont("font.fnt", "graphics/SMB/fontback.png")
+	fontCAP = love.graphics.newFont("fontcap.fnt", "graphics/SMB/font.png")
+	fontbackCAP = love.graphics.newFont("fontcap.fnt", "graphics/SMB/fontback.png")
+	--gamefont = font
+	--gamefontback = fontback
+	--gamefontCAP = fontCAP
+	--gamefontbackCAp = fontbackCAP
+	love.graphics.setFont(font)
+
+	utf8 = require("utf8")
+	local t = require("libs/utf8_simple")
+	utf8.chars = t.chars
+	utf8.sub = t.sub
+	fontglyphs = [[
+		ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		abcdefghijklmnopqrstuvwxyz
+		0123456789 ⇒←→↑↓
+		.!?,:;'"-_+=><#%&*()[]{}/\
+		@©~¡¿°^$£€¥
+		ÁÂÀÄÅÃÆÇÉÊÈËÍÎÌÏÑÓÔÒÖÕØŒÚÛ
+		ÙÜŠÝŸẞÞÐĆŃŚŹĄĘŁĈĜĤĴŜŬŽİ
+		áâàäåãæçéêèëíîìïñóôòöõøœúû
+		ùüšýÿßþðćńśźąęłĉĝĥĵŝŭžı
+		АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШ
+		ЩЪЫЬЭЮЯ№«»„
+		абвгдеёжзийклмнопрстуфхцчш
+		щъыьэюя
+	]]
+	fontglyphs = fontglyphs:gsub("	","")
 	fontquads = {}
-	for i = 1, string.len(fontglyphs) do
-		fontquads[string.sub(fontglyphs, i, i)] = love.graphics.newQuad((i-1)*8, 0, 8, 8, 512, 8)
-	end
-	fontquads["A"] = fontquads[","]
-	fontquads["B"] = fontquads["-"]
 	fontquadsback = {}
-	for i = 1, string.len(fontglyphs) do
-		fontquadsback[string.sub(fontglyphs, i, i)] = love.graphics.newQuad((i-1)*10, 0, 10, 10, fontbackimage:getWidth(), fontbackimage:getHeight())
+	fontindexCAP = {} --all uppercase
+	fontindexOLD = {} --old font with all uppercase and U=up D=down A=, B=-
+	--local out = string.format("chars count=%s\n", utf8.len(fontglyphs:gsub("\n",""))) --Export font.fnt (doesn't)
+	local s = fontglyphs:split("\n")
+	for line = 1, #s do
+		for i, c, b in utf8.chars(s[line]) do
+			fontquads[c] = love.graphics.newQuad((i-1)*10+1, (line-1)*10+1, 8, 8, fontimage:getWidth(),fontimage:getHeight())
+			fontquadsback[c] = love.graphics.newQuad((i-1)*10, (line-1)*10, 10, 10, fontimage:getWidth(),fontimage:getHeight())
+			--UPPER CASE
+			local ci = c
+			if line == 2 then
+				ci = utf8.sub(s[1],i,i)
+			elseif line == 8 or line == 9 then
+				ci = utf8.sub(s[line-2],i,i)
+			elseif line == 12 or line == 13 then
+				ci = utf8.sub(s[line-2],i,i)
+			end
+			fontindexCAP[c] = ci
+			--export font.fnt layout
+			--out = out .. string.format("char id=%d x=%d y=%d width=10 height=10 xoffset=-1 yoffset=0 xadvance=8 page=0 chnl=15\n", utf8.codepoint(c), (i-1)*10, (line-1)*10)
+			--Capitals
+			--local qx,qy = fontquads[ci]:getViewport()
+			--out = out .. string.format("char id=%d x=%d y=%d width=10 height=10 xoffset=-1 yoffset=0 xadvance=8 page=0 chnl=15\n", utf8.codepoint(c), qx-1,qy-1)
+		end
 	end
-	fontquadsback["A"] = fontquadsback[","]
-	fontquadsback["B"] = fontquadsback["-"]
-	fontglyphs = fontglyphs .. "AB"
+	--love.system.setClipboardText(out)
+	fontindexCAP["{"] = "←"
+	fontindexCAP["}"] = "→"
+	for j, w in pairs(fontindexCAP) do
+		fontindexOLD[j] = w
+	end
+	fontindexOLD["A"] = ","
+	fontindexOLD["B"] = "-"
+	fontindexOLD["D"] = "↓"
+	fontindexOLD["U"] = "↑"
+
+	if love.filesystem.exists("alesans_entities/familyfriendly.txt") then FamilyFriendly = true end
 	
 	math.randomseed(os.time());math.random();math.random()
 	
 	--intro
-	loadingtexts = {"reticulating splines", "rendering important stuff", "01110000011011110110111001111001", "sometimes, i dream about cheese",
-					"baking cake", "happy explosion day", "raising coolness by a fifth", "yay facepunch", "stabbing myself", "sharpening knives",
-					"tanaka, thai kick", "slime will find you", "becoming self-aware", "it's a secret to everybody", "there is no minus world", 
-					"oh my god, jc, a bomb", "silly loading message here", "motivational art by jorichi", "you're my favorite deputy", 
-					"licensed under wtfpl", "banned in australia", "loading anti-piracy module", "watch out there's a sni", "attack while its tail's up!", 
-					"what a horrible night to have a curse", "han shot first", "establishing connection to nsa servers..","how do i programm", 
-					"making palette inaccurate..", "y cant mario crawl?", "please hold..", "avoiding lawsuits", "loading bugs", "traduciendo a ingles",
-					"fixign typo..", "swing your arms", "this message will self destruct in 3 2 1", "preparing deadly neurotoxin", "loading asleons entetis..", 
-					"now with online multiplayer", "any second now..", "all according to keikaku", "we need pow blocks!", "cross your fingers",
-					"not accurate to the nes!", "improved stability to enhance user experience.", "0118 999 881 999 119 7253", "hoo-ray",
-					"removing herobrine", "how do i play multiplayer????", "not mario maker", "hello there", "this statement is false", 
-					"zap to the extreme", "it just works", "eat your arms", "travelling qpus...", "im a tire", "in real life!", "bold and brash", 
-					"giant enemy crabs", "but im super duper, with a big tuper", "see that mountain? you can climb it", "loading alesan99's stuff",
-					"according to all known laws of aviation", "i am not a moron", "dlc is broken, go fix", "now with 3d!.. wait wrong mod",
-					"adhesion gel is not purple!", "youtuber flamingo will come for u at 3 am"}
+
+	alesannames = {"asone's", "atolone's", "asomon's", "aslane's", "aleonse's",
+				   "alesan's", "aslallan's", "aidan's", "aaaaaaaaaa's",
+				   "ale-chan's", "asdasdas99's", "alesan99's", "ale-san's",
+				   "sanale's"}
+	alesanname = alesannames[math.random(#alesannames)]
+
+	loadingtexts = {
+		{"rendering important stuff", ""},
+		{"01110000 01101111", "01101110 01111001"},
+		{"sometimes, i dream about cheese", ""},
+		{"the cake was never a lie, sike", ""},
+		{"happy explosion day", ""},
+		{"raising coolness by a fifth", ""},
+		{"stabbing myself", ""},
+		{"sharpening knives", ""},
+		{"becoming self-aware", "", "red"},
+		{"there is no minus world", ""},
+		{"silly loading message here", ""},
+		{"licensed under wtfpl", ""},
+		{"banned in australia", ""},
+		{"loading anti-piracy module", ""},
+		{"attack while its tail's up!", ""},
+		{"what a horrible night to have a curse", ""},
+
+		{"han shot first", ""},
+		{"establishing connection to nsa servers", "... ... ... ... ..."},
+		{"how do i mod?", ""},
+		{"making palette inaccurate", "... ... ... ... ..."},
+		{"y cant mario crawl?", ""},
+		{"avoiding lawsuits", ""},
+		{"h", ""},
+		{"loading bugs", ""},
+		{"swing your arms", ""},
+		{"this message will self destruct in", "3... 2... 1..."},
+		{"what's this green gas?", ""},
+		{"loading " .. alesanname .. " entities", ""},
+		{"now with online multiplayer", ""},
+		{"how dose one port forward???", ""},
+		{"we need pow blocks!", ""},
+		{"cross your fingers", ""},
+
+		{"improved stability to enhance user experience", ""},
+		{"hoo-ray", ""},
+		{"that's my pan", ""},
+		{"not mario maker", ""},
+		{"removing herobrine", ""},
+		{"hello there", ""},
+		{"not enough quicksand :(", ""},
+		{"this statement is false", ""},
+		{"it just works!", ""},
+		{"im a tire", ""},
+		{"super mario in real life!", ""},
+		{"but im super duper, with a big tuper", ""},
+		{"loading unoptimised code", "... ... ... ... ..."},
+		{"according to all known laws of aviation,", "there is no way a bee should be able to fly."},
+		{"i am not a moron!!!!", ""},
+		{"dlc is broken, go fix", ""},
+
+		{"now with 3d!.. wait wrong mod", ""},
+		{"adhesion gel is not purple!", ""},
+		{"youtuber flamingo will come for u at 3 am", ""},
+		{"all hail the pineapple", ""},
+		{"no thoughts, only smithley", "", "smithley"},
+		{"todays loading text is sponsered by", "raid shadow legends!"},
+		{"nil", ""},
+		{"somehow more broken", ""},
+		{"pls ad purpel guy at lest", "pls ad purpel guy at lest", "abode"},
+		{"now with horrible android controls", ""},
+		{"think u safe?", ""},
+		{"fixing offsets", "... ... ... ... ..."},
+		{"2) cover yourself in oil", "", "oil"},
+		{"mari0", ""},
+		{"super portal bros", ""},
+		{"there is no loading text", "take off your clothes"},
+
+		{"only 90's kids remember ace", ""},
+		{"also fuck the random d", ""},
+		{"but will anyone actually use this", ""},
+		{"no copyright law in the universe", "is going to stop me"},
+		{"attempt to call function", "'who_asked' (a nil value)"},
+	}
 						
-	loadingtext = loadingtexts[math.random(#loadingtexts)]
-	--loadingtext = loadingtexts[#loadingtexts]
+	--loadingtext = loadingtexts[math.random(#loadingtexts)]
+	loadingtext = loadingtexts[#loadingtexts]
+	--loadingtext = loadingtexts[53]
 	loadingbardraw(1)
 	
 	--require ALL the files!
@@ -234,35 +390,40 @@ function love.load()
 	require "netplay"
 	JSON = require "JSON"
 	require "notice"
+	require "languages"
 	
 	local luas = {"intro", "menu", "levelscreen", "game", "editor", "physics", "online", "quad", "animatedquad", "entity", "dailychallenge",
 				"portalwall", "tile", "mario", "mushroom", "hatconfigs", "flower", "star", "coinblockanimation",
 				"scrollingscore", "platform", "platformspawner", "portalparticle", "portalprojectile", "box", "emancipationgrill", "door",
-				"button", "groundlight", "wallindicator", "walltimer", "lightbridge", "faithplate", "laser", "laserdetector", "gel", "geldispenser",
+				"button", --[["groundlight",]] "wallindicator", "walltimer", "lightbridge", "faithplate", "laser", "laserdetector", "gel", "geldispenser",
 				"cubedispenser", "pushbutton", "screenboundary", "fireball", "gui", "blockdebris", "firework", "vine", "spring", "seesaw",
 				"seesawplatform", "bubble", "rainboom", "miniblock", "notgate", "musicloader", "smbsitem",
 				"donut", "levelball", "leaf", "mariotail", "windleaf", "energylauncher", "energycatcher", "blocktogglebutton", "squarewave",
-				"delayer", "coin", "funnel", "longfire", "minimushroom", "pedestal", "portalent", "text", "regiontrigger", "tiletool",  
+				"delayer", "coin", "funnel", "longfire", "pedestal", "portalent", "text", "regiontrigger", "tiletool",  
 				"enemytool", "randomizer", "yoshi", "musicchanger", "mariohammer", "regiondrag", "flipblock",
 				"characters", "checkpoint", "onlinemenu", "lobby", "magic", "doorsprite", "enemies", "enemy", "itemanimation", "cappy",
 				"emancipationfizzle", "emancipateanimation", "ceilblocker", "belt", "hatloader", "poof", "animationguiline", "animation",
 				"animationsystem", "animationtrigger", "dialogbox", "portal", "orgate", "andgate", "animatedtiletrigger", "rsflipflop", "animatedtimer",
 				"collectable", "powblock", "smallspring", "risingwater", "redseesaw", "snakeblock", "frozencoin", "entitytooltip", "spawnanimation",
 				"camerastop", "clearpipe", "track", "tilemoving", "checkpointflag", "ice", "pipe", "errorwindow", "tilegravity", "claw",
-				"rouletteblock", "crowber"}
+				"rouletteblock", "commander"}
+
 	for i = 1, #luas do
 		require(luas[i])
 	end
-	print("done loading .luas!")
+
+	print("-- DONE LOADING LUA'S --")
 	loadingbardraw(1)
+
+	print("-- LOADING ENEMIES --")
+
 	local enemyluas = love.filesystem.getDirectoryItems("enemies")
 	for i = 1, #enemyluas do
 		require("enemies/" .. enemyluas[i]:sub(1, enemyluas[i]:len()-4))
 	end
-	print("done loading enemies!")
-	loadingbardraw(1)
 
-	emulogic = love.graphics.newFont("emulogic.ttf", 8)
+	print("-- DONE LOADING ENEMIES --")
+	loadingbardraw(1)
 
 	--json error window
 	JSONcrashgame = true
@@ -271,22 +432,13 @@ function love.load()
 	--internet connection
 	http = require("socket.http")
 	http.TIMEOUT = 1
-	
-	updatenotification = false
-	--[[if getupdate() then
-		updatenotification = true
-	end]]
+
 	credited = true
 	http.TIMEOUT = 7
 	
-	graphicspack = "SMB" --SMB, ALLSTARS, SMM
-	gpack = graphicspack
-
+	graphicspack = "SMB" --SMB, ALLSTARS
 	playertypei = 1
 	playertype = playertypelist[playertypei] --portal, minecraft
-
-	entitytypei = 1
-	entitytype = entitytypelist[entitytypei] --default, mario, portal, classic
 	
 	if volume == 0 then
 		soundenabled = false
@@ -400,6 +552,7 @@ function love.load()
 	backgroundcolor[9] = {24, 60, 92}]]
 	
 	--IMAGES--
+	print("-- LOADING GRAPHIC'S --")
 	
 	menuselectimg = love.graphics.newImage("graphics/" .. graphicspack .. "/menuselect.png")
 	mappackback = love.graphics.newImage("graphics/GUI/mappackback.png")
@@ -425,10 +578,10 @@ function love.load()
 		optionsiconsquads[i] = love.graphics.newQuad((i-1)*12, 0, 12, 12, 72, 12)
 	end
 
-	grillsimg = love.graphics.newImage("graphics/GUI/grilldisplay.png")
-
 	markbaseimg = love.graphics.newImage("graphics/markbase.png")
 	markoverlayimg = love.graphics.newImage("graphics/markoverlay.png")
+
+	autosaveicon = love.graphics.newImage("graphics/GUI/autosaveicon.png")
 	
 	--tiles
 	smbtilesimg = love.graphics.newImage("graphics/" .. graphicspack .. "/smbtiles.png")
@@ -439,71 +592,23 @@ function love.load()
 	rgblist = {}
 	
 	--add smb tiles
-	local imgwidth, imgheight = smbtilesimg:getWidth(), smbtilesimg:getHeight()
-	local width = math.floor(imgwidth/17)
-	local height = math.floor(imgheight/17)
-	local secretstart = 7
-	local imgdata = love.image.newImageData("graphics/" .. graphicspack .. "/smbtiles.png")
-	
-	for y = 1, height do
-		for x = 1, width do
-			if y >= secretstart then
-				local i = ((secretstart-1)*22) + (.01*((y*22+x)-(secretstart*22)))
-				tilequads[i] = quad:new(smbtilesimg, imgdata, x, y, imgwidth, imgheight)
-				local r, g, b = getaveragecolor(imgdata, x, y)
-				rgblist[i] = {r, g, b}
-			else
-				table.insert(tilequads, quad:new(smbtilesimg, imgdata, x, y, imgwidth, imgheight))
-				local r, g, b = getaveragecolor(imgdata, x, y)
-				table.insert(rgblist, {r, g, b})
-			end
-		end
-	end
-	smbtilecount = width*height-((height-secretstart+1)*22) --subtract secret rows of tiles
-	
+	loadtiles("smb", "initial")
 	--add portal tiles
-	local imgwidth, imgheight = portaltilesimg:getWidth(), portaltilesimg:getHeight()
-	local width = math.floor(imgwidth/17)
-	local height = math.floor(imgheight/17)
-	local imgdata = love.image.newImageData("graphics/" .. graphicspack .. "/portaltiles.png")
-	
-	for y = 1, height do
-		for x = 1, width do
-			table.insert(tilequads, quad:new(portaltilesimg, imgdata, x, y, imgwidth, imgheight))
-			local r, g, b = getaveragecolor(imgdata, x, y)
-			table.insert(rgblist, {r, g, b})
-		end
-	end
-	portaltilecount = width*height
-	
+	loadtiles("portal", "initial")
 	--add entities
 	entityquads = {}
-	local imgwidth, imgheight = entitiesimg:getWidth(), entitiesimg:getHeight()
-	local width = math.floor(imgwidth/17)
-	local height = math.floor(imgheight/17)
-	local imgdata = love.image.newImageData("graphics/" .. graphicspack .. "/entities.png")
-	
-	for y = 1, height do
-		for x = 1, width do
-			table.insert(entityquads, entity:new(entitiesimg, x, y, imgwidth, imgheight))
-			entityquads[#entityquads]:sett(#entityquads)
-		end
-	end
-	entitiescount = width*height
+	loadtiles("entity", "initial")
 
 	--nitpicks
 	loadnitpicks()
 	
 	--formated entities list
-	if classic then
-		entitiesform = entitiesforms["classic"]
-	elseif customent then
+	entitiesform = entitiesforms["default"]
+	if customent then
 		entitiesform = entitiesforms["custom"]
-	else
-		entitiesform = entitiesforms[entitytype]
 	end
 	updatenamespacing()
-		
+
 	--check if entities are missing because i'm stupid
 	--[[local entitycheck = {}
 	for i = 1, entitiescount do
@@ -535,13 +640,14 @@ function love.load()
 	mariolightimg = love.graphics.newImage("graphics/" .. graphicspack .. "/mariolight.png")
 	
 	calendarimg = love.graphics.newImage("graphics/" .. graphicspack .. "/calendar.png")
+
+	print("-- DONE LOADING GRAPHIC'S --")
 	
 	--menut tips
 	menutips = {"resize the game window by changing the scale to 'resizable' in the options!",
 			"download dlc mappacks by going to the dlc tab in the mappack menu!",
 			"is there a problem with the mod? tell me at the stabyourself.net forums!",
 			"there are currently about " .. math.floor(entitiescount-100) .. " new entities in this mod! try them out!",
-			--"change your mappack folder to 'alesans_entities/mappacks' in the options to prevent crashes when you use unmodded mari0!",
 			"lock your mouse with f12!",
 			"display fps with f11!",
 			"experienced an error? post your error found in 'mari0/alesans_entities/crashes' at the stabyourself.net forums!",
@@ -555,15 +661,14 @@ function love.load()
 			"change your character in the settings!",
 			"add more playable characters in the 'mari0/alesans_entities/characters' folder."}
 	disabletips = false
-	--[[if love.filesystem.exists("alesans_entities/disabletips.txt") then
-		disabletips = true
-	end]]
 
+	print("-- LOADING QUAD'S --")
 	loadingbardraw(1)
 	
 	------------------------------
 	------------QUADS-------------
 	------------------------------
+
 	numberglyphs = "012458"
 	font2quads = {}
 	for i = 1, 6 do
@@ -593,16 +698,21 @@ function love.load()
 	
 	linktoolpointerimg = love.graphics.newImage("graphics/GUI/linktoolpointer.png")
 
-	local pipedirs = {"up", "left", "down", "right", "default", ""}
+	local pipedirs = {"up", "left", "down", "right", "default", "", "", "", ""}
+	local spawndirs = {"none", "offset", "block", "cannon", "pipeup", "pipedown", "pipeleft", "piperight", "poof"}
 	pipesimg = love.graphics.newImage("graphics/GUI/pipes.png")
 	pipesquad = {}
 	for y = 1, 4 do
 		pipesquad[y] = {}
-		for x = 1, 6 do
-			pipesquad[y][pipedirs[x]] = love.graphics.newQuad((x-1)*16, (y-1)*16, 16, 16, 96, 64)
+		for x = 1, 9 do
+			if y == 4 then
+				pipesquad[y][spawndirs[x]] = love.graphics.newQuad((x-1)*16, (y-1)*16, 16, 16, 144, 64)
+			else
+				pipesquad[y][pipedirs[x]] = love.graphics.newQuad((x-1)*16, (y-1)*16, 16, 16, 144, 64)
+			end
 		end
 	end
-	
+
 	loadquads(true)
 
 	--portals
@@ -666,11 +776,20 @@ function love.load()
 	groundlightquad = {}
 	for s = 1, 4 do
 		groundlightquad[s] = {}
-		for x = 1, 12 do
+		for x = 1, 6 do
 			groundlightquad[s][x] = {}
 			for y = 1, 2 do
-				groundlightquad[s][x][y] = love.graphics.newQuad((x-1)*16, (s-1)*32+(y-1)*16, 16, 16, 192, 128)
+				groundlightquad[s][x][y] = love.graphics.newQuad((x-1)*16, (s-1)*32+(y-1)*16, 16, 16, 96, 128)
 			end
+		end
+	end
+
+	--antlines
+	antlinequad = {}
+	for s = 1, 4 do
+		antlinequad[s] = {}
+		for i = 1, 2 do
+			antlinequad[s][i] = love.graphics.newQuad((i-1)*6, (s-1)*6, 6, 6, 12, 24)
 		end
 	end
 
@@ -685,11 +804,13 @@ function love.load()
 	for y = 1, 4 do
 		cubedispenserquad[y] = love.graphics.newQuad(0, (y-1)*32, 32, 32, 32, 128)
 	end
-	
+
 	--faithplate
 	faithplatequad = {}
 	for y = 1, 4 do
-		faithplatequad[y] = love.graphics.newQuad(0, (y-1)*16, 32, 16, 32, 32)
+		faithplatequad[y] = {}
+		faithplatequad[y][1] = love.graphics.newQuad(0, (y-1)*32, 32, 16, 32, 128)
+		faithplatequad[y][2] = love.graphics.newQuad(0, ((y-1)*32)+16, 32, 16, 32, 128)
 	end
 
 	--laserside
@@ -769,7 +890,7 @@ function love.load()
 	hudclockquad = {}
 	hudclockquad[false] = love.graphics.newQuad(0, 0, 10, 9, 10, 18)
 	hudclockquad[true] = love.graphics.newQuad(0, 9, 10, 9, 10, 18) --outline
-	
+
 	entplaceimg = love.graphics.newImage("graphics/GUI/entityoverlay.png")
 	entplacequad = {}
 	for i = 1, 5 do
@@ -779,15 +900,16 @@ function love.load()
 	--editorstuff
 	editorstuff = {}
 	editorstuffquad = {}
+	--directions (4 types)
 	editorstuffquad["up"] = love.graphics.newQuad(0, 0, 112, 112, 448, 112)
 	editorstuffquad["left"] = love.graphics.newQuad(112, 0, 112, 112, 448, 112)
 	editorstuffquad["down"] = love.graphics.newQuad(224, 0, 112, 112, 448, 112)
 	editorstuffquad["right"] = love.graphics.newQuad(336, 0, 112, 112, 448, 112)
-	--door
-	editorstuffquad["ver"] = love.graphics.newQuad(0, 0, 112, 112, 224, 112)
-	editorstuffquad["hor"] = love.graphics.newQuad(112, 0, 112, 112, 224, 112)
+	--boolean (2 types)
+	editorstuffquad["no"] = love.graphics.newQuad(0, 0, 112, 112, 224, 112)
+	editorstuffquad["yes"] = love.graphics.newQuad(112, 0, 112, 112, 224, 112)
 	--single like me :(
-	editorstuffquad["off"] = love.graphics.newQuad(0, 0, 112, 112, 112, 112)
+	editorstuffquad["none"] = love.graphics.newQuad(0, 0, 112, 112, 112, 112)
 	for i = 1, #entitylist do
 		if love.filesystem.exists("graphics/editorstuff/" .. entitylist[i].t .. ".png") then
 			editorstuff[entitylist[i].t] = love.graphics.newImage("graphics/editorstuff/" ..entitylist[i].t .. ".png")
@@ -797,6 +919,7 @@ function love.load()
 	end
 
 	--Portal FX
+	portalgunimg = love.graphics.newImage("graphics/" .. graphicspack .. "/portalgun.png")
 	portalparticleimg = love.graphics.newImage("graphics/" .. graphicspack .. "/portalparticle.png")
 	portalcrosshairimg = love.graphics.newImage("graphics/" .. graphicspack .. "/portalcrosshair.png")
 	portaldotimg = love.graphics.newImage("graphics/" .. graphicspack .. "/portaldot.png")
@@ -830,8 +953,10 @@ function love.load()
 		minecraftpickaxequad[y] = love.graphics.newQuad(0, (y-1)*20, 20, 20, 20, 100)
 	end
 	
-	print("done loading all quads!")
+	print("-- DONE LOADING QUAD'S --")
 	loadingbardraw(1)
+	
+	print("-- LOADING SOUND'S --")
 	
 	--AUDIO--
 	--sounds
@@ -907,6 +1032,7 @@ function love.load()
 	superballeatsound = love.audio.newSource("sounds/superballeat.ogg", "static")
 	capeflysound = love.audio.newSource("sounds/capefly.ogg", "static")
 	mushroombigeatsound = love.audio.newSource("sounds/mushroombigeat.ogg", "static")
+	--groundpoundsound = love.audio.newSource("sounds/groundpound.ogg", "static")
 	sausagesound = love.audio.newSource("sounds/totaka.ogg", "static")--this is for um, the sausage entity.
 	babysound = love.audio.newSource("sounds/baby.ogg", "static")
 	bigiciclesound = love.audio.newSource("sounds/bigicicle.ogg", "static")
@@ -915,6 +1041,8 @@ function love.load()
 	clawexitsound = love.audio.newSource("sounds/clawexit.ogg", "static")
 	buttononsound = love.audio.newSource("sounds/buttonon.ogg", "static")
 	buttonoffsound = love.audio.newSource("sounds/buttonoff.ogg", "static")
+	noteblocksound = love.audio.newSource("sounds/noteblock.ogg", "static")
+	shoepoundsound = love.audio.newSource("sounds/shoepound.ogg", "static")
 	--i don't like this but i KNOW someone is going to complain about sounds if i don't do this
 	collectable1sound = love.audio.newSource("sounds/collectable1.ogg", "static")
 	collectable2sound = love.audio.newSource("sounds/collectable2.ogg", "static")
@@ -926,7 +1054,6 @@ function love.load()
 	collectable8sound = love.audio.newSource("sounds/collectable8.ogg", "static")
 	collectable9sound = love.audio.newSource("sounds/collectable9.ogg", "static")
 	collectable10sound = love.audio.newSource("sounds/collectable10.ogg", "static")
-	noteblocksound = love.audio.newSource("sounds/noteblock.ogg", "static")
 	
 	glados1sound = love.audio.newSource("sounds/glados/glados1.ogg", "stream")
 	glados2sound = love.audio.newSource("sounds/glados/glados2.ogg", "static")
@@ -945,15 +1072,14 @@ function love.load()
 					raccoonplanesound, skidsound, jumptinysound, pbuttonsound, windsound, suitsound, koopalingendsound, bowserendsound, dooropensound, doorclosesound, keysound, keyopensound, weirdmushroomsound, jumpskinnysound,
 					energybouncesound, shufflesound, grabsound, throwsound, collectable1sound, collectable2sound, collectable3sound, collectable4sound, collectable5sound, collectable6sound, collectable7sound, 
 					collectable8sound, collectable9sound, collectable10sound, switchsound, iciclefallsound, helmetsound, helmethitsound, propellersound, clearpipesound, megamushroomsound, stompbigsound, thwompbigsound,
-					superballeatsound, superballsound, capeflysound, mushroombigeatsound, bumperhitsound, bumperjumpsound, cannonfastsound, powblocksound, checkpointsound, bigiciclesound, bigiciclefallsound,
-					clawsound, clawexitsound, buttononsound, buttonoffsound}
+					superballeatsound, superballsound, capeflysound, mushroombigeatsound, bumperhitsound, bumperjumpsound, cannonfastsound, powblocksound, checkpointsound, groundpoundsound}
 		soundliststring = {"jump", "jumpbig", "stomp", "shot", "blockhit", "blockbreak", "coin", "pipe", "boom", "mushroomappear", "mushroomeat", "shrink", "death", "gameover",
 			"turretshot", "oneup", "levelend", "castleend", "scorering", "intermission", "fire", "fireball", "bridgebreak", "bowserfall", "vine", "swim", "rainboom",
 			"portal1open", "portal2open", "portalenter", "portalfizzle", "lowtime", "pause", "stab", "bulletbill", "icicle", "thwomp", "boomerang", "raccoonswing",
 			"raccoonplane", "skid", "jumptiny", "pbutton", "wind", "suit", "koopalingend", "bowserend", "dooropen", "doorclose", "key", "keyopen", "weirdmushroom", "jumpskinny",
 			"energybounce", "shuffle", "grab", "throw", "collectable1","collectable2","collectable3","collectable4","collectable5","collectable6","collectable7","collectable8", "collectable9", "collectable10",
 			"switch", "iciclefall", "helmet", "helmethit", "propeller", "clearpipe", "megamushroom", "stompbig", "thwompbig", "superballeat", "superball", "capefly", "mushroombigeat", "bumperhit",
-			"bumperjump", "cannonfast", "powblock", "checkpoint", "bigicicle", "bigiciclefall", "claw", "clawexit", "buttonon", "buttonoff"}
+			"bumperjump", "cannonfast", "powblock", "groundpound", "checkpoint", "bigicicle", "bigiciclefall", "claw", "clawexit", "buttonon", "buttonoff"}
 		local temptable = {} --sort the sounds
 		for i, t in pairs(soundlist) do
 		table.insert(temptable, {t, soundliststring[i]})
@@ -966,7 +1092,7 @@ function love.load()
 	end
 	updatesoundlist()
 	
-	print("done loading all " .. #soundlist .. " sounds!")
+	print("-- DONE LOADING SOUND'S --")
 	loadingbardraw(1)
 	
 	musici = 2
@@ -1000,31 +1126,21 @@ function love.load()
 			aeditorbuttonsimg:getHeight(),aeditorbuttonsimg:getHeight(),
 			aeditorbuttonsimg:getWidth(),aeditorbuttonsimg:getHeight())
 		end
-
-		acorruptbuttonsimg = love.graphics.newImage("graphics/GUI/androidcorruptbuttons.png")
-		acorruptbuttonsq = {}
-		for i = 1, math.floor(acorruptbuttonsimg:getWidth()/acorruptbuttonsimg:getHeight()) do
-			acorruptbuttonsq[i] = love.graphics.newQuad(acorruptbuttonsimg:getHeight()*(i-1),0,
-			acorruptbuttonsimg:getHeight(),acorruptbuttonsimg:getHeight(),
-			acorruptbuttonsimg:getWidth(),acorruptbuttonsimg:getHeight())
-		end
 	end
 
-	loadingbardraw(1)
+	--Set Language
+	if CurrentLanguage and CurrentLanguage ~= "english" then
+		set_language(CurrentLanguage)
+	end
 
-	--corrupt
-	corruptstart = false
-	corruptdelay = 0.5
-	corrupttimer = corruptdelay
-	corruptintensity = 2
-	corruptammount = 0
-	cselection = 2
-	
 	clatest = ""
 	consoleprint = ""
 	
 	showdebug = true
 
+	print("----- GAME LOADED, ENJOY YOUR STAY -----")
+	loadingbardraw(1)
+	
 	intro_load()
 end
 
@@ -1033,11 +1149,6 @@ function love.update(dt)
 		music:update()
 	end
 	dt = math.min(0.01666667, dt)
-
-	--corrupt
-	if _CORRUPTER and not editormode and not testlevel and corruptstart then
-		update_corrupt(dt)
-	end	
 	
 	--speed
 	if speed ~= speedtarget then
@@ -1112,11 +1223,15 @@ end
 function love.draw()
 	if resizable or android then
 		if canvassupported or android then
+			if letterboxfullscreen and (shaders.passes[1].on or shaders.passes[2].on) then
+				love.graphics.setColor(0, 0, 0)
+				love.graphics.rectangle("fill", 0, 0, winwidth, winheight)
+			end
 			love.graphics.setCanvas(canvas)
 			love.graphics.clear()
 			canvas:renderTo(lovedraw)
 			love.graphics.setCanvas()
-			if letterboxfullscreen then
+			if letterboxfullscreen and not (shaders.passes[1].on or shaders.passes[2].on) then
 				love.graphics.setColor(0, 0, 0)
 				love.graphics.rectangle("fill", 0, 0, winwidth, winheight)
 				local cw, ch = canvas:getWidth(), canvas:getHeight()--current size
@@ -1145,7 +1260,7 @@ function lovedraw()
 	if resizable then
 		if canvassupported then
 			love.graphics.setColor(love.graphics.getBackgroundColor())
-			love.graphics.rectangle("fill", 0, 0, 400*scale, 244*scale)
+			love.graphics.rectangle("fill", 0, 0, width*16*scale, height*16*scale)
 		end
 	end
 	love.graphics.setColor(255, 255, 255)
@@ -1166,51 +1281,11 @@ function lovedraw()
 		properprintfast(love.timer.getFPS(), 2*scale, 2*scale)
 	end
 
-	love.graphics.setColor(255, 155, 155)
-	--debug
-	if _CORRUPTER and showdebug and not editormode and not testlevel then
-		local t = {
-			"corruption started:" .. tostring(corruptstart),
-			"corruption delay: " .. corruptdelay .. " (" .. round(1/corruptdelay, 3) .. " per sec)",
-			"corruption intensity: " .. corruptintensity,
-			"total corruptions: " .. corruptammount,
-			"latest variable:" .. clatest,
-			consoleprint
-		}
-		local y = 30*scale
-		if android then
-			y = 90*scale
-		end
-		for i, s in pairs(t) do
-			if s == "" then
-				y = y + 24
-			else
-				if cselection == i then
-					love.graphics.setColor(60, 60, 60, 150)
-				else
-					love.graphics.setColor(0, 0, 0, 150)
-				end
-				love.graphics.rectangle("fill", 0, y, ((s:len()*8)+4)*2, 24)
-				if not pausemenuopen and gamestate == "game" then
-					love.graphics.setColor(255, 255, 255)
-				else
-					love.graphics.setColor(255, 100, 100)
-				end
-				properprintdebug(s, 4, (y+4), nil, 2)
-				y = y + 24
-			end
-		end
-	end
-	love.graphics.setColor(255, 255, 255)
-
 	if showinfo and gamestate == "game" then --ooohhh
 		showfps = false
 		--map tiles
 		local mousex, mousey = love.mouse.getPosition()
 		local tx, ty = getMouseTile(mousex, mousey+8*scale)
-
-		--time
-		local ostime = os.date('*t') --get the date/time
 
 		--map possition
 		local mappos = map[tx][ty]
@@ -1235,12 +1310,6 @@ function lovedraw()
 			curr = "entity"
 		end
 
-		local air = "false"
-		--aiiiiiiiiiiir
-		if objects["player"][1].falling or objects["player"][1].jumping then
-			air = "true"
-		end
-
 		local totalent = 0
 		local totalentcount = {}
 		local totalentcountname = {}
@@ -1258,16 +1327,19 @@ function lovedraw()
 		local t1 = {
 			"ace" .. VERSIONSTRING,
 			"fps = " .. love.timer.getFPS(),
-			"time : " .. ostime.hour .. ":" .. ostime.min .. ":" .. ostime.sec,
-			"day : " .. ostime.day .. "/" .. ostime.month .. "/" .. ostime.year,
 			"_b",
 			"map x-y = " .. tx .. " - " .. ty,
 			"current " .. curr .. " = " .. (currenttile or "n/a"),
 			"_b",
-			"player x-y = " .. (objects["player"][1].x or 0) .. "-" .. (objects["player"][1].y or 0),
+			"player x = " .. (objects["player"][1].x or 0),
+			"player y = " .. (objects["player"][1].y or 0),
+			"player xspeed = " .. (objects["player"][1].speedx or 0),
+			"player xspeed = " .. (objects["player"][1].speedy or 0),
 			"player size = " .. objects["player"][1].size .. " (" .. (powerupslist[objects["player"][1].size] or "n/a") .. ")",
+			"jumping = " .. (tostring(objects["player"][1].jumping) or "false"),
+			"falling = " .. (tostring(objects["player"][1].falling) or "false"),
+			"_b",
 			"scroll x-y = " .. xscroll .. "-" .. yscroll,
-			"in air = " .. air,
 			"_b",
 			"map data",
 			"tile = " .. (mappos[1] or "n/a"),
@@ -1296,7 +1368,7 @@ function lovedraw()
 				love.graphics.setColor(0, 0, 0, 200)
 				love.graphics.rectangle("fill", 0, y, ((s:len()*8)+4), 12)
 				love.graphics.setColor(255, 255, 255)
-				properprintdebug(s, 2, (y+2))
+				properprintF(s, 2, (y+2), (1/3))
 				y = y + 12
 			end
 		end
@@ -1308,7 +1380,8 @@ function lovedraw()
 				love.graphics.setColor(0, 0, 0, 200)
 				love.graphics.rectangle("fill", (400*scale)-((s:len()*8)+4), y, ((s:len()*8)+4), 12)
 				love.graphics.setColor(255, 255, 255)
-				properprintdebug(s, (401*scale)-((s:len()*8)+4), (y+2))
+				properprintF(s, (401*scale)-((s:len()*8)+4), (y+2),
+				 (1/3))
 				y = y + 12
 			end
 		end
@@ -1341,6 +1414,18 @@ function lovedraw()
 			love.graphics.setColor(255, 255, 255, 140)
 			love.graphics.circle("line", x, y, r, 8)
 			
+			--c (USE BUTTONS POG)
+			if separateusebutton then
+			if love.keyboard.isDown(controls[1]["use"][1]) then
+				love.graphics.setColor(100, 100, 100, 140)
+			else
+				love.graphics.setColor(30, 30, 30, 80)
+			end
+			local x, y, r = (b["use"][1]+b["use"][3])/2, (b["use"][2]+b["use"][4])/2, (b["use"][3]-b["use"][1])/2
+			love.graphics.circle("fill", x, y, r, 8)
+			love.graphics.setColor(255, 255, 255, 140)
+			love.graphics.circle("line", x, y, r, 8)
+			end
 			--b+
 			if gamestate == "game" then
 				if touchrunlock then
@@ -1393,6 +1478,9 @@ function lovedraw()
 			love.graphics.setColor(255, 255, 255)
 			properprint("a", 366, 190)
 			properprint("b", 313, 190)
+			if separateusebutton then
+        properprint("c", 340, 142.5)
+      end
 			if gamestate == "game" then
 				properprint("+", 276, 202)
 			end
@@ -1415,20 +1503,6 @@ function lovedraw()
 				love.graphics.draw(aeditorbuttonsimg, aeditorbuttonsq[i], bx, by)
 
 				bx = bx + aeditorbuttonsw + 2
-			end
-		elseif _CORRUPTER and not editormode then
-			local i2 = #acorruptbuttons
-			local bx, by = 2, 2
-			if not showdebug then i2 = 1 end
-			for i = 1, i2 do
-				love.graphics.setColor(20, 20, 20, 200)
-				love.graphics.rectangle("fill", bx, by, acorruptbuttonsw, acorruptbuttonsw)
-				love.graphics.setColor(255, 255, 255, 100)
-				love.graphics.rectangle("line", bx+.5, by+.5, acorruptbuttonsw, acorruptbuttonsw)
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(acorruptbuttonsimg, acorruptbuttonsq[i], bx, by)
-
-				bx = bx + acorruptbuttonsw + 2
 			end
 		end
 		
@@ -1458,11 +1532,10 @@ function lovedraw()
 		love.graphics.setColor(255, 255, 255)
 		love.graphics.print(debuginput, 2, 2)
 	end
-
 	--testing sublevels (i KNOW you'll need this)
 	--love.graphics.setColor(255,255,255)
-	--properprint("mariosublevel: " .. tostring(mariosublevel) .. "|prevsublevel: " .. tostring(prevsublevel) .. "|actualsublevel: " .. tostring(actualsublevel), 2, 2)
-	
+	--properprint("mariosublevel: " .. tostring(mariosublevel) .. "\nprevsublevel: " .. tostring(prevsublevel) .. "\nactualsublevel: " .. tostring(actualsublevel), 2, 2)
+
 	love.graphics.setColor(255, 255,255)
 end
 
@@ -1481,13 +1554,10 @@ function saveconfig()
 			end
 			s = s .. j .. "-" .. c
 			count = count + 1
-			if count == 12 then
-				s = s .. ";"
-			else
-				s = s .. ","
-			end
+			s = s .. ","
 		end
-	end	
+		s = s:sub(1,-2) .. ";"
+	end
 	
 	if mariocharacter then
 		s = s .. "mariocharacter:"
@@ -1564,8 +1634,6 @@ function saveconfig()
 	if vsync then
 		s = s .. "vsync;"
 	end
-
-	--s = s .. "entitylist:" .. entitytypei .. ";"
 	
 	if gamefinished then
 		s = s .. "gamefinished;"
@@ -1593,6 +1661,9 @@ function saveconfig()
 	end
 	
 	s = s .. "resizable:" .. tostring(resizable) .. ";"
+	if CurrentLanguage then
+		s = s .. "language:" .. CurrentLanguage .. ";"
+	end
 	
 	if fourbythree then
 		s = s .. "fourbythree;"
@@ -1678,10 +1749,12 @@ function loadconfig(nodefaultconfig)
 			end
 			
 		elseif s2[1] == "scale" then
-			if android then
-				scale = 1
-			else
-				scale = tonumber(s2[2])
+			if not nodefaultconfig then
+				if android then
+					scale = 1
+				else
+					scale = tonumber(s2[2])
+				end
 			end
 		elseif s2[1] == "letterbox" then
 			letterboxfullscreen = true
@@ -1712,8 +1785,6 @@ function loadconfig(nodefaultconfig)
 			gamefinished = true
 		elseif s2[1] == "vsync" then
 			vsync = true
-		--elseif s2[1] == "entitylist" then
-			--entitytypei = s2[2]
 		elseif s2[1] == "reachedworlds" then
 			reachedworlds[s2[2]] = {}
 			local s3 = s2[3]:split(",")
@@ -1734,6 +1805,8 @@ function loadconfig(nodefaultconfig)
 			end
 		elseif s2[1] == "fourbythree" then
 			fourbythree = true
+		elseif s2[1] == "language" then
+			CurrentLanguage = s2[2]
 		elseif s2[1] == "localnick" then
 			localnick = s2[2]
 		elseif s2[1] == "mariocharacter" then
@@ -1981,6 +2054,7 @@ function defaultconfig()
 	controls = {}
 	
 	local i = 1
+	controlstable = {"left", "right", "up", "down", "run", "jump", "reload", "use", "aimx", "aimy", "portal1", "portal2"}
 	controls[i] = {}
 	controls[i]["right"] = {"d"}
 	controls[i]["left"] = {"a"}
@@ -1994,6 +2068,7 @@ function defaultconfig()
 	controls[i]["portal2"] = {""}
 	controls[i]["reload"] = {"r"}
 	controls[i]["use"] = {"e"}
+	controls[i]["pause"] = {"escape"}
 	
 	for i = 2, 4 do
 		controls[i] = {}		
@@ -2009,6 +2084,7 @@ function defaultconfig()
 		controls[i]["portal2"] = {"joy", i-1, "but", 6}
 		controls[i]["reload"] = {"joy", i-1, "but", 4}
 		controls[i]["use"] = {"joy", i-1, "but", 2}
+		controls[i]["pause"] = {""}
 	end
 	-------------------
 	-- PORTAL COLORS --
@@ -2076,6 +2152,10 @@ function suspendgame()
 	st.character = {}
 	st.fireenemy = {}
 	st.colors = {}
+	--st.shoe = {}
+	st.changestats = {}
+	st.changedstats = {}
+	st.keepstatson = {}
 	for i = 1, players do
 		if objects["player"][i] then
 			local p = objects["player"][i]
@@ -2084,6 +2164,12 @@ function suspendgame()
 			if p.fireenemy then
 				st.fireenemy[i] = p.fireenemy
 				st.colors[i] = p.colors
+			end
+			--print(p.characterdata.changestats,"suspend")
+			if p.characterdata.changestats then
+				st.changestats[i] = p.characterdata.changestats
+				st.changedstats[i] = p.characterdata.changedstats
+				st.keepstatson[i] = {(p.characterdata.keepstatsongrow or false),(p.characterdata.keepstatsonshrink or false),(p.characterdata.keepstatsonwin or false)}
 			end
 		else
 			st.size[i] = 1
@@ -2127,6 +2213,7 @@ function continuegame()
 	
 	marioworld = st.world
 	mariolevel = st.level
+	mariocoincount = st.coincount
 	marioscore = st.score
 	players = st.players
 	if mariolivecount ~= false then
@@ -2139,6 +2226,9 @@ function continuegame()
 			setcustomplayer(mariocharacter[i], i)
 		end
 	end
+	--[[for i, shoe in pairs(st.shoe) do
+		marioproperties[i].shoe = shoe
+	end]]
 	for i, fireenemy in pairs(st.fireenemy) do
 		marioproperties[i].fireenemy = fireenemy
 	end
@@ -2146,6 +2236,20 @@ function continuegame()
 	for i, customcolors in pairs(st.colors) do
 		marioproperties[i].customcolors = customcolors
 	end
+	for i, changestats in pairs(st.changestats) do
+		marioproperties[i].changestats = changestats
+	end
+
+	for i, changedstats in pairs(st.changedstats) do
+		marioproperties[i].changedstats = changedstats
+	end
+
+	for i, keepstatson in pairs(st.keepstatson) do
+		marioproperties[i].keepstatsongrow = keepstatson[1]
+		marioproperties[i].keepstatsonshrink = keepstatson[2]
+		marioproperties[i].keepstatsonwin = keepstatson[3]
+	end
+
 	mappack = st.mappack
 	mappackfolder = st.mappackfolder
 	
@@ -2306,44 +2410,20 @@ function love.keypressed(key, unicode, isrepeat)
 			ok, result = pcall(func) -- execute the chunk safely
 
 			if not ok then -- will be false if there is an error
-				print('The following error happened: ' .. tostring(result))
+				print('-- ERROR -- The following error happened: ' .. tostring(result))
 			else
-				print('The result of loading is: ' .. tostring(result))
+				print('-- The result of loading is: ' .. tostring(result))
 			end
 		elseif key == "tab" then
 			debuginputon = not debuginputon
+			if debuginputon then
+				love.keyboard.setKeyRepeat(true)
+			else
+				love.keyboard.setKeyRepeat(false)
+			end
 		end
 		if debuginputon then
 			return
-		end
-	end
-	
-	--corrupt
-	if _CORRUPTER and not editormode and not testlevel then
-		if cselection == 1 then
-			if key == "[" or key == "]" then
-				corruptstart = not corruptstart
-			end
-		elseif cselection == 2 then
-			if key == "[" then
-				corruptdelay = math.max(0.1, corruptdelay - 0.1)
-			elseif key == "]" then
-				corruptdelay = corruptdelay + 0.1
-			end
-		elseif cselection == 3 then
-			if key == "[" then
-				corruptintensity = math.max(1, corruptintensity - 1)
-			elseif key == "]" then
-				corruptintensity = corruptintensity + 1
-			end
-		end
-		if key == "'" then
-			cselection = cselection + 1
-			if cselection == 4 then
-				cselection = 1
-			end
-		elseif key == ";" then
-			showdebug = not showdebug
 		end
 	end
 	
@@ -2385,16 +2465,7 @@ function love.keypressed(key, unicode, isrepeat)
 		return
 	end
 	
-	if key == "f8" then
-		loadanimatedtiles()
-		enemies_load()
-		loadcustomsprites()
-		loadcustomtext()
-		loadcustomsounds()
-		loadcustommusic()
-		loadcustombackgrounds()
-		getmappacklevels()
-	elseif key == "f9" then
+	if key == "f9" then
 		showinfo = not showinfo
 	elseif key == "f10" then
 		if android then
@@ -2570,12 +2641,17 @@ end
 function love.mousemoved(x, y, dx, dy)
 	if resizable and letterboxfullscreen and canvassupported and canvas then
 		x, y = love.mouse.getPosition()
-		dx, dy = dx/(winwidth/gamewidth), dy/(winheight/gameheight)
+		local cw, ch = canvas:getWidth(), canvas:getHeight()--current size
+		local tw, th = winwidth, winheight--target size
+		local s
+		if cw/tw > ch/th then s = tw/cw
+		else s = th/ch end
+		dx, dy = dx/(s), dy/(s)
 	elseif android or resizable then
 		x, y = x/(winwidth/gamewidth), y/(winheight/gameheight)
 		dx, dy = dx/(winwidth/gamewidth), dy/(winheight/gameheight)
 	end
-	if gamestate == "mappackmenu" then
+	if gamestate == "menu" or gamestate == "options" or gamestate == "mappackmenu" then
 		menu_mousemoved(x, y, dx, dy)
 	elseif gamestate == "game" then
 		if editormode then
@@ -2599,6 +2675,7 @@ function love.filedropped(file)
 end
 
 --[DROID]
+--ANDROID STUFF
 local mousetx = 0
 local mousety = 0
 local mouseid = false
@@ -2607,6 +2684,7 @@ if android then
 	androidbuttons = {
 		["jump"] = {346, 169, 395, 219},
 		["run"] = {292, 169, 342, 219},
+		["use"] = {320, 120, 370, 170},
 		["start"] = {352, 5, 395, 21},
 		["left"] = {5+5, 159, 35+5, 189},
 		["right"] = {65+5, 159, 95+5, 189},
@@ -2623,37 +2701,6 @@ if android then
 			currenttile = 1 end},
 		{function() ANDROIDRIGHTCLICK = not ANDROIDRIGHTCLICK end},
 		{function() backgroundtilemode = not backgroundtilemode end},
-		--{function() undo_undo() end},
-	}
-	acorruptbuttonsw = 24
-	acorruptbuttons = {
-		{function()
-			showdebug = not showdebug
-		end},
-		{function() 
-			if cselection == 2 then
-				corruptstart = not corruptstart
-			elseif cselection == 3 then
-				corruptdelay = math.max(0.1, corruptdelay - 0.1)
-			elseif cselection == 4 then
-				corruptintensity = math.max(1, corruptintensity - 1)
-			end
-		end},
-		{function() 
-			if cselection == 2 then
-				corruptstart = not corruptstart
-			elseif cselection == 3 then
-				corruptdelay = corruptdelay + 0.1
-			elseif cselection == 4 then
-				corruptintensity = corruptintensity + 1
-			end
-		end},
-		{function() 
-			cselection = cselection + 1
-			if cselection == 5 then
-				cselection = 2 
-			end
-		end}
 	}
 
 	function getandroidbutton(x, y)
@@ -2671,15 +2718,6 @@ if android then
 					return i
 				end
 				bx = bx + aeditorbuttonsw + 2
-			end
-		elseif not editormode then
-			local i2 = #acorruptbuttons
-			local bx, by = 2, 2
-			for i = 1, i2 do
-				if x > bx and x < bx+acorruptbuttonsw and y > by and y < by+acorruptbuttonsw then
-					return i
-				end
-				bx = bx + acorruptbuttonsw + 2
 			end
 		end
 		return false
@@ -2705,11 +2743,16 @@ if android then
 		elseif button == "run" and ((not editormode) or ((not editormenuopen) and (not HIDEANDROIDBUTTONS))) then--b
 			love.keypressed(controls[1]["run"][1])
 			touchkey[controls[1]["run"][1]] = id
-			if gamestate == "game" then
+			if gamestate == "game" and not separateusebutton then
 				love.keypressed(controls[1]["use"][1])
 				touchkey[controls[1]["use"][1]] = id
 			end
 			return true
+		elseif button == "use" and ((not editormode) or ((not editormenuopen) and (not HIDEANDROIDBUTTONS))) and separateusebutton then
+		    
+				love.keypressed(controls[1]["use"][1])
+				touchkey[controls[1]["use"][1]] = id
+		    
 		elseif button == "start" then--start
 			if gamestate == "game" or gamestate == "options" or gamestate == "mappackmenu" or gamestate == "onlinemenu" then
 				love.keypressed("escape")
@@ -2767,16 +2810,6 @@ if android then
 				end
 				bx = bx + aeditorbuttonsw + 2
 			end
-		elseif not editormode then
-			local i2 = #acorruptbuttons
-			local bx, by = 2, 2
-			for i = 1, i2 do
-				if x > bx and x < bx+acorruptbuttonsw and y > by and y < by+acorruptbuttonsw then
-					acorruptbuttons[i][1]()
-					return true
-				end
-				bx = bx + acorruptbuttonsw + 2
-			end
 		end
 		
 		--rightclick
@@ -2812,6 +2845,10 @@ if android then
 			if id == touchid then
 				love.keyreleased(key)
 				touchkey[key] = false
+				if key == controls[1]["run"][1] and gamestate == "game" and not separateusebutton then
+					love.keypressed(controls[1]["use"][1])
+					touchkey[controls[1]["use"][1]] = false
+				end
 				return true
 			end
 		end
@@ -2822,26 +2859,47 @@ if android then
 		end
 	end
 
-	lmx = love.mouse.getX
-	function love.mouse.getX()
-		return mousetx/(winwidth/gamewidth)
-	end
-	lmy = love.mouse.getY
-	function love.mouse.getY()
-		return mousety/(winheight/gameheight)
-	end
-	function love.mouse.isDown(button)
-		local target = "l"
-		if ANDROIDRIGHTCLICK then--love.keyboard.isDown(controls[1]["run"][1]) then
-			target = "r"
+	if (not androidtest) then
+		--these may be causing issues with touching, TODO?
+		lmx = love.mouse.getX
+		function love.mouse.getX()
+			if resizable and letterboxfullscreen then
+				local cw, ch = gamewidth, gameheight--current size
+				local tw, th = winwidth, winheight--target size
+				local s
+				if cw/tw > ch/th then s = tw/cw
+				else s = th/ch end
+				return math.max(0, math.min(cw*s, mousetx - ((tw*0.5)-(cw*s*0.5))))/s
+			else
+				return mousetx/(winwidth/gamewidth)
+			end
 		end
-		return (button == target and mouseid)
-	end
-	function love.mouse.getPosition()
-		local x, y = love.mouse.getX(), love.mouse.getY()
-		return x, y
-	end
+		lmy = love.mouse.getY
+		function love.mouse.getY()
+			if resizable and letterboxfullscreen then
+				local cw, ch = gamewidth, gameheight--current size
+				local tw, th = winwidth, winheight--target size
+				local s
+				if cw/tw > ch/th then s = tw/cw
+				else s = th/ch end
+				return math.max(0, math.min(ch*s, mousety - ((th*0.5)-(ch*s*0.5))))/s
+			else
+				return mousety/(winheight/gameheight)
+			end
+		end
 
+		function love.mouse.isDown(button)
+			local target = "l"
+			if ANDROIDRIGHTCLICK then--love.keyboard.isDown(controls[1]["run"][1]) then
+				target = "r"
+			end
+			return (button == target and mouseid)
+		end
+		function love.mouse.getPosition()
+			local x, y = love.mouse.getX(), love.mouse.getY()
+			return x, y
+		end
+	end
 	function love.textinput(c)
 		love.keypressed(c)
 	end
@@ -3173,66 +3231,153 @@ function getupdate()
 	return false
 end
 
-function properprintfast(s, x, y)
+--TTF Printing
+function properprintfast(s, x, y, size)
 	if s == nil then
 		return
 	end
-	local font = love.graphics.getFont()
-	love.graphics.setFont(emulogic)
-	love.graphics.print(s, x, y-scale, 0, scale, scale)
+	local size = size or 1
+	--use with emulogic or any 8x8 font
 	love.graphics.setFont(font)
+	love.graphics.print(s, x, y-scale, 0, size*scale, size*scale)
 end
-
-function properprintfastf(s, x, y, w)
+function properprintfastbackground(s, x, y, size)
+	--outlines
 	if s == nil then
 		return
 	end
-	local font = love.graphics.getFont()
-	love.graphics.setFont(emulogic)
-	love.graphics.printf(s, x, y-scale, w, "left", 0, scale, scale)
+	local size = size or 1
+	love.graphics.setFont(fontback)
+	love.graphics.print(s, x, y-scale, 0, size*scale, size*scale)
 	love.graphics.setFont(font)
+	love.graphics.print(s, x, y-scale, 0, size*scale, size*scale)
 end
-
-function properprint(s, x, y, sc, size)
+function properprintfastf(s, x, y, w, size) --word wrap
+	if s == nil then
+		return
+	end
+	local size = size or 1
+	love.graphics.setFont(font)
+	love.graphics.printf(s, x, y-scale, w, "left", 0, size*scale, size*scale)
+end
+function properprintFast(s, x, y, size)
+	--CAPITALS
+	if s == nil then
+		return
+	end
+	local size = size or 1
+	love.graphics.setFont(fontCAP)
+	love.graphics.print(s, x, y-scale, 0, size*scale, size*scale)
+end
+function properprintFastbackground(s, x, y, size)
+	if s == nil then
+		return
+	end
+	local size = size or 1
+	love.graphics.setFont(fontbackCAP)
+	love.graphics.print(s, x, y-scale, 0, size*scale, size*scale)
+	love.graphics.setFont(fontCAP)
+	love.graphics.print(s, x, y-scale, 0, size*scale, size*scale)
+end
+--UTF-8 Printing
+function properprintf(s, x, y, size)
+	--UTF-8
+	if s then
+		local size = size or 1
+		local startx = x
+		for i, char, b in utf8.chars(tostring(s)) do
+			if char == " " then
+			elseif char == "\n" then
+				x = startx-((i)*(8*size))*scale
+				y = y + (10*size)*scale
+			elseif fontquads[char] then
+				love.graphics.draw(fontimage, fontquads[char], x+((i-1)*(8*size))*scale, y, 0, size*scale, size*scale)
+			end
+		end
+	end
+end
+function properprintfbackground(s, x, y, include, color, size)
+	--UTF-8 outline
+	if s then
+		local size = size or 1
+		local startx, starty = x, y
+		for i, char, b in utf8.chars(tostring(s)) do
+			if char == " " then
+			elseif char == "\n" then
+				x = startx-((i)*(8*size))*scale
+				y = y + (10*size)*scale
+			elseif fontquadsback[char] then
+				love.graphics.draw(fontbackimage, fontquadsback[char], x+((i-1)*(8*size)-1*size)*scale, y-(1*size)*scale, 0, size*scale, size*scale)
+			end
+		end
+		
+		if include ~= false then
+			if color then
+				love.graphics.setColor(color)
+			end
+			properprintf(s, startx, starty, size)
+		end
+	end
+end
+function properprintF(s, x, y, size)
+	--UTF-8 CAPITALS
+	if s then
+		local size = size or 1
+		local startx = x
+		for i, char, b in utf8.chars(tostring(s)) do
+			if char == " " then
+			elseif char == "\n" then
+				x = startx-((i)*(8*size))*scale
+				y = y + (10*size)*scale
+			elseif fontquads[char] then
+				love.graphics.draw(fontimage, fontquads[fontindexCAP[char]], x+((i-1)*(8*size))*scale, y, 0, size*scale, size*scale)
+			end
+		end
+	end
+end
+function properprintFbackground(s, x, y, include, color, size)
+	--UTF-8 CAPITALS OUTLINE
+	if s then
+		local size = size or 1
+		local startx, starty = x, y
+		for i, char, b in utf8.chars(tostring(s)) do
+			if char == " " then
+			elseif char == "\n" then
+				x = startx-((i)*(8*size))*scale
+				y = y + (10*size)*scale
+			elseif fontquadsback[char] then
+				love.graphics.draw(fontbackimage, fontquadsback[fontindexCAP[char]], x+((i-1)*(8*size)-1*size)*scale, y-(1*size)*scale, 0, size*scale, size*scale)
+			end
+		end
+		
+		if include ~= false then
+			if color then
+				love.graphics.setColor(color)
+			end
+			properprintF(s, startx, starty, size)
+		end
+	end
+end
+--Normal Mari0 Printing (no utf-8, Capitals may be displayed as a special character)
+function properprint(s, x, y, size)
 	if s == nil then
 		return
 	end
 	local size = size or 1
 	s = tostring(s)
 	local startx = x
-	for i = 1, string.len(tostring(s)) do
+	for i = 1, string.len(s) do
 		local char = string.sub(s, i, i)
 		if char == " " then
-		elseif char == "|" then
+		elseif char == "\n" then
 			x = startx-((i)*(8*size))*scale
 			y = y + (10*size)*scale
 		elseif fontquads[char] then
-			love.graphics.draw(fontimage, fontquads[char], x+((i-1)*(8*size))*scale, y, 0, size*scale, size*scale)
+			love.graphics.draw(fontimage, fontquads[fontindexOLD[char]], x+((i-1)*(8*size))*scale, y, 0, size*scale, size*scale)
 		end
 	end
 end
-
-function properprintdebug(s, x, y, sc, size)
-	if s == nil then
-		return
-	end
-	local size = size or 1
-	s = tostring(s)
-	local startx = x
-	for i = 1, string.len(tostring(s)) do
-		local char = string.sub(s, i, i)
-		if char == " " then
-		elseif char == "|" then
-			x = startx-((i)*(8*size))
-			y = y + (10*size)
-		elseif fontquads[char] then
-			love.graphics.draw(fontimage, fontquads[char], x+((i-1)*(8*size)), y, 0, size, size)
-		end
-	end
-end
-
-function properprintbackground(s, x, y, include, color, sc, size)
-	local scale = sc or scale
+function properprintbackground(s, x, y, include, color, size)
 	local size = size or 1
 	local startx, starty = x, y
 	local skip = 0
@@ -3242,11 +3387,11 @@ function properprintbackground(s, x, y, include, color, sc, size)
 		else
 			local char = string.sub(s, i, i)
 			if char == " " then
-			elseif char == "|" then
+			elseif char == "\n" then
 				x = startx-((i)*(8*size))*scale
 				y = y + (10*size)*scale
 			elseif fontquadsback[char] then
-				love.graphics.draw(fontbackimage, fontquadsback[char], x+((i-1)*(8*size))*scale, y-(1*size)*scale, 0, size*scale, size*scale)
+				love.graphics.draw(fontbackimage, fontquadsback[fontindexOLD[char]], x+((i-1)*(8*size)-1*size)*scale, y-(1*size)*scale, 0, size*scale, size*scale)
 			end
 		end
 	end
@@ -3255,7 +3400,7 @@ function properprintbackground(s, x, y, include, color, sc, size)
 		if color then
 			love.graphics.setColor(color)
 		end
-		properprint(s, startx, starty, scale)
+		properprint(s, startx, starty, size)
 	end
 end
 
@@ -3299,13 +3444,11 @@ function love.errhand(msg)
     if love.audio then love.audio.stop() end
     love.graphics.reset()
 	love.graphics.setBackgroundColor(0, 0, 0)
-	local font
-	--if not emulogic then
-		font = love.graphics.newFont("emulogic.ttf", 8*scale)
-		--[[font = love.graphics.newFont(10*scale)
-	else
-		font = emulogic
-	end]]
+	local fontscale = scale or 2
+	if not font then
+		font = love.graphics.newFont(8*scale)
+		fontscale = 1
+	end
 	love.graphics.setFont(font)
 
     love.graphics.setColor(255, 255, 255, 255)
@@ -3322,7 +3465,7 @@ function love.errhand(msg)
 
     for l in string.gmatch(trace, "(.-)\n") do
         if not string.match(l, "boot.lua") then
-            l = string.gsub(l, "stack traceback:", "Traceback\n")
+            l = string.gsub(l, "stack traceback:", "Traceback [" .. VERSION .. "]\n")
             table.insert(traceback, l)
         end
     end
@@ -3364,14 +3507,15 @@ function love.errhand(msg)
 		if screenshot then
 			love.graphics.setColor(30, 30, 30)
 			love.graphics.draw(screenshot, 0, 0, 0, love.graphics.getWidth()/screenshot:getWidth(), love.graphics.getHeight()/screenshot:getHeight())
+			--love.graphics.draw(crashscreen, 0, 0, 0, scale, scale)
 			if gradientimg and width and height then
 				love.graphics.setColor(0, 0, 0)
 				love.graphics.draw(gradientimg, 0, 0, 0, love.graphics.getWidth()/(width*16), love.graphics.getHeight()/(height*16))
 			end
 		end
 		love.graphics.setColor(255, 255, 255)
-		love.graphics.printf({{255,255,255,255},p,{255,255,255,100},p2}, 10, 10, love.graphics.getWidth() - 10)
-		love.graphics.print("Mari0 ACE" .. VERSIONSTRING, love.graphics.getWidth() - font:getWidth("Mari0 ACE" .. VERSIONSTRING) - 5*scale, love.graphics.getHeight() - 15*scale)
+		love.graphics.printf({{255,255,255,255},p,{255,255,255,100},p2}, 10, 10, (love.graphics.getWidth() - 10)/fontscale, nil, 0, fontscale, fontscale)
+		love.graphics.print("Mari0 AE Version " .. VERSIONSTRING, love.graphics.getWidth() - font:getWidth("Mari0 AE Version " .. VERSIONSTRING)*fontscale - 5*scale, love.graphics.getHeight() - 15*scale, 0, fontscale, fontscale)
 		love.graphics.present()
     end
 	
@@ -3418,6 +3562,7 @@ function loadcustombackground(filename)
 	custombackgroundimg = {}
 	custombackgroundwidth = {}
 	custombackgroundheight = {}
+	custombackgroundquad = {}
 	custombackgroundanim = {}
 	--try to load map specific background first
 	local levelstring = marioworld .. "-" .. mariolevel
@@ -3442,6 +3587,9 @@ function loadcustombackground(filename)
 			if not data then return	end
 			data = data:gsub("\r", "")
 			loadcustombackgroundanim(custombackgroundimg, custombackgroundwidth, custombackgroundheight, custombackgroundanim, i, data)
+		else
+			custombackgroundimg[i]:setWrap("repeat","repeat")
+			custombackgroundquad[i] = love.graphics.newQuad(0,0,width*16,height*16,custombackgroundimg[i]:getWidth(),custombackgroundimg[i]:getHeight())
 		end
 		i = i +1
 	end
@@ -3457,6 +3605,9 @@ function loadcustombackground(filename)
 				if not data then return	end
 				data = data:gsub("\r", "")
 				loadcustombackgroundanim(custombackgroundimg, custombackgroundwidth, custombackgroundheight, custombackgroundanim, i, data)
+			else
+				custombackgroundimg[i]:setWrap("repeat","repeat")
+				custombackgroundquad[i] = love.graphics.newQuad(0,0,width*16,height*16,custombackgroundimg[i]:getWidth(),custombackgroundimg[i]:getHeight())
 			end
 			return
 		end
@@ -3472,6 +3623,8 @@ function loadcustombackground(filename)
 		custombackgroundimg[i] = love.graphics.newImage("graphics/SMB/portalbackground.png")
 		custombackgroundwidth[i] = custombackgroundimg[i]:getWidth()/16
 		custombackgroundheight[i] = custombackgroundimg[i]:getHeight()/16
+		custombackgroundimg[i]:setWrap("repeat","repeat")
+		custombackgroundquad[i] = love.graphics.newQuad(0,0,width*16,height*16,custombackgroundimg[i]:getWidth(),custombackgroundimg[i]:getHeight())
 	end
 end
 
@@ -3662,9 +3815,9 @@ function loadcustomsounds()
 		customstarmusic = true
 	else
 		if starmusicexists then
-			notice.new("can't load custom starmusic.ogg|starmusic-fast.ogg is missing!", notice.red, 6)
+			notice.new("can't load custom starmusic.ogg\nstarmusic-fast.ogg is missing!", notice.red, 6)
 		elseif starmusicfastexists then
-			notice.new("can't load custom starmusic-fast.ogg|starmusic.ogg is missing!", notice.red, 6)
+			notice.new("can't load custom starmusic-fast.ogg\nstarmusic.ogg is missing!", notice.red, 6)
 		end
 		if customstarmusic then
 			music:preload("sounds/starmusic.ogg", "starmusic")
@@ -3866,17 +4019,24 @@ function loadnitpicks()
 		if t.letterbox ~= nil then
 			letterboxfullscreen = t.letterbox --mouse inputs will be in the wrong place!
 		end
-		--_3DMODE = t.render3d now a setting : )
-		HITBOXDEBUG = t.viewhitboxes
-		--ACE additons
-		supersizent = t.supersizent
-		babymode = t.babymode
-		if t.classic then
-			classic = true
-			DisableToolTips = true
+		CustomPortalColors = t.customportalcolors
+		UseButtonCappy = t.usebuttoncappy
+		local oldfamilyfriendly = FamilyFriendly
+		FamilyFriendly = t.familyfriendly or t.ilovefamilyguy
+		if FamilyFriendly then
+			love.filesystem.write("alesans_entities/familyfriendly.txt","")
+		elseif oldfamilyfriendly then
+			love.filesystem.remove("alesans_entities/familyfriendly.txt")
 		end
+		if t.showfps then
+			showfps = t.showfps
+		end
+		InfiniteLivesMultiplayer = t.infinitelivesmultiplayer
+		_3DMODE = t.render3d
+		HITBOXDEBUG = t.viewhitboxes
+		--AECE additons
+		supersizent = t.supersizent
 		extrasubs = t.extrasublevels
-		randomnewlevels = t.random
 		if t.nooutline == "extreme" then
 			extremenooutline = true
 		else
@@ -3885,6 +4045,8 @@ function loadnitpicks()
 		compactentity = t.compactentity
 		anyiteminclaw = t.anyiteminclaw
 		bettermoon = t.ctrlaltdel
+		usetoenterdoors = t.usetousedoors
+		separateusebutton = t.separateusebutton
 		if t.entities then
 			customent = true
 			entitiesforms["custom"] = {}
@@ -3976,52 +4138,9 @@ function deepcopy(orig)
     return copy
 end
 
-function updategraphics()
-	graphicspack = gpack
-
-	backgroundcolor[1] = {92, 148, 252}
-	backgroundcolor[2] = {0, 0, 0}
-	backgroundcolor[3] = {32, 56, 236}
-	if gpack == "ALLSTARS" then
-		backgroundcolor[1] = {144, 200, 224}
-		backgroundcolor[2] = {16, 16, 16}
-		backgroundcolor[3] = {56, 104, 192}
-	elseif gpack == "SMM" then
-		backgroundcolor[1] = {118, 134, 255}
-		backgroundcolor[3] = {50, 52, 220}
-	end
-
-	menuselectimg = love.graphics.newImage("graphics/" .. graphicspack .. "/menuselect.png")
-	
-	smbtilesimg = love.graphics.newImage("graphics/" .. graphicspack .. "/smbtiles.png")
-	portaltilesimg = love.graphics.newImage("graphics/" .. graphicspack .. "/portaltiles.png")
-	entitiesimg = love.graphics.newImage("graphics/" .. graphicspack .. "/entities.png")
-	
-	local imgdata = love.image.newImageData("graphics/" .. graphicspack .. "/smbtiles.png")
-	local imgdata = love.image.newImageData("graphics/" .. graphicspack .. "/portaltiles.png")
-	local imgdata = love.image.newImageData("graphics/" .. graphicspack .. "/entities.png")
-	
-	shockimg = love.graphics.newImage("graphics/" .. graphicspack .. "/shock.png")
-	mariolightimg = love.graphics.newImage("graphics/" .. graphicspack .. "/mariolight.png")
-	calendarimg = love.graphics.newImage("graphics/" .. graphicspack .. "/calendar.png")
-
-	bunnyearsimg = love.graphics.newImage("graphics/" .. graphicspack .. "/bunnyears.png")
-	capeimg = love.graphics.newImage("graphics/" .. graphicspack .. "/cape.png")
-
-	portalparticleimg = love.graphics.newImage("graphics/" .. graphicspack .. "/portalparticle.png")
-	portalcrosshairimg = love.graphics.newImage("graphics/" .. graphicspack .. "/portalcrosshair.png")
-	portaldotimg = love.graphics.newImage("graphics/" .. graphicspack .. "/portaldot.png")
-	portalprojectileimg = love.graphics.newImage("graphics/" .. graphicspack .. "/portalprojectile.png")
-	portalprojectileparticleimg = love.graphics.newImage("graphics/" .. graphicspack .. "/portalprojectileparticle.png")
-
-	loadcustomsprites(true)
-end
-
 function updateentitylist()
-	if not classic then
-		entitiesform = entitiesforms[entitytype]
-		updatenamespacing()
-	end
+	entitiesform = entitiesforms[entitytype]
+	updatenamespacing()
 end
 
 function updatenamespacing()
@@ -4032,529 +4151,5 @@ function updatenamespacing()
 		entitiesform[list].y = ly
 		entitiesform[list].h = 17*(math.ceil(#entitiesform[list]/22))
 		ly = ly + entitiesform[list].h
-	end
-end
-
-function update_corrupt(dt)
-	if not pausemenuopen and gamestate == "game" then
-		corrupttimer = corrupttimer - dt
-		while corrupttimer < 0 do
-			corrupt(dt, corruptintensity)
-			corruptammount = corruptammount + 1
-			corrupttimer = corrupttimer + corruptdelay
-		end
-	end
-end
-
-function corrupt(dt, i)
-	local t = getct()
-	if t == "vars" then
-		local i2 = math.random(#cvars)
-		clatest = cvars[i2]
-		
-		print(clatest)
-		local v = _G[cvars[i2]]
-		local oldv = v
-		local typev = type(v)
-		local cvarsnt = {"add", "add", "mul"}
-		if typev == "number" then
-			local t2 = cvarsnt[math.random(#cvarsnt)]
-			if t2 == "add" then
-				v = v + math.random(-i, i)
-			elseif t2 == "mul" then
-				v = v * math.random(v/i, v*i)
-			end
-		elseif typev == "boolean" then
-			v = not v
-		end
-		_G[cvars[i2]] = v
-		consoleprint = cvars[i2] .. " was " .. tostring(oldv) .. " is now " .. tostring(v)
-		print(consoleprint)
-	elseif t == "vars2" then
-		local i2 = math.random(#cvars2)
-		clatest = cvars2[i2][1]
-		
-		print(clatest)
-		local v = _G[cvars2[i2][1]]
-		local oldv = v
-		v = math.random(cvars2[i2][2], cvars2[i2][3], cvars2[i2][4])
-		if cvars2[i2][1] == "marioworld" then
-			if loadmap(v .. "-" .. mariolevel .. "-" .. mariosublevel) ~= false then
-				_G[cvars2[i2][1]] = v
-			end
-		elseif cvars2[i2][1] == "mariolevel" then
-			if loadmap(marioworld .. "-" .. v .. "-" .. mariosublevel) ~= false then
-				_G[cvars2[i2][1]] = v
-			end
-		else
-			_G[cvars2[i2][1]] = v
-		end
-
-		if cvars2[i2][5] ~= false then
-			_G[cvars2[i2][5]] = true
-		end
-		consoleprint = cvars2[i2][1] .. " was " .. tostring(oldv) .. " is now " .. tostring(v)
-		print(consoleprint)
-	elseif t == "imgs" then
-		local i2 = math.random(#cimgs)
-		clatest = cimgs[i2]
-		
-		print(clatest)
-		local s = cimgs[math.random(#cimgs)]
-		if type(_G[s]) ~= nil then
-			_G[cimgs[i2]] = _G[s]
-		end
-		consoleprint = cimgs[i2] .. " image was swapped with " .. s
-		print(consoleprint)
-	elseif t == "map" then
-		local repeats = math.ceil(i/math.random(1, 5))
-		if mapwidth and mapheight and map then
-			for times = 1, repeats do
-				replacetile(math.random(1, mapwidth), math.random(1, mapheight), math.random(1, smbtilecount+portaltilecount+customtilecount))
-			end
-		end
-		local i2 = math.random(#cimgs)
-		clatest = "map"
-		print(clatest)
-		consoleprint = repeats .. " map tiles changed"
-		print(consoleprint)
-	elseif t == "bmap" then
-		local repeats = math.ceil(i/math.random(1, 5))
-		if mapwidth and mapheight and map then
-			for times = 1, repeats do
-				map[math.random(1, mapwidth)][math.random(1, mapheight)]["back"] = math.random(1, smbtilecount+portaltilecount+customtilecount)
-			end
-		end
-		local i2 = math.random(#cimgs)
-		clatest = "bmap"
-		print(clatest)
-		consoleprint = repeats .. " back map tiles changed"
-		print(consoleprint)
-	elseif t == "replace" then
-		--grabs a random tile id from map
-		local old = map[math.random(1, mapwidth)][math.random(1, mapheight)][1]
-		--grabs a random tile from list
-		local new = math.random(1, smbtilecount+portaltilecount+customtilecount)
-		--goes throght the whole map
-		for x = 1, mapwidth do
-			for y = 1, mapheight do
-				if map[x][y][1] == old then --is it the old id?
-					replacetile(x, y, new) --make it new
-				end
-			end
-		end
-		clatest = "replace " .. old
-		print(clatest)
-		consoleprint = "tiles with id " .. old .. " was replaced by id " .. new
-		print(consoleprint)
-	elseif t == "sound" then
-		local i2 = math.random(#csounds)
-		clatest = csounds[i2]
-		
-		print(clatest)
-		local s = csounds[math.random(#csounds)]
-		if type(_G[s]) ~= nil then
-			_G[csounds[i2]] = _G[s]
-		end
-		consoleprint = csounds[i2] .. " sound was swapped with " .. s
-		print(consoleprint)
-	elseif t == "physics" then
-		local old = currentphysics
-		local new = math.random(7)
-		clatest = "physics"
-		
-		print(clatest)
-		currentphysics = new
-		setphysics(currentphysics)
-		consoleprint = "physics " .. old .. " changed to " .. new
-		print(consoleprint)
-	elseif t == "cam" then
-		local old = camerasetting
-		local new = math.random(3)
-		clatest = "camera"
-		
-		print(clatest)
-		camerasetting = new
-		setcamerasetting(camerasetting)
-		consoleprint = "camera setting " .. old .. " changed to " .. new
-		print(consoleprint)
-	elseif t == "spawn" then
-		clatest = "spawn"
-		local list, listnames = generatespawnableentitylist(hiddenentitylist)
-		local enemy = listnames[math.random(#list)]
-		corruptspawn(enemy)
-		consoleprint = "a " .. enemy .. " spawned"
-	elseif t == "event" then
-		--random hard coded events
-		clatest = "event"
-		print(clatest)
-		local ce = {
-			"background", "background", "background", "background", "tilevomit", "tilevomitmore", --[["char",]] "size",
-			"xspeed", "xspeed", "yspeed", "yspeed", "xpos", "xpos", "ypos", "ypos", "playsound", "playsound", "playsound"}
-		local e = ce[math.random(#ce)]
-		if e == "background" then
-			love.graphics.setBackgroundColor(math.random(255), math.random(255), math.random(255))
-			consoleprint = "background color changed"
-		elseif e == "tilevomit" then
-			local repeats = math.random(5, 40)
-			if mapwidth and mapheight and map then
-				for times = 1, repeats do
-					replacetile(math.random(1, mapwidth), math.random(1, mapheight), math.random(1, smbtilecount+portaltilecount+customtilecount))
-				end
-			end
-			consoleprint = repeats .. " tiles vomited"
-		elseif e == "tilevomitmore" then
-			local repeats = math.random(10, 80)
-			if mapwidth and mapheight and map then
-				for times = 1, repeats do
-					replacetile(math.random(1, mapwidth), math.random(1, mapheight), math.random(1, smbtilecount+portaltilecount+customtilecount))
-				end
-			end
-			consoleprint = repeats .. " tiles vomited"
-		elseif e == "size" then
-			local size = math.random(16)
-			objects["player"][1]:grow(size)
-			consoleprint = "players size changed to " .. powerupslist[size]
-		elseif e == "xspeed" then
-			sp = math.random(-i, i)*10
-			objects["player"][1].xspeed = sp
-			consoleprint = "player speed x set to " .. sp
-		elseif e == "yspeed" then
-			sp = math.random(-i, i)*10
-			objects["player"][1].yspeed = sp
-			consoleprint = "player speed y set to " .. sp
-		elseif e == "xpos" then
-			sp = math.random(-i, i)/2
-			objects["player"][1].x = objects["player"][1].x + sp
-			consoleprint = "player x changed by " .. sp
-		elseif e == "ypos" then
-			sp = math.random(-i, i)/2
-			objects["player"][1].y = objects["player"][1].y + sp
-			consoleprint = "player y changed by " .. sp
-		elseif e == "playsound" then
-			local s = csounds[math.random(#csounds)]
-			playsound(_G[s])
-			consoleprint = "played " .. s
-		end
-		print(consoleprint)
-	end
-end
-
-function getct()
-	local r = math.random(1, 100)
-	--get a random corruption with odd's
-	if r < 60 then
-		return "vars"
-	elseif r < 70 then
-		return "imgs"
-	elseif r < 75 then
-		return "sound"
-	elseif r < 80 then
-		return "map"
-	elseif r < 85 then
-		return "bmap"
-	elseif r < 90 then
-		return "spawn"
-	elseif r == 90 or r == 91 or r == 92 then
-		return "vars2"
-	elseif r == 93 or r == 94 then
-		return "replace"
-	elseif r == 95 or r == 96 then
-		return "physics"
-	elseif r == 97 or r == 98 then
-		return "cam"
-	else
-		return "event"
-	end
-end
-
---OLD change odds
---[[ct = {"vars", "vars", "vars", "vars", "vars",
-	  "vars", "vars", "vars", "vars", "vars",
-	  "vars", "vars", "vars", "vars", "vars",
-	  "vars2",
-	  "imgs", "imgs", "imgs", "imgs", "imgs",
-	  "sound", "sound", "sound", "sound", "sound",
-	  "map", "map", "map", "map", "map",
-	  "bmap", "bmap", "bmap", "bmap", "bmap",
-	  "replace",
-	  "physics",
-	  "cam",
-	  "spawn", "spawn", "spawn",
-	  "event"
-}]]
-
---corruptable variables
-cvars = {
-	--new
-	"portalgundelay", "gellifetime", "bulletbilllifetime", "bigbilllifetime", "kingbilllifetime",
-	"icefriction", "icewalkacceleration", "icerunacceleration", "groundfreezetime", "goombashoehop", "fencespeed",
-	"hugemarioblockbounceforce", "uwwalkacceleration", "uwrunacceleration", "uwwalkaccelerationair", "uwmaxairwalkspeed",
-	"uwmaxairshellwalkspeed", "uwmaxwalkspeed", "uwmaxrunspeed", "uwfriction", "uwsuperfriction", "uwfrictionair",
-	"uwairslidefactor", "uwjumpforce", "uwjumpforceadd", "uwyacceleration", "uwyaccelerationjumping",
-	"waterdamping", "waterjumpforce", "uwmaxheight", "uwpushdownspeed", "bubblesmaxy", "bubblesspeed", "bubblesmargin",
-	"gelmaxrunspeed", "gelmaxwalkspeed", "gelrunacceleration", "gelwalkacceleration", "bluegelminforce", "horbouncemul",
-	"horbouncespeedy", "horbouncemaxspeedx", "horbounceminspeedx", "cloudacceleration", "cloudspeed", "cloudtime",
-	"drybonesshelltime", "freezetime", "iceblockspeed", "iceblockkickminspeed", "iceblockairtime", "dkhammeranimspeed",
-	"yoshieggjumpforce", "yoshieggbreaktime", "yoshijumpforce", "yoshijumpforceadd", "yoshipanicspeed", "yoshitoungespeed",
-	"yoshitoungemaxwidth", "yoshitoungeheight", "yoshiswallowtime", "poisonmushspeed", "poisonmushtime", "poisonmushjumpforce",
-	"leafjumpforce", "fighterflyjumpforce", "fighterflyjumpdelay", "goombashoejumpforce", "goombashoejumpdelay", "wigglerspeed",
-	"wigglerspeedangry", "thwompattackspeed", "thwompwait", "thwompreturnspeed", "muncheracceleration", "muncheranimationspeed",
-	"muncherdeathtime", "barrelspeed", "barrelacceleration", "barrelanimationspeed", "barreldeathtime", "splunkinspeed",
-	"splunkinmadspeed", "splinkinacceleration", "splunkinanimationspeed", "splunkindeathtime", "splunkinhealth", "ninjijumpforce",
-	"sidestepperspeed", "sidestepperacceleration", "sidestepperanimationspeed", "sidestepperdeathtime", "drybonesspeed",
-	"drybonesanimationspeed", "drybonesjumpforce", "drybonesflyinggravity", "moleanimationspeed", "molespeed", "molechaserange",
-	"molebounceforce", "moleacceleration", "boomboomjumpforce", "boomboomhighjumpforce", "boospeed", "booturnspeed",
-	"maximumbulletbills", "maximumbigbills", "maximumkingbills", "coinblocktime", "pbuttontime", "lowgravitymult",
-	"lowgravityjumpingmult", "lowgravitymaxyspeed", "lovgravityxmult", "snakeblockspeed", "snakeblockfalltime",
-	"snakeblockfallspeed", "clearpipespeed", "clearpipereleasespeed", "clearpipeenterspeed", "plantcreeperspeed",
-	"plantcreeperstompspeed", "plantcreeperstompdist", "plantcreeperouttime", "plantcreeperintime", "plantcreeperstomptime",
-	"plantcreepersleepingstomptime", "plantcreeperhittime", "trackspeed", "trackfastspeed", "trackgravity", "trackmaxyspeed",
-	"windspeed", "windspeedslow", "autoscrollingdefaultspeed", "autoscrollingmaxspeed", "dropshadow", "infinitelives",
-	"lightsout", "lowgravity", "flagclimbframedelay", "scoredelay", "flagdescendtime", "flagydistance",
-	"flaganimationdelay", "scoresubtractspeed", "castleflagstarty", "castleflagspeed", "castlemintime", "fireworkdelay",
-	"fireworksoundtime", "endtime", --[["_3DMODE",]] "idleanimationspeed", "runanimationspeed", "piperunanimationspeed",
-	"swimanimationspeed", "fenceanimationspeed", "propellertime", "propellerforce", "propellerspeed", "propellerfloatspeed",
-	"cannonboxdelay", "xscroll", "yscroll", "flagborder", "showcastleflag", "realtime", "nocoinlimit", "intermission",
-	"haswarpzone", "bonusstage", "edgewrapping", "portalgun", "HITBOXDEBUG", "helmetbounceforce", "scrollingscoretime",
-	"simplehud", "hudoutline", "platformverdistance", "platformhordistance", "platformvertime", "platformhortime",
-	"platformbonusspeed", "platformspawndelay", "platformjustspeed",
-
-	--older
-	"walkacceleration", "runacceleration", "walkaccelerationair", "runaccelerationair", "minspeed", "maxwalkspeed",
-	"maxrunspeed", "friction", "superfriction", "frictionair", "airslidefactor", "yacceleration", "yaccelerationjumping",
-	"jumpforce", "jumpforceadd", "headforce", "bounceheight", "passivespeed", "mushroomspeed", "mushroomtime",
-	"mushroomjumpforce", "starjumpforce", "mariostarblinkrate", "mariostarblinkrateslow", "mariostarrunout",
-	"goombaspeed", "goombaacceleration", "goombadeathtime", "koopaspeed", "koopasmallspeed", "koopajumpforce",
-	"koopaflyinggravity", "koopaflyingdistance", "koopaflyingtime", "fireballspeed", "fireballjumpforce",
-	"maxfireballs", "shotspeedx", "shotjumpforce", "shotgravity", "deathanimationjumpforce", "deathanimationjumptime",
-	"deathgravity", "scrollrate", "superscrollrate", "maxscrollrate", "blockbouncetime", "blockbounceheight", "plantintime",
-	"plantouttime", "plantmovedist", "plantmovespeed", "springtime", "springhighforce", "springforce", "infinitetime",
-	"infinitelives", --[["goombaattack",]] "bullettime", "portalknockback", "sonicrainboom", "playercollisions", "marioscore",
-	"earthquake", "underwater", "subtractscore", "squidfallspeed", "squidxspeed", "squidupspeed",
-	"squidacceleration", "squiddowndistance", "cheepwhitespeed", "cheepredspeed", "cheepyspeed", "cheepheight"
-}
-
---small numbers w/o decimals
-cvars2 = {
-	--{var name, start, end, by, turn on var?}
-	{"spriteset", 1, 4, 1, false},
-	{"marioworld", 1, 8, 1, false},
-	{"mariolevel", 1, 4, 1, false},
-	{"maximumbulletbills", 1, 99, 1, false},
-	{"gameovertime", 1, 10, 1, false},
-	{"bowserhealth", 1, 10, 1, false},
-	{"boomboomhp", 1, 10, 1, false},
-	{"mariotime", 1, 1000, 1, false},
-	{"autoscrollingspeed", 1, 10, 0.1, "autoscroll"},
-	{"toxintime", 1, 500, 1, "neurotoxin"}
-}
-
---corruptable images (just swaps)
-cimgs = {
-	"blockdebrisimage", "coinblockanimationimage", "coinanimationimage",
-	"coinblockimage", "flipblockimage", "blocktogglebuttonimage", "buttonblockimage", "coinimage", "axeimg", "levelballimg", 
-	"springimg", "springgreenimg", "toadimg", "peachimg", "platformimg", "platformbonusimg", "titleimage", "playerselectarrowimg", 
-	"flowerimg", "iceflowerimg", "fireballimg", "iceballimg", "vineimg", "gladosimage",
-	"coreimage", "pedestalimage", "donutimage", "energylauncherimage", "energyballimage", "shyguyimg", "goombratimage", 
-	"drygoombaimage", "goombaimage", "thwompimage", "biggoombaimage", "sidestepperimage", "barrelimage", "ninjiimage", 
-	"bigspikeyimg", "splunkinimage", "icicleimage", "paragoombaimage", "muncherimg", "spikeyimg", 
-	"parabeetleimg", "booimage", "moleimage", "bigmoleimage", "bombimage", "ampimage", "windleafimage", "lakitoimg", 
-	"angrysunimg", "koopaimage", "kooparedimage", "beetleimage", "koopablueimage", "drybonesimage",  "bigkoopaimage", 
-	"bigbeetleimage", "cheepcheepimg", "sleepfishimg", "meteorimg", "fishboneimg", "squidimg", "bigblocktogglebuttonimage",
-	"pinksquidimg", "bulletbillimg", "bigbillimg", "kingbillimg", "cannonballimg", "torpedotedimage", "torpedolauncherimg",
-	"hammerbrosimg", "firebrosimg", "boomerangbrosimg", "hammerimg", "boomerangimg", "plantimg", "redplantimg", 
-	"dryplantimg", "fireplantimg", "longfireimg", "fireimg", "upfireimg", "bowserimg", "decoysimg",
-	"boximage", "turretimg", "turret2img", "rocketturretimage", "flagimg", "castleflagimg", "bubbleimg", 
-	"boomboomimg", "emanceparticleimg", "emancesideimg", "doorpieceimg", "doorcenterimg", "buttonimg",
-	"pushbuttonimg", "wallindicatorimg", "walltimerimg", "lightbridgeimg", "lightbridgeglowimg", "lightbridgesideimg", "laserimg", 
-	"lasersideimg", "faithplateplateimg", "laserdetectorimg", "gel1img", "gel2img", "gel3img", "gel4img", "gel5img", "gel1ground", 
-	"gel2ground", "gel3ground", "gel4ground", "geldispenserimg", "cubedispenserimg", "yoshieggimg", "yoshiimage", "fontimage", "fontbackimage", "seesawimg",
-	"starimg", "pbuttonimg", "spiketopimg", "turretrocketimage", "pokeyimg", "fighterflyimg", "dkhammerimg", "itemsimg", "chainchompimg",
-	"bighammerbrosimg", "rockywrenchimg", "wrenchimg", "rotodiscimg", "funnel1img", "funnel2img", "funnelend1img", "funnelend2img", "funnelbaseimg", "thwimpimg",
-	"drybeetleimg", "tinygoombaimage", "koopalingimg", "koopalingshotimg", "bigmushroomimg", "icebrosimg", "homingbulletimg",
-	"doorspriteimg", "squidbabyimg", "goombashoeimg", "wigglerimg", "keyimg", "magikoopaimg", "magikoopamagicimg",
-	"fizzleimg", "spikeyshellimg", "boocrawlerimg", "skewerimg", "bigcloudimg", "beltimg", "poofimg", "hudclockimg", "luckystarimg", "portalimg",
-	"groundlightimg", "portalglowimg", "actionblockimg", "gateimg", "collectableimg", "collectableuiimg", "keyuiimg",
-	"switchblockimg", "superballflowerimg", "superballimg", "powblockimg", "smallspringimg", "iciclebigimg", "risingwaterimg", "beltonimg", "beltoffimg",
-	"drybonesshellimg", "redseesawimg", "snakeblockimg", "oneuptextimage", "threeuptextimage", "boomboomflyingimg", "menuselectimg", "smallfont",
-	"pblockimg", "spikeimg", "spikeballimg", "coinfrozenimg", "coinbrickfrozenimg", "helmetshellimg", "boxgelimg", "helmetpropellerimg", "helmetcannonimg",
-	"cannonballcannonimg", "clearpipeimg", "plantcreeperimg", "trackimg", "pneumatictubeimg", "dustimg", "platformtrackimg", "checkpointflagimg", "iceimg",
-	"snowspikeimg", "grinderimg", "fuzzyimg", "emancelaserimg", "iciclehugeimg", "mushroomfrozenimg", "frozenimg", "coinblockfrozenimg", "redpowblockimg",
-	"clawimg"
-
-	--"smbtilesimg", "portaltilesimg"
-}
-
---corruptable sounds
-csounds = {
-	"jumpsound", "jumpbigsound", "stompsound", "shotsound", "blockhitsound", "blockbreaksound", "coinsound", "pipesound", "boomsound", "mushroomappearsound", "mushroomeatsound", "shrinksound", "deathsound", "gameoversound",
-	"turretshotsound", "oneupsound", "levelendsound", "castleendsound", "scoreringsound", "intermissionsound", "firesound", "fireballsound", "bridgebreaksound", "bowserfallsound", "vinesound", "swimsound", "rainboomsound", 
-	"portal1opensound", "portal2opensound", "portalentersound", "portalfizzlesound", "lowtimesound", "pausesound", "stabsound", "bulletbillsound", "iciclesound", "thwompsound", "boomerangsound", "raccoonswingsound",
-	"raccoonplanesound", "skidsound", "jumptinysound", "pbuttonsound", "windsound", "suitsound", "koopalingendsound", "bowserendsound", "dooropensound", "doorclosesound", "keysound", "keyopensound", "weirdmushroomsound", "jumpskinnysound",
-	"energybouncesound", "shufflesound", "grabsound", "throwsound", "collectable1sound", "collectable2sound", "collectable3sound", "collectable4sound", "collectable5sound", "collectable6sound", "collectable7sound", 
-	"collectable8sound", "collectable9sound", "collectable10sound", "switchsound", "iciclefallsound", "helmetsound", "helmethitsound", "propellersound", "clearpipesound", "megamushroomsound", "stompbigsound", "thwompbigsound",
-	"superballeatsound", "superballsound", "capeflysound", "mushroombigeatsound", "bumperhitsound", "bumperjumpsound", "cannonfastsound", "powblocksound", "checkpointsound", "bigiciclesound", "bigiciclefallsound",
-	"clawsound", "clawexitsound", "buttononsound", "buttonoffsound"
-}
-
-local function replacetile(x, y, id)
-	objects["tile"][tilemap(x, y)] = nil
-	map[x][y][1] = id
-	if tilequads[map[x][y][1]].collision then
-		objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
-	end
-	checkportalremove(x, y)
-	generatespritebatch()
-end
-
---hippity hoppity, your code it my property, sorry enemytool.lua
-local function corruptspawn(enemy)
-	local i = enemy
-	local x = math.random(1, mapwidth)
-	local y = math.random(1, mapheight)
-	local dir = "left"
-
-	--actually spawn the enemy
-	local obj, wasenemy, objtable
-	if i == "groundmole" or i == "ground mole" then
-		obj = mole:new(x-0.5, y-1/16)
-		table.insert(objects["mole"], obj)
-	elseif i == "mole" or i == "monty mole" then
-		obj = mole:new(x-0.5, y-1/16)
-		table.insert(objects["mole"], obj)
-		obj.width = 12/16
-		obj.height = 12/16
-		obj.quad = molequad[spriteset][3]
-		obj.gravity = yacceleration
-		obj.mask = {	true, 
-					false, false, false, false, true,
-					false, true, false, true, false,
-					false, false, true, false, false,
-					true, true, false, false, false,
-					false, true, true, false, false,
-					true, false, true, true, true}
-		obj.inground = false
-	elseif i == "bowser" then
-		obj = bowser:new(x-4, y-1/16)
-		table.insert(objects["bowser"], obj)
-	elseif i == "bowserfire" then
-		obj = fire:new(x,y)
-		table.insert(objects["fire"], obj)
-	elseif i == "bulletbillsingle" or i == "bulletbill" or i == "bullet bill" then
-		obj = bulletbill:new(x, y, dir)
-		table.insert(objects["bulletbill"], obj)
-	elseif i == "bulletbill right" then
-		table.insert(objects["bulletbill"], bulletbill:new(x, y, "right"))
-	elseif  i == "bulletbill left" then
-		table.insert(objects["bulletbill"], bulletbill:new(x, y, "left"))
-	elseif i == "bigbillsingle" or i == "bigbill" or i == "banzai bill" then
-		obj = bigbill:new(x, y, dir)
-		table.insert(objects["bigbill"], obj)
-	elseif i == "banzai bill left" or i == "bigbillleft" or i == "big bill left" or i == "bigbill left" then
-		table.insert(objects["bigbill"], bigbill:new(x, y, "left"))
-	elseif i == "bigbillright" or i == "bigbill right" or i == "banzai bill right" or i == "big bill right" then
-		table.insert(objects["bigbill"], bigbill:new(x, y, "right"))
-	elseif i == "kingbill" or i == "king bill" then
-		table.insert(objects["kingbill"], kingbill:new(xscroll-200/16, y))
-	elseif i == "cannonballsingle" or i == "cannonball" or i == "cannon ball" then
-		table.insert(objects["cannonball"], cannonball:new(x, y, "left"))
-	elseif i == "hammer" then
-		if dir == "left" then
-			obj = hammer:new(x-1-5/16, y, "left")
-		else
-			obj = hammer:new(x, y, "right")
-		end
-		table.insert(objects["hammer"], obj)
-	elseif i == "brofireball" then
-		obj = brofireball:new(x-1, y-1, dir)
-		table.insert(objects["brofireball"], obj)
-	elseif i == "broboomerang" then
-		obj = boomerang:new(x-1, y-1, dir)
-		table.insert(objects["boomerang"], obj)
-	elseif i == "broiceball" then
-		obj = brofireball:new(x-1, y-1, dir, "ice")
-		table.insert(objects["brofireball"], obj)
-	elseif i == "flyingfish" or i == "jumping fish" then
-		obj = flyingfish:new()
-		table.insert(objects["flyingfish"], obj)
-	elseif i == "meteor" then
-		obj = meteor:new()
-		table.insert(objects["meteor"], obj)
-	elseif i == "turretleft" or i == "turret left" then
-		table.insert(objects["turret"], turret:new(x, y, "left"))
-	elseif i == "turretright" or i == "turret" or i == "turret right" then
-		table.insert(objects["turret"], turret:new(x, y, "right"))
-	elseif i == "turret2left" or i == "defective turret left" then
-		table.insert(objects["turret"], turret:new(x, y, "left", "turret2"))
-	elseif i == "turret2right" or i == "defective turret" then
-		table.insert(objects["turret"], turret:new(x, y, "right", "turret2"))
-	elseif i == "spring" then
-		table.insert(objects["spring"], spring:new(x, y, nil))
-	elseif i == "moving spring" then
-		table.insert(objects["spring"], spring:new(x, y, nil, true))
-	elseif i == "greenspring" or i == "green spring" then
-		table.insert(objects["spring"], spring:new(x, y, "green"))
-	elseif i == "moving greenspring" or i == "moving green spring" then
-		table.insert(objects["spring"], spring:new(x, y, "green", true))
-	elseif i == "spike snow" then
-		obj = spike:new(x-0.5, y-1/16, "snow")
-		table.insert(objects["spike"], obj)
-	elseif i == "snowball" then
-		obj = spikeball:new(x-0.5, y, "snow", "left", true)
-		table.insert(objects["spikeball"], obj)
-	elseif i == "koopaling" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 1))
-	elseif i == "koopaling2" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 2))
-	elseif i == "koopaling3" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 3))
-	elseif i == "koopaling4" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 4))
-	elseif i == "koopaling5" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 5))
-	elseif i == "koopaling6" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 6))
-	elseif i == "koopaling7" then
-		table.insert(objects["koopaling"], koopaling:new(x-0.5, y-1/16, 7))
-	elseif i == "box" then --change to enemy? (be wary of region triggers)
-		obj = box:new(x, y)
-		table.insert(objects["box"], obj)
-	elseif i == "box2" then
-		obj = box:new(x, y, "box2")
-		table.insert(objects["box"], obj)
-	elseif i == "edgelessbox" then
-		obj = box:new(x, y, "edgeless")
-		table.insert(objects["box"], obj)
-	elseif i == "coin" then
-		objects["coin"][tilemap(x, y)] = coin:new(x, y)
-	elseif i == "spikeyfall" then
-		obj = goomba:new(self.x+6/16, self.y, "spikeyfall")
-		table.insert(objects["goomba"], obj)
-	elseif i == "gel1" then
-		obj = gel:new(self.x+1, self.y+1, 1)
-		table.insert(objects["gel"], obj)
-	elseif i == "gel2" then
-		obj = gel:new(self.x+1, self.y+1, 2)
-		table.insert(objects["gel"], obj)
-	elseif i == "gel3" then
-		obj = gel:new(self.x+1, self.y+1, 3)
-		table.insert(objects["gel"], obj)
-	elseif i == "gel4" then
-		obj = gel:new(self.x+1, self.y+1, 4)
-		table.insert(objects["gel"], obj)
-	elseif i == "gelcleanse" then
-		obj = gel:new(self.x+1, self.y+1, 5)
-		table.insert(objects["gel"], obj)
-	else
-		obj, wasenemy, objtable = spawnenemy(i, x, y, false, "spawner")
-		--turn in the right direction
-		if obj and dir == "right" and obj.animationdirection then
-			if obj.animationdirection == "right" then
-				obj.animationdirection = "left"
-			else
-				obj.animationdirection = "right"
-			end
-		end
 	end
 end

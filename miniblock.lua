@@ -37,7 +37,7 @@ function miniblock:update(dt)
 	
 	self.y = self.y + self.speedy*dt
 	
-	if self.y > 16 then
+	if self.y > mapheight+1 then
 		return true
 	end
 	
@@ -45,15 +45,6 @@ function miniblock:update(dt)
 end
 
 function miniblock:draw()
-	local img = customtilesimg
-	if self.i > 90000 then
-		img = tilequads[self.i].image
-	elseif math.floor(self.i) <= smbtilecount then
-		img = smbtilesimg
-	elseif self.i <= smbtilecount+portaltilecount then
-		img = portaltilesimg
-	end
-	
 	local yadd = math.sin(self.timer)*0.1+0.15
-	love.graphics.draw(img, tilequads[self.i].quad, math.floor((self.x-xscroll)*16*scale), math.floor((self.y-.5-yscroll-yadd)*16*scale), 0, scale/2, scale/2, 8, 16)
+	love.graphics.draw(tilequads[self.i].image, tilequads[self.i].quad, math.floor((self.x-xscroll)*16*scale), math.floor((self.y-.5-yscroll-yadd)*16*scale), 0, scale/2, scale/2, 8, 16)
 end

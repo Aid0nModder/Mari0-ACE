@@ -11,7 +11,7 @@ if love.filesystem.exists("alesans_entities/daily_challenge_expansion.data") the
 				return
 			end
 		else
-			print("Daily challenge Error!: " .. tostring(result))
+			print("-- ERROR -- daily challenge error!: " .. tostring(result))
 		end
 	end
 end
@@ -19,12 +19,10 @@ end
 function getdailychallenge()
 	local randomobj = love.math.newRandomGenerator(math.floor((datet[1]*((datet[1]*datet[2])+datet[3]))*datet[3]/datet[2]))
 	randomobj:random(1, 256)
-	--local i = randomobj:random(1, #DCchaltable)
-	local i = 19
+	local i = randomobj:random(1, #DCchaltable)
 	return DCchaltable[i].t, DCchaltable[i].name, DCchaltable[i]
 end
-
-local createscenery, rectangle, drawfrozencoins
+local createscenery, rectangle, createflag
 
 DCchaltable = {
 	{
@@ -133,11 +131,6 @@ DCchaltable = {
 		finish={"lowcoins",0},
 		counttimeseparately=true,
 	},
-	{
-		t="frozencoin",
-		name="melt all the ice!",
-		finish={"lowpoints",0},
-	},
 }
 
 function createdailychallenge()
@@ -152,7 +145,7 @@ function createdailychallenge()
 	end
 	
 	mariotimelimit = 100
-
+	
 	--hud
 	dctimer = 100
 	dctimerdisp = 0
@@ -232,7 +225,6 @@ function createdailychallenge()
 					else
 						map[x][y][1] = 39
 					end
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 				end
 			end
 		end
@@ -248,21 +240,8 @@ function createdailychallenge()
 			elseif rand == 3 then
 				map[x][8][2] = 5
 			end
-			objects["tile"][tilemap(x, 8)] = tile:new(x-1, 7, 1, 1, true)
 		end
-		flagx = mapwidth-7
-		flagy = 13
-		flagimgx = flagx+8/16
-		flagimgy = 3+1/16
-		map[flagx+1][13][1] = 78
-		objects["tile"][tilemap(flagx+1, 13)] = tile:new(flagx, flagy-1, 1, 1, true)
-		for y = 3, 12 do
-			if y == 3 then
-				map[flagx+1][y][1] = 100
-			else
-				map[flagx+1][y][1] = 103
-			end
-		end
+		createflag()
 		createscenery("cloud", randomobj)
 		createscenery("bush", randomobj)
 	elseif currentdc == "coin" then
@@ -273,10 +252,8 @@ function createdailychallenge()
 					if randomobj:random(1, 2) == 1 then
 						map[x][y][2] = 5
 					end
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 				elseif y > 13 then
 					map[x][y][1] = 2
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 				end
 			end
 		end
@@ -307,14 +284,12 @@ function createdailychallenge()
 					if randomobj:random(1, 2) == 1 then
 						map[x][y][2] = 5
 					end
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 				elseif y == 1 or y == 2 then
 					map[x][y][1] = 121
 				elseif y == 3 then
 					map[x][y][1] = 106
 				elseif y > 13 and x <= 5 then
 					map[x][y][1] = 98
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 				end
 			end
 		end
@@ -326,6 +301,9 @@ function createdailychallenge()
 			for x = 5, mapwidth-5 do
 				map[x][y][1] = 116
 			end
+		end
+		if randomobj:random(1, 2) == 1 then --fish
+			map[13][13][2] = 184
 		end
 	elseif currentdc == "stomp" then
 		rectangle(78, 1, 1, 1, mapheight)
@@ -349,7 +327,6 @@ function createdailychallenge()
 			local y = 10-(4*(i-1))
 			for x = 7, 19 do
 				map[x][y][1] = 7
-				objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 			end
 			local y2 = 9-(4*(i-1))
 			local num = randomobj:random(1, 2)
@@ -369,7 +346,6 @@ function createdailychallenge()
 			local y = 10-(4*(i-1))
 			for x = 7, 19 do
 				map[x][y][1] = 49
-				objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 			end
 			local y2 = 9-(4*(i-1))
 			local x = 13
@@ -392,9 +368,8 @@ function createdailychallenge()
 		for x = 1, mapwidth do
 			for y = 1, mapheight do
 				if y > 13 then
-					map[x][y] = {92, 164}
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
-					map[x][y]["gels"] = {}
+					map[x][y][1] = 92
+					map[x][y][2] = 164
 				end
 			end
 		end
@@ -428,7 +403,6 @@ function createdailychallenge()
 					else
 						map[x][y][1] = 37
 					end
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 				end
 			end
 		end
@@ -464,7 +438,6 @@ function createdailychallenge()
 				if randomobj:random(1, 20) == 1 then
 					map[x2][14-height+1][2] = 108
 				end
-				objects["tile"][tilemap(x2, (14-height))] = tile:new(x2-1, 14-height-1, 1, 1, true)
 			end
 		end
 		flagx = mapwidth-7
@@ -472,7 +445,6 @@ function createdailychallenge()
 		flagimgx = flagx+8/16
 		flagimgy = 3+1/16
 		map[flagx+1][13][1] = 78
-		objects["tile"][tilemap(flagx+1,13)] = tile:new(flagx, flagy-1, 1, 1, true)
 		for y = 3, 12 do
 			if y == 3 then
 				map[flagx+1][y][1] = 101
@@ -497,7 +469,6 @@ function createdailychallenge()
 					x = math.max(x, 7)
 				end
 				map[x][y][1] = 78
-				objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 				lastx = x
 			end
 		end
@@ -507,19 +478,14 @@ function createdailychallenge()
 		for x = 1, mapwidth do
 			for y = 1, mapheight do
 				if y == 14 and x > 1 and x < 6 then
-					map[x][y] = {71}
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
-					map[x][y]["gels"] = {}
+					map[x][y][1] = 71
 				elseif y == 15 and x > 1 and x < 6 then
-					map[x][y] = {93}
-					map[x][y]["gels"] = {}
+					map[x][y][1] = 93
 				end
 			end
 		end
 		map[1][14][1] = 70
-		objects["tile"][tilemap(1, 4)] = tile:new(0, 13, 1, 1, true)
 		map[6][14][1] = 72
-		objects["tile"][tilemap(6, 14)] = tile:new(5, 13, 1, 1, true)
 		local x = 8
 		local height = 2
 		while x < mapwidth-11 do
@@ -531,12 +497,9 @@ function createdailychallenge()
 			for y = mapheight-height+1, mapheight do
 				if y == mapheight-height+1 then
 					map[x][y][1] = 70
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 					map[x+width-1][y][1] = 72
-					objects["tile"][tilemap((x+width-1), y)] = tile:new((x+width-1)-1, y-1, 1, 1, true)
 					for x = x+1, x+width-2 do
 						map[x][y][1] = 71
-						objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 						if randomobj:random(1, 20) == 1 then
 							if randomobj:random(1, 2) == 1 then
 								map[x][y-1][2] = 12
@@ -557,25 +520,7 @@ function createdailychallenge()
 			map[1][3][2] = 22
 			lakitoendx = mapwidth-12
 		end
-		flagx = mapwidth-7
-		flagy = 13
-		flagimgx = flagx+8/16
-		flagimgy = 3+1/16
-		map[flagx+1][13][1] = 78
-		objects["tile"][tilemap(flagx+1,13)] = tile:new(flagx, flagy-1, 1, 1, true)
-		for y = 3, 12 do
-			if y == 3 then
-				map[flagx+1][y][1] = 100
-			else
-				map[flagx+1][y][1] = 103
-			end
-		end
-		for x = flagx-2, mapwidth do
-			for y = 14, mapheight do
-				map[x][y][1] = 2
-				objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
-			end
-		end
+		createflag("ground")
 		createscenery("hill", randomobj)
 		createscenery("cloud", randomobj)
 	elseif currentdc == "cloud" then
@@ -585,8 +530,6 @@ function createdailychallenge()
 			for y = 1, mapheight do
 				if y == 14 and x > 1 and x < 9 then
 					map[x][y][1] = 79
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
-					map[x][y]["gels"] = {}
 				end
 			end
 		end
@@ -648,10 +591,8 @@ function createdailychallenge()
 		for i = 1, rows do
 			local x2 = math.floor((mapwidth/(rows+1))*i)
 			map[x2][y2][1] = 29
-			objects["tile"][tilemap(x2, y2)] = tile:new(x2-1, y2-1, 1, 1, true)
 			x2 = math.ceil((mapwidth/(rows+1))*i)
 			map[x2][y2][1] = 29
-			objects["tile"][tilemap(x2, y2)] = tile:new(x2-1, y2-1, 1, 1, true)
 		end
 	elseif currentdc == "spiny" then
 		spriteset = 3
@@ -665,19 +606,14 @@ function createdailychallenge()
 			for y = 1, mapheight do
 				if x == 1 or x == mapwidth or y == 1 or y > 13 then
 					map[x][y][1] = 154
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 				end
 			end
 		end
 		
 		map[2][10][1] = 192
-		objects["tile"][tilemap(2, 10)] = tile:new(2-1, 10-1, 1, 1, true)
 		map[3][10][1] = 190
-		objects["tile"][tilemap(3, 10)] = tile:new(3-1, 10-1, 1, 1, true)
 		map[mapwidth-1][10][1] = 191
-		objects["tile"][tilemap(mapwidth-1, 10)] = tile:new(mapwidth-2, 10-1, 1, 1, true)
 		map[mapwidth-2][10][1] = 190
-		objects["tile"][tilemap(mapwidth-2, 10)] = tile:new(mapwidth-3, 10-1, 1, 1, true)
 		table.insert(objects["box"], box:new(3, 9))
 		
 		local goombano = randomobj:random(1, 5)
@@ -692,19 +628,14 @@ function createdailychallenge()
 		for x = 1, mapwidth do
 			for y = 1, mapheight do
 				if y == 14 and x > 1 and x < 7 then
-					map[x][y] = {21}
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
-					map[x][y]["gels"] = {}
+					map[x][y][1] = 21
 				elseif y == 15 and x == 4 then
-					map[x][y] = {43}
-					map[x][y]["gels"] = {}
+					map[x][y][1] = 43
 				end
 			end
 		end
 		map[1][14][1] = 20
-		objects["tile"]["1-14"] = tile:new(0, 13, 1, 1, true)
 		map[7][14][1] = 22
-		objects["tile"]["7-14"] = tile:new(5, 13, 1, 1, true)
 		local x = 8
 		local height = 2
 		while x < mapwidth-11 do
@@ -716,12 +647,9 @@ function createdailychallenge()
 			for y = mapheight-height+1, mapheight do
 				if y == mapheight-height+1 then
 					map[x][y][1] = 20
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 					map[x+width-1][y][1] = 22
-					objects["tile"][tilemap((x+width-1), y)] = tile:new((x+width-1)-1, y-1, 1, 1, true)
 					for x = x+1, x+width-2 do
 						map[x][y][1] = 21
-						objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 						if randomobj:random(1, 16) == 1 then
 							local rand = randomobj:random(1, 3)
 							if rand == 1 then
@@ -745,25 +673,9 @@ function createdailychallenge()
 			map[1][3][2] = 22
 			lakitoendx = mapwidth-12
 		end
-		flagx = mapwidth-7
-		flagy = 13
-		flagimgx = flagx+8/16
-		flagimgy = 3+1/16
-		map[flagx+1][13][1] = 78
-		objects["tile"][tilemap(flagx+1,13)] = tile:new(flagx, flagy-1, 1, 1, true)
-		for y = 3, 12 do
-			if y == 3 then
-				map[flagx+1][y][1] = 100
-			else
-				map[flagx+1][y][1] = 103
-			end
-		end
-		for x = flagx-2, mapwidth do
-			for y = 14, mapheight do
-				map[x][y][1] = 2
-				objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
-			end
-		end
+		--flag
+		createflag("ground")
+		--bullet bills
 		if randomobj:random(1, 3) == 1 then
 			bulletbilldelay = 0.5
 			bulletbillstarted = true
@@ -785,26 +697,13 @@ function createdailychallenge()
 			elseif rand == 2 then
 				map[x][y][2] = 4
 			end
-			objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 		end
 		local moleno = randomobj:random(8, 16)
 		for i = 1, moleno do
 			local x = randomobj:random(8, mapwidth-10)
 			map[x][mapheight-2][2] = 143
 		end
-		flagx = mapwidth-7
-		flagy = 13
-		flagimgx = flagx+8/16
-		flagimgy = 3+1/16
-		map[flagx+1][13][1] = 78
-		objects["tile"][tilemap(flagx+1,13)] = tile:new(flagx, flagy-1, 1, 1, true)
-		for y = 3, 12 do
-			if y == 3 then
-				map[flagx+1][y][1] = 100
-			else
-				map[flagx+1][y][1] = 103
-			end
-		end
+		createflag()
 		createscenery("cloud", randomobj)
 		createscenery("tree", randomobj)
 		createscenery("fence", randomobj)
@@ -826,19 +725,7 @@ function createdailychallenge()
 			
 			x = x + size + randomobj:random(5, 10)
 		end
-		flagx = mapwidth-7
-		flagy = 13
-		flagimgx = flagx+8/16
-		flagimgy = 3+1/16
-		map[flagx+1][13][1] = 78
-		objects["tile"][tilemap(flagx+1,13)] = tile:new(flagx, flagy-1, 1, 1, true)
-		for y = 3, 12 do
-			if y == 3 then
-				map[flagx+1][y][1] = 100
-			else
-				map[flagx+1][y][1] = 103
-			end
-		end
+		createflag()
 		createscenery("cloud", randomobj)
 		createscenery("hill", randomobj)
 	elseif currentdc == "sledgebro" then
@@ -850,7 +737,6 @@ function createdailychallenge()
 			local y = 10-(4*(i-1))
 			for x = 7, 19 do
 				map[x][y][1] = 7
-				objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 			end
 			local y2 = 9-(4*(i-1))
 			local num = randomobj:random(1, 2)
@@ -897,47 +783,17 @@ function createdailychallenge()
 					map[x][y][1] = tileilist[tilei]
 				end
 				mariocoincount = mariocoincount + 1
+			end
+		end
+	end
+ 
+	--create collision
+	for x = 1, mapwidth do
+		for y = 1, mapheight do
+			if tilequads[map[x][y][1]] and tilequads[map[x][y][1]].collision == true then
 				objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 			end
 		end
-	elseif currentdc == "frozencoin" then
-		background = 1
-		frozencoinmode = true
-		lowpointscount = 0
-		spriteset = 1
-		--(i,rx,ry,w,h)
-		-- make the walls
-		rectangle(2, 1, 1, mapwidth, 1)
-		rectangle(2, 1, 1, 1, mapheight)
-		rectangle(2, mapwidth, 1, 1, mapheight)
-		rectangle(2, 1, 14, mapwidth, 2)
-		-- platforms
-		rectangle(93, 2, 11, 5, 3)
-		rectangle(71, 2, 10, 5, 1)
-		rectangle(72, 7, 10, 1, 1)
-		rectangle(93, 20, 11, 5, 3)
-		rectangle(71, 20, 10, 5, 1)
-		rectangle(70, 19, 10, 1, 1)
-		-- make dem blocks
-		local blocks = randomobj:random(2, 4)
-		local y = 12
-		local x = 13
-		for i = 1, blocks do
-			x = randomobj:random(2,24)
-			if x < 7 or x > 19 then
-				local offset = randomobj:random(1,2)
-				if offset == 1 then
-					y = y - 4
-				end
-			end
-			if (x == 3 or x == 4) and y == 12 then
-				--oof
-			else
-				drawfrozencoins(x, y, 2, "nothing")
-			end
-		end
-		createscenery("cloud", randomobj)
-		createscenery("hill", randomobj)
 	end
 end
 
@@ -954,10 +810,6 @@ function checkdcwin(dt)
 		end
 	elseif v[1] == "lowcoins" then
 		if mariocoincount <= v[2] then
-			pass = true
-		end
-	elseif v[1] == "lowpoints" then
-		if lowpointscount <= v[2] then
 			pass = true
 		end
 	elseif v[1] == "kill" then
@@ -1003,23 +855,6 @@ function rectangle(i,rx,ry,w,h)
 		for y = ry, ry+h-1 do
 			if inmap(x, y) then
 				map[x][y][1] = i
-				if tilequads[map[x][y][1]].collision then
-					objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
-				end
-			end
-		end
-	end
-end
-
-function drawfrozencoins(sx, sy, sc, type) --smart boi
-	for fx = 1, sc do
-		for fy = 1, sc do
-			if map[sx+(fx-1)][sy+(fy-1)][2] == 296 then
-				--to stop overlaping (making challange impossible)
-			else
-				map[sx+(fx-1)][sy+(fy-1)][2] = 296
-				map[sx+(fx-1)][sy+(fy-1)][3] = type
-				lowpointscount = lowpointscount + 1
 			end
 		end
 	end
@@ -1174,6 +1009,29 @@ function createscenery(t, randomobj)
 				end	
 			end
 			x = x + size + randomobj:random(3, 9)
+		end
+	end
+end
+
+function createflag(ground)
+	flagx = mapwidth-7
+	flagy = 13
+	flagimgx = flagx+8/16
+	flagimgy = 3+1/16
+	map[flagx+1][13][1] = 78
+	for y = 3, 12 do
+		if y == 3 then
+			map[flagx+1][y][1] = 100
+		else
+			map[flagx+1][y][1] = 103
+		end
+	end
+	--ground
+	if ground then
+		for x = flagx-2, mapwidth do
+			for y = 14, mapheight do
+				map[x][y][1] = 2
+			end
 		end
 	end
 end

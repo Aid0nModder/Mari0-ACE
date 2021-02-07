@@ -17,6 +17,12 @@ function pedestal:init(x, y, t)
 	self.quadi = 1
 	self.gun = true
 	self.timer = 0
+
+	self.outtable = {}
+end
+
+function pedestal:addoutput(a, t)
+	table.insert(self.outtable, {a, t})
 end
 
 function pedestal:draw()
@@ -38,7 +44,7 @@ end
 
 function pedestal:update(dt)
 	if not self.gun then
-		if self.quadi ~= 11 then
+		if self.quadi ~= 10 then
 			self.timer = self.timer + dt
 			if self.timer > 0.1 then
 				self.quadi = self.quadi + 1
@@ -68,12 +74,26 @@ function pedestal:ceilcollide(a, b)
 	end
 end
 
+function pedestal:get(b)
+	if self.gun then
+		if not b.characterdata.noportalgun then
+			b.portalgun = true
+			b.portals = self.portals
+			b:updateportalsavailable()
+
+			for i = 1, #self.outtable do
+				self.outtable[i][1]:input("on", self.outtable[i][2])
+			end
+
+			self.gun = false
+			self.active = false
+		end
+	end
+end
+
 function pedestal:globalcollide(a, b)
-	if a == "player" and self.gun then
-		b.pickupgun = true
-		self.quadi = 3
-		self.gun = false
-		self.active = false
+	if a == "player" then
+		self:get(b)
 	end
 end
 

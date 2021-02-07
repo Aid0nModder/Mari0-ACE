@@ -46,6 +46,7 @@ function loadcustomplayers()
 				runaccelerationair = runaccelerationair,
 				minspeed = minspeed,
 				frogminspeed = frogminspeed,
+				frogfriction = frogfriction,
 				maxwalkspeed = maxwalkspeed,
 				maxrunspeed = maxrunspeed,
 				friction = friction,
@@ -104,12 +105,11 @@ function loadcustomplayers()
 				smallducking = false,
 				breaksblockssmall = false,
 				skid = false,
+				groundpound = false,
+				doublejump = false,
+				customtimer = customtimer, --SMUG 
+				checkif = checkif, --DOUBLE SMUG
 
-				--spawnchildren
-				spawnchildren = spawnchildren,
-                spawnchildrenoffsetx = spawnchildrenoffsetx,
-                spawnchildrenoffsety = spawnchildrenoffsety,
-				
 				--powerup restrict
 				advancedchar = advancedchar,
 				nomini = nomini,
@@ -129,16 +129,18 @@ function loadcustomplayers()
 				noboomerang = noboomerang,
 				nosmallbig = nosmallbig,
 				
-				--frames
+				--frames (anything that is quoted out doesn't work)
 				idleframes = 1,
 				runframes = 3,
 				--jumpframes = 1,
 				fallframes = 0,
 				customframes = 0,
 				swimframes = 4,
+				climbframes = 2, --doesnt work
 				swimpushframes = 0,
 				fenceframes = 0,
 				smallduckingframes = 0,
+				groundpoundframes = 0,
 				--carryingframes = 0,
 				--carryingwalkingframes = 0,
 				--carryingjumpframes = 0,
@@ -150,7 +152,9 @@ function loadcustomplayers()
 				--yoshiframes = 0,
 
 				nopointing = false,
+				portalgunoverlay = false, --paste an image of a portal gun on top of character
 				portalgununderhat = false,
+				nojumpsound = false,
 
 				--powerup/health
 				defaultsize = false,
@@ -367,6 +371,16 @@ function loadcustomplayers()
 						end)
 					JSONcrashgame = true
 				end
+				if playerstuff.fireenemy then
+					for i, v in pairs(playerstuff.fireenemy) do
+						local a = i:lower()
+						if type(v) == "string" then
+							playerstuff.fireenemy[a] = v:lower()
+						else
+							playerstuff.fireenemy[a] = v
+						end
+					end
+				end
 			end
 
 			for i2, n in pairs(animfiles) do
@@ -375,12 +389,24 @@ function loadcustomplayers()
 					playerstuff.imgs[n] = true
 				end
 			end
+
+			--check if for the right version
+			if playerstuff.version then
+				local vs = playerstuff.version
+				if vs and vs > VERSION then
+					if math.abs(vs-VERSION) < 0.1 then
+						notice.new(v .. " was made for a\nnew patch of mari0 ae\ndownload the new version", notice.white, 4.5)
+					else
+						notice.new(v .. " was made for a\nnewer version of mari0 ae\ndownload the new version!", notice.red, 8)
+					end
+				end
+			end
 			
 			characters.data[v] = playerstuff
 			table.insert(characters["list"], v)
 
 			--create animations0.png animations1.png
-			if playerstuff.splitmissingimages then
+			if playerstuff.splitmissingimages and playerstuff.writefiles then
 				local i = v
 				local imgs = characters.data[i].imgs
 				if not characters.data[i]["animations"] then
@@ -443,9 +469,9 @@ function setcustomplayer(i, pn, initial) --name, player number, initial (don't c
 		if love.filesystem.exists("alesans_entities/characters/" .. i .. "/config.txt") then
 			--incompatible probably
 			if love.filesystem.exists("alesans_entities/characters/" .. i .. "/animationsBAK.png") then --SE Character
-				notice.new("Incompatible Character Detected|Use characters made for mari0:AE!", notice.red, 5)
+				notice.new("Incompatible Character Detected\nUse characters made for mari0:AE!", notice.red, 5)
 			elseif not love.filesystem.exists("alesans_entities/characters/" .. i .. "/config.json") then --Old Character Format
-				notice.new("Incompatible Character Detected|Use characters made for|mari0:AE version " .. VERSIONSTRING .. "!", notice.red, 5)
+				notice.new("Incompatible Character Detected\nUse characters made for\nmari0:AE version " .. VERSIONSTRING .. "!", notice.red, 5)
 			end
 		end
 
@@ -506,12 +532,12 @@ function setcustomplayer(i, pn, initial) --name, player number, initial (don't c
 				--for some reason the number of mario colors is always 4
 				--i dont fuckin know
 				--print(initial, #mariocolors[pn], #characters.data[i].defaultcolors[pn])
-				if #characters.data[i].defaultcolors[pn] == #characters.data[i].colorables then
+				if #characters.data[i].defaultcolors[pn] >= #characters.data[i].colorables then
 					for j = 1, #characters.data[i].colorables do
 						if characters.data[i].defaultcolors[pn][j] then
 							mariocolors[pn][j] = shallowcopy(characters.data[i].defaultcolors[pn][j])
 						else
-							print("missing colorable:" .. j)
+							print("-- ERROR -- missing colorable:" .. j)
 						end
 					end
 				end
@@ -541,14 +567,14 @@ function setcustomplayer(i, pn, initial) --name, player number, initial (don't c
 	end
 end
 
-function customplayerhatoffsets(i, targettable, animationstate, frame)
+function customplayerhatoffsets(i, targettable, anim, frame)
 	--target table is hatoffsets, bighatoffsets, skinnyhatoffsets
 	if i and characters.data[i] and characters.data[i][targettable] then
-		if characters.data[i][targettable][animationstate] then
-			if frame and type(characters.data[i][targettable][animationstate]) == "table" then
-				return characters.data[i][targettable][animationstate][frame]
+		if characters.data[i][targettable][anim] then
+			if frame and type(characters.data[i][targettable][anim]) == "table" and characters.data[i][targettable][anim][frame] and type(characters.data[i][targettable][anim][frame]) == "table" then
+				return characters.data[i][targettable][anim][frame]
 			end
-			return characters.data[i][targettable][animationstate]
+			return characters.data[i][targettable][anim]
 		end
 	end
 	return false

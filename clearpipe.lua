@@ -227,6 +227,7 @@ function clearpipe:link()
 			for i, v in pairs(objects[w]) do
 				if tonumber(self.r[2]) == v.cox and tonumber(self.r[3]) == v.coy then
 					v:addoutput(self)
+					self.suck = false
 				end
 			end
 		end

@@ -1,8 +1,8 @@
 blocktogglebutton = class:new()
 
-function blocktogglebutton:init(x, y, color, t)
+function blocktogglebutton:init(x, y, r, t)
 	--PHYSICS STUFF
-	self.t = t or  "small"
+	self.t = t or "small"
 	
 	self.cox = x
 	self.coy = y
@@ -30,12 +30,18 @@ function blocktogglebutton:init(x, y, color, t)
 	self.dir = "down"
 	if self.t == "p" then
 		self.color = 1
-		if color then
-			local v = convertr(color, {"string"}, true)
+		if r then
+			local v = convertr(r, {"string"}, true)
 			self.dir = v[1] or "down"
 		end
 	else
-		self.color = color or 1
+		if r and not tonumber(r) and r:find("|") then
+			local v = convertr(r, {"num", "string"}, true)
+			self.color = v[1] or 1
+			self.dir = v[2] or "down"
+		else
+			self.color = r or 1
+		end
 	end
 	
 	self.category = 2
@@ -86,6 +92,17 @@ function blocktogglebutton:init(x, y, color, t)
 		end
 	end
 
+	if self.t == "big" then
+		if self.dir == "up" then
+			self.offsetY = -16
+			self.offsetX = 24
+		elseif self.dir == "left" then
+			self.offsetX = 24
+		elseif self.dir == "right" then
+			self.offsetY = -16
+		end
+	end
+
 	self.falling = false
 	
 	self.pushed = false
@@ -103,7 +120,7 @@ end
 
 function blocktogglebutton:update(dt)
 	if self.dir == "down" then
-		self.rotation = math.mod(self.rotation, math.pi*2)
+		self.rotation = math.fmod(self.rotation, math.pi*2)
 		if self.rotation > 0 then
 			self.rotation = self.rotation - portalrotationalignmentspeed*dt
 			if self.rotation < 0 then
@@ -134,9 +151,9 @@ function blocktogglebutton:update(dt)
 				end
 				if yespls then
 					self:changeblocks(true)
-					self.drawable = false
+					--self.drawable = false
 					pbuttonsound:stop()
-					if (not music:playingmusic()) and (not levelfinished) then
+					if (not music:playingmusic()) and (not lowtimesound:isPlaying()) and (not levelfinished) then
 						playmusic()
 					end
 				end
@@ -204,17 +221,23 @@ function blocktogglebutton:leftcollide(a, b)
 	if self:globalcollide(a, b) then
 		return false
 	end
+	if self.dir == "right" and self:press(a, b) then
+		return false
+	end
 end
 
 function blocktogglebutton:rightcollide(a, b)
 	if self:globalcollide(a, b) then
 		return false
 	end
+	if self.dir == "left" and self:press(a, b) then
+		return false
+	end
 end
 
 function blocktogglebutton:ceilcollide(a, b)
 	if self.dir == "down" and self:press(a, b) then
-		return false
+		return ture
 	end
 end
 
@@ -242,6 +265,11 @@ function blocktogglebutton:press(a, b)
 		playsound(bulletbillsound)
 		if self.t == "p" then
 			stopmusic()
+			if lowtimesound:isPlaying() then
+				pbuttonsound:setVolume(0)
+			else
+				pbuttonsound:setVolume(1)
+			end
 			playsound(pbuttonsound)
 			--playsound(pbuttonpushsound) i didn't find a sound :(
 		else

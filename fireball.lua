@@ -62,11 +62,24 @@ function fireball:init(x, y, dir, v, t)
 		self.hp = 2
 
 		if dir == "right" then
-			self.speedx = iceballspeed
+			self.speedx = iceballspeed+(v.speedx*.5)
 		else
-			self.speedx = -iceballspeed
+			self.speedx = -iceballspeed+(v.speedx*.5)
 		end
 		self.gravity = 30
+	elseif self.t == "shoeghost" --[[or self.t == "squishyboi"]] then
+		self.mask[2] = true
+		self.animationdirection = "right"
+		self.graphic = shoeghostimg
+		self.quad = shoeghostquad[1][1]
+		self.offsetX = 6
+		self.offsetY = 6
+		self.quadcenterX = 18
+		self.quadcenterY = 8
+		self.light = 1
+		self.static = false
+		self.gravity = 0
+		self.savespeedx = self.speedx
 	else
 		self.graphic = fireballimg
 		self.quad = fireballquad[1]
@@ -104,6 +117,41 @@ function fireball:update(dt)
 			elseif objects["collectable"][tilemap(x, y)] then
 				getcollectable(x, y)
 			end
+		end
+	elseif self.t == "shoeghost" then
+		if self.speedx > 0 then
+			self.animationdirection = "right"
+		elseif self.speedx < 0 then
+			self.animationdirection = "left"
+		end
+		if self.animationdirection == "left" and self.speedx < -0.1 then
+			self.speedx = self.speedx + 9 * dt
+			if self.speedx > -0.1 then
+				self.speedx = -0.1
+			end
+		elseif self.animationdirection == "right" and self.speedx > 0.1 then
+			self.speedx = self.speedx - 9 * dt
+			if self.speedx < 0.1 then
+				self.speedx = 0.1
+			end
+		end
+		if self.timer > 0.09 then
+			self.timer = 0
+			self.lifetime = (self.lifetime or 0) + 1
+			if self.quad == shoeghostquad[1][1] then
+				self.quad = shoeghostquad[1][2]
+			elseif self.quad == shoeghostquad[1][2] then
+				self.quad = shoeghostquad[1][3]
+			elseif self.quad == shoeghostquad[1][3] then
+				self.quad = shoeghostquad[1][4]
+			elseif self.quad == shoeghostquad[1][4] then
+				self.quad = shoeghostquad[1][5]
+			elseif self.quad == shoeghostquad[1][5] then
+				self.quad = shoeghostquad[1][4]
+			end
+		end
+		if self.lifetime and self.lifetime > 15 then
+			self:explode()
 		end
 	elseif self.destroysoon == false then
 		while self.timer > staranimationdelay do
@@ -174,6 +222,8 @@ function fireball:leftcollide(a, b)
 		self.speedx = math.abs(self.speedx)
 	elseif self.t == "iceball" then
 		self:hitstuff(a, b)
+	elseif self.t == "shoeghost" then
+		self.speedx = self.speedx
 	else
 		self.speedx = fireballspeed
 	end
@@ -198,6 +248,8 @@ function fireball:rightcollide(a, b)
 		self.speedx = -math.abs(self.speedx)
 	elseif self.t == "iceball" then
 		self:hitstuff(a, b)
+	elseif self.t == "shoeghost" then
+		self.speedx = self.speedx
 	else
 		self.speedx = -fireballspeed
 	end
@@ -266,8 +318,22 @@ function fireball:hitstuff(a, b)
 	if self.x+self.width/2 > b.x+b.width/2 then
 		dir = "left"
 	end
+	if self.t == "shoeghost" then
+		if mariohammerkill[a] or a == "muncher" then
+			if a == "enemy" then
+				if b:shotted(self.animationdirection, nil, nil, false, true) then
+					addpoints(firepoints[b.t] or 100, self.x, self.y)
+				end
+			else
+				if a ~= "bowser" then
+					addpoints(firepoints[a], self.x, self.y)
+				end
+			end
+			b:shotted(self.animationdirection,"powblock")
+		end
+	end
 	if self.t == "iceball" then
-		if a == "tile" or a == "portalwall" or a == "spring" or a == "kingbill" or (a == "angrysun" and b.t == "sun") or a == "springgreen" or a == "thwomp" or a == "fishbone" or a == "muncher" or (a == "bigkoopa" and b.t == "bigbeetle") or a == "meteor" or a == "dryplant" or a == "drydownplant" or a == "parabeetle" or a == "boo" or a == "torpedoted" then
+		if a == "tile" or a == "portalwall" or a == "spring" or a == "kingbill" or (a == "angrysun" and b.t == "sun") or a == "springgreen" or a == "thwomp" or a == "fishbone" or a == "muncher" or (a == "bigkoopa" and b.t == "bigbeetle") or a == "meteor" or a == "parabeetle" or a == "boo" or a == "torpedoted" then
 			playsound(iciclesound)
 		elseif iceballfreeze[a] then
 			if b.freezable and (not b.frozen) and (not b.resistseverything) then
@@ -290,7 +356,7 @@ function fireball:hitstuff(a, b)
 		end
 		self:explode()
 	
-	elseif (a == "koopa" and (b.t == "beetle" or b.t == "beetleshell" or b.t == "bigbeetle" or b.t == "downbeetle")) or a == "spikeball" then
+	elseif (a == "koopa" and (b.t == "beetle" or b.t == "beetleshell" or b.t == "bigbeetle" or b.t == "downbeetle")) or a == "spikeball" or a == "amp" then
 		self:explode()
 
 	elseif fireballkill[a] then
@@ -298,8 +364,6 @@ function fireball:hitstuff(a, b)
 		if a ~= "bowser" and (a ~= "koopaling" or shot) then
 			addpoints(firepoints[a] or 200, self.x, self.y)
 		end
-		self:explode()
-	
 	elseif a == "bomb" then
 		if not b.explosion then
 			local dir = "right"
@@ -326,11 +390,12 @@ function fireball:explode()
 		if self.fireballthrower then
 			self.fireballthrower:fireballcallback()
 		end
-		
-		if self.t == "superball" then
-			self.destroy = true
-			self.active = false
-			makepoof(self.x+self.width/2, self.y+self.height/2, "makerpoof")
+		if self.t == "superball" or self.t == "shoeghost" then
+			if (self.t == "shoeghost" and self.lifetime and self.lifetime > 15) or self.t ~= "shoeghost" then --They doesn't explode on contact
+				self.destroy = true
+				self.active = false
+				makepoof(self.x+self.width/2, self.y+self.height/2, "makerpoof")
+			end
 		else
 			self.destroysoon = true
 			self.quadi = 5

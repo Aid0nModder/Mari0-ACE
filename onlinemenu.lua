@@ -21,15 +21,15 @@ function onlinemenu_load()
 	guielements.ipentry = guielement:new("input", 6, 87, 23, joingame, "", 23, 1)
 	guielements.portentry2 = guielement:new("input", 131, 145, 5, nil, "27020", 5, 1, true)
 	
-	guielements.portentry = guielement:new("input", 274, 87, 5, function() notice.new("the port isn't a code!|it doesn't create a server!|leave it the same unless|you know what you're doing", notice.red, 12) end, "27020", 5, 1, true)
+	guielements.portentry = guielement:new("input", 274, 87, 5, function() notice.new(TEXT["port notice"], notice.red, 12) end, "27020", 5, 1, true)
 	
-	guielements.magiccheckbox = guielement:new("checkbox", 220, 147, togglemagic, false, "use magicdns words")
+	guielements.magiccheckbox = guielement:new("checkbox", 220, 147, togglemagic, false, TEXT["use magicdns words"])
 	
-	guielements.hostbutton = guielement:new("button", 247, 199, "create game", creategame, 2)
+	guielements.hostbutton = guielement:new("button", 247, 199, TEXT["create game"], creategame, 2)
 	guielements.hostbutton.bordercolor = {255, 0, 0}
 	guielements.hostbutton.bordercolorhigh = {255, 127, 127}
 	
-	guielements.joinbutton = guielement:new("button", 61, 199, "join game", joingame, 2)
+	guielements.joinbutton = guielement:new("button", 61, 199, TEXT["join game"], joingame, 2)
 	guielements.joinbutton.bordercolor = {0, 255, 0}
 	guielements.joinbutton.bordercolorhigh = {127, 255, 127}
 	
@@ -87,13 +87,13 @@ function onlinemenu_draw()
 	love.graphics.rectangle("fill", 3*scale, 3*scale, 394*scale, 52*scale)
 	love.graphics.setColor(255, 255, 255)
 	
-	properprint("online play", 4*scale, 5*scale)
+	properprintF(TEXT["online play"], 4*scale, 5*scale)
 	
-	properprint("your nick:", 4*scale, 20*scale)
+	properprintF(TEXT["your nick:"], 4*scale, 20*scale)
 	guielements.nickentry:draw()
 	
-	properprint("use config", 140*scale, 20*scale)
-	properprint("number  " .. playerconfig , 140*scale, 33*scale)
+	properprintF(TEXT["use config"], 140*scale, 20*scale)
+	properprintF(TEXT["config number"] .. playerconfig , 140*scale, 33*scale)
 	guielements.configdecrease:draw()
 	guielements.configincrease:draw()
 	
@@ -107,27 +107,23 @@ function onlinemenu_draw()
 	love.graphics.rectangle("fill", 3*scale, 58*scale, 196*scale, 163*scale)
 	
 	love.graphics.setColor(255, 255, 255)
-	properprint("join game", 64*scale, 60*scale)
+	properprintF(TEXT["join game"], 64*scale, 60*scale)
 	
-	properprint("address/magicdns", 36*scale, 77*scale)
+	properprintF(TEXT["address/magicdns"], 36*scale, 77*scale)
 	guielements.ipentry:draw()
 	love.graphics.setColor(150, 150, 150)
-	properprint("enter ip, hostname,", 24*scale, 107*scale)
-	properprint("domain or magicdns", 28*scale, 117*scale)
-	properprint("words to connect.", 32*scale, 127*scale)
+	properprintF(TEXT["join game instructons"], 24*scale, 107*scale)
 	
 	love.graphics.setColor(255, 255, 255)
-	properprint("optional port:", 21*scale, 148*scale)
+	properprintF(TEXT["optional port:"], 21*scale, 148*scale)
 	if guielements.portentry2.inputting then
 		guielements.portentry2:draw()
 	else
-		properprint(guielements.portentry2.value, 133*scale, 148*scale)
+		properprintF(guielements.portentry2.value, 133*scale, 148*scale)
 	end
 	
 	love.graphics.setColor(150, 150, 150)
-	properprint("not needed when", 40*scale, 162*scale)
-	properprint("connecting through", 28*scale, 172*scale)
-	properprint("magicdns", 68*scale, 182*scale)
+	properprintF(TEXT["optional port instructions"], 24*scale, 162*scale)
 	
 	guielements.joinbutton:draw()
 	
@@ -136,25 +132,21 @@ function onlinemenu_draw()
 	love.graphics.rectangle("fill", 202*scale, 58*scale, 195*scale, 163*scale)
 	
 	love.graphics.setColor(255, 255, 255)
-	properprint("host game", 260*scale, 60*scale)
-	properprint("port:", 278*scale, 77*scale)
+	properprintF(TEXT["host game"], 260*scale, 60*scale)
+	properprintF(TEXT["port:"], 278*scale, 77*scale)
 	
 	if guielements.portentry.inputting then
 		guielements.portentry:draw()
 	else
-		properprint(guielements.portentry.value, 276*scale, 90*scale)
+		properprintF(guielements.portentry.value, 276*scale, 90*scale)
 	end
 	
 	love.graphics.setColor(150, 150, 150)
-	properprint("port will need to", 230*scale, 107*scale)
-	properprint("be udp forwarded for", 218*scale, 117*scale)
-	properprint("internet play!", 242*scale, 127*scale)
+	properprintF(TEXT["host game instructions"], 218*scale, 107*scale)
 	
 	guielements.magiccheckbox:draw()
 	love.graphics.setColor(150, 150, 150)
-	properprint("allows friends", 238*scale, 162*scale)
-	properprint("to join using", 242*scale, 172*scale)
-	properprint("two short words", 234*scale, 182*scale)
+	properprintF(TEXT["magicdns instructions"], 238*scale, 162*scale)
 	
 	guielements.hostbutton:draw()
 	
@@ -211,14 +203,14 @@ function drawplayercard(x, y, colortable, hattable, nick, ping, focus, character
 	end
 
 	love.graphics.setColor(255, 255, 255)
-	properprint(nick, x*scale+35*scale, y*scale+10*scale)
+	properprintF(nick, x*scale+35*scale, y*scale+10*scale)
 
 	if not ping then
 		love.graphics.setColor(127, 127, 127)
 	end
 	if not ping then
-		properprint("ping:", x*scale+35*scale, y*scale+22*scale)
-		properprint("host", x*scale+75*scale, y*scale+22*scale)
+		properprintF("ping:", x*scale+35*scale, y*scale+22*scale)
+		properprintF("host", x*scale+75*scale, y*scale+22*scale)
 	else
 		if tonumber(ping) then
 			if tonumber(ping) < 40 then
@@ -231,8 +223,8 @@ function drawplayercard(x, y, colortable, hattable, nick, ping, focus, character
 		else
 			love.graphics.setColor(127, 127, 127, 255)
 		end
-		properprint("ping:", x*scale+35*scale, y*scale+22*scale)
-		properprint(ping .. "ms", (x+123-#(ping .. "ms")*8)*scale, y*scale+22*scale)
+		properprintF("ping:", x*scale+35*scale, y*scale+22*scale)
+		properprintF(ping .. "ms", (x+123-#(ping .. "ms")*8)*scale, y*scale+22*scale)
 	end
 end
 
@@ -283,7 +275,7 @@ function joingame()
 		ip, port = magicdns_find(adjective, noun)
 		
 		if ip == nil then
-			notice.new("INVALID MAGICDNS|THE HOST NEEDS TO PORT FORWARD!", notice.red, 6 )
+			notice.new(TEXT["INVALID MAGICDNS\nTHE HOST NEEDS TO PORT FORWARD!"], notice.red, 6 )
 			return
 		end
 	else
@@ -313,7 +305,7 @@ function magicdns_make()
 		return string.lower(result[2]), string.lower(result[3])
 	else
 		notice.new("MAGICDNS MAKE FAILED HORRIBLY", notice.red, 3)
-		print("MAGICDNS MAKE FAILED HORRIBLY");
+		print("-- ERROR -- MAGICDNS MAKE FAILED HORRIBLY");
 		usemagic = false
 		return;
 	end
@@ -324,9 +316,9 @@ function magicdns_keep()
 	result = (s or ""):split("/")
 	magicdns_error(result)
 	if result[1] ~= "KEPT" then
-		print("MAGICDNS KEEP FAILED! RETURNED: " .. (s or ""))
+		print("-- ERROR -- MAGICDNS KEEP FAILED! RETURNED: " .. (s or ""))
 	elseif result[2] ~= "" then
-		print("MAGICDNS EXTERNAL PORT KNOWN = " .. result[2])
+		print("-- ERROR -- MAGICDNS EXTERNAL PORT KNOWN = " .. result[2])
 	end
 end
 
@@ -335,7 +327,7 @@ function magicdns_remove()
 	result = (s or ""):split("/")
 	magicdns_error(result)
 	if result[1] ~= "REMOVED" then
-		print("MAGICDNS REMOVE FAILED! RETURNED: " .. (s or ""))
+		print("-- ERROR -- MAGICDNS REMOVE FAILED! RETURNED: " .. (s or ""))
 	end
 end
 	
@@ -346,7 +338,7 @@ function magicdns_find(adjective, noun)
 	magicdns_error(result)
 	if result[1] == "FOUND" then
 		if result[4] == "" then
-		print("MAGICDNS Server external port is not known!")
+		print("-- ERROR -- MAGICDNS Server external port is not known!")
 		
 		notice.new("MAGICDNS Server external port is not known!", notice.red, 3)
 		end		
@@ -358,11 +350,11 @@ end
 
 function magicdns_error(result)
 	if result[1] == "ERROR" then
-		print("MAGICDNS ERROR: "..result[2])
+		print("-- ERROR -- MAGICDNS ERROR: "..result[2])
 		notice.new("MAGICDNS ERROR: "..result[2], notice.red, 3)
 		return true
 	elseif not tablecontains(magicdns_validresponses, result[1]) then
-		print("MAGICDNS: nonstandard response: "..result[1])
+		print("-- ERROR -- MAGICDNS: nonstandard response: "..result[1])
 		notice.new("MAGICDNS: nonstandard response: "..result[1], notice.red, 3)
 		return true
 	end

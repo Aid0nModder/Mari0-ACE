@@ -131,6 +131,15 @@ function music:stopall()
 	intromusic = false
 end
 
+function music:getPlaying()
+	for name, source in pairs(self.loaded) do
+		if source:isPlaying() then
+			return name, source
+		end
+	end
+	return false
+end
+
 function music:update()
 	for name, source in pairs(self.loaded) do
 		if source ~= false then

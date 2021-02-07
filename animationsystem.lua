@@ -6,6 +6,7 @@ function animationsystem_load()
 	animationplayerlandtriggerfuncs = {}
 	animationplayerhurttriggerfuncs = {}
 	animations = {}
+	animationschar = {}
 	
 	if not dcplaying then
 		local dir = love.filesystem.getDirectoryItems(mappackfolder .. "/" .. mappack .. "/animations")
@@ -15,19 +16,23 @@ function animationsystem_load()
 				table.insert(animations, animation:new(mappackfolder .. "/" .. mappack .. "/animations/" .. dir[i], dir[i]))
 			end
 		end
+	end
 
-		--custom chracters animations
-		local characterenemiesloaded = {} --don't load the same enemy multiple times
-		for i = 1, #mariocharacter do
-			if mariocharacter[i] and (not characterenemiesloaded[mariocharacter[i]]) and love.filesystem.exists("alesans_entities/characters/" .. mariocharacter[i] .. "/animations/") then
-				local dir = love.filesystem.getDirectoryItems("alesans_entities/characters/" .. mariocharacter[i] .. "/animations/")
-				for i2 = 1, #dir do
-					if string.sub(dir[i], -4) == "json" then
-						table.insert(animations, animation:new("alesans_entities/characters/" .. mariocharacter[i] .. "/animations/" .. dir[i2], dir[i2]))
+	--custom chracters animations
+	local characterenemiesloaded = {} --don't load the same enemy multiple times
+	for i = 1, #mariocharacter do
+		if mariocharacter[i] and (not characterenemiesloaded[mariocharacter[i]]) and love.filesystem.exists("alesans_entities/characters/" .. mariocharacter[i] .. "/animations/") then
+			local dir = love.filesystem.getDirectoryItems("alesans_entities/characters/" .. mariocharacter[i] .. "/animations/")
+			for i2 = 1, #dir do
+				if dir[i2] and string.sub(dir[i2], -4) == "json" then
+					local t = animationschar
+					if editormode and (characters.data[mariocharacter[i]] and not characters.data[mariocharacter[i]].hideanimations) then
+						t = animations
 					end
+					table.insert(t, animation:new("alesans_entities/characters/" .. mariocharacter[i] .. "/animations/" .. dir[i2], dir[i2]))
 				end
-				characterenemiesloaded[mariocharacter[i]] = true
 			end
+			characterenemiesloaded[mariocharacter[i]] = true
 		end
 	end
 end
@@ -37,12 +42,18 @@ function animationsystem_update(dt)
 		for i, v in pairs(animations) do
 			v:update(dt)
 		end
+		for i, v in pairs(animationschar) do
+			v:update(dt)
+		end
 	end
 end
 
 function animationsystem_draw()
 	if not editormode then
 		for i, v in pairs(animations) do
+			v:draw()
+		end
+		for i, v in pairs(animationschar) do
 			v:draw()
 		end
 	end

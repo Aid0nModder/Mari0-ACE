@@ -2,10 +2,6 @@ notice = {}
 notice.red = {255, 127, 127}
 notice.white = {255, 255, 255}
 
-notice.blue = {72, 165, 185}
-notice.orange = {241, 154, 52}
-notice.purple = {128, 112, 207}
-
 notice.notices = {}
 notice.duration = 5 --seconds
 notice.fadetime = 0.5
@@ -37,7 +33,7 @@ function notice.draw()
 		local v = notice.notices[i]
 		
 		--get width by finding longest line
-		local split = v.text:split("|")
+		local split = v.text:split("\n")
 		local longest = #split[1]
 		for i = 2, #split do
 			if #split[i] > longest then
@@ -61,7 +57,7 @@ function notice.draw()
 		drawrectangle(targetrect[1]+1, targetrect[2]+1, targetrect[3]-2, targetrect[4]-2)
 		
 		love.graphics.setColor(v.color)
-		properprint(v.text, (targetrect[1]+2)*scale, (actualy+3)*scale)
+		properprintF(v.text, (targetrect[1]+2)*scale, (actualy+3)*scale)
 		y = actualy+height
 		love.graphics.setScissor()
 	end

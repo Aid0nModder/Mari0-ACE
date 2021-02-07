@@ -1,3 +1,20 @@
+hatoffsetindex = {}
+hatoffsetindex["idleanim"] = "idle"
+hatoffsetindex["run"] = "running"
+hatoffsetindex["runfast"] = "running"
+hatoffsetindex["slide"] = "sliding"
+hatoffsetindex["jump"] = "jumping"
+hatoffsetindex["fall"] = "falling"
+hatoffsetindex["climb"] = "climbing"
+hatoffsetindex["swim"] = "swimming"
+hatoffsetindex["swimpush"] = "swimming"
+hatoffsetindex["duck"] = "ducking"
+hatoffsetindex["fly"] = "flyjump"
+hatoffsetindex["capefly"] = "capefly"
+hatoffsetindex["float"] = "jumping"
+hatoffsetindex["die"] = "dead"
+hatoffsetindex["grownogun"] = "grow"
+
 hatoffsets = {}
 hatoffsets["idle"] = {0, 0}
 hatoffsets["running"] = {{0, 0}, {0, 0}, {-1, -1}}
@@ -25,19 +42,6 @@ bighatoffsets["ducking"] = {-5, -12}
 bighatoffsets["flyjump"] = {-4, -2}
 bighatoffsets["capefly"] = {{-10, -10}, {-11, -15}, {-10, -19}, {-11, -21}, {-9, -22}, {-9, -24}}
 bighatoffsets["dead"] = false
-
-tinyoffsets = {}
-tinyoffsets["idle"] = {0, 0}
-tinyoffsets["running"] = {{0, 0}, {0, 0}, {-1, -1}}
-tinyoffsets["sliding"] = {0, 0}
-tinyoffsets["jumping"] = {0, -1}
-tinyoffsets["falling"] = {0, 0}
-tinyoffsets["climbing"] = {{0, 0}, {0, -1}}
-tinyoffsets["fence"] = {{0, 0}, {0, 0}}
-tinyoffsets["swimming"] = {{1, -1}, {1, -1}, {1, -1}, {1, -1}, {1, -1}}
-tinyoffsets["ducking"] = {0, -3}
-tinyoffsets["dead"] = {1, -2}
-tinyoffsets["grow"] = {-6, 0}
 
 skinnyhatoffsets = {}
 skinnyhatoffsets["idle"] = {1, 0}

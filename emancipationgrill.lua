@@ -440,12 +440,10 @@ function emancipationgrillbody:init(parent, x, y, dir, i, items, player)
 		self.mask[4] = false
 		self.mask[5] = false
 		self.mask[9] = false
-		--print("blocks items")
 	end
 
 	if self.blockplayer then
 		self.mask[3] = false
-		--print("blocks player")
 	end
 
 	self:pushstuff()

@@ -6,7 +6,7 @@ function animationtrigger:init(x, y, r, id)
 	self.y = y
 	self.cox = x
 	self.coy = y
-
+	
 	self.r = r
 	local v = convertr(id, {"string", "string"})
 	self.id = v[1]
@@ -14,7 +14,6 @@ function animationtrigger:init(x, y, r, id)
 	if v[2] and v[2] ~= "" then
 		self.sub = v[2]
 	end
-	print(self.id, self.sub)
 end
 
 function animationtrigger:link()
@@ -51,7 +50,7 @@ function animationoutput:init(x, y, r, id)
 	self.coy = y
 	
 	self.r = r
-	self.id = id
+	self.id = tostring(id)
 
 	self.out = true
 

@@ -86,6 +86,12 @@ function mariotail:hitstuff(a, b)
 		end
 		local x, y = b.cox, b.coy
 		hitblock(x, y, {size=2})
+	elseif a == "tilemoving" then
+		if self.playhitsound then
+			playsound(blockhitsound)
+			self.playhitsound = false
+		end
+		b:hit("mariotail", self)
 	elseif mariotailkill[a] then
 		local dir = "right"
 		if b.x+b.width/2 < self.x+self.width/2 then
@@ -104,6 +110,9 @@ function mariotail:hitstuff(a, b)
 			b:shotted(dir)
 			if a ~= "bowser" then
 				addpoints(firepoints[a], self.x, self.y)
+			end
+			if a == "koopaling" then
+				self.destroy = true
 			end
 		end
 		if dir == "right" then

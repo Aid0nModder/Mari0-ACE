@@ -83,10 +83,20 @@ function pipe:init(t, x, y, r)
 			local v = convertr(self.r[1], {"string", "num", "string", "string"}, true)
 
 			local world = tonumber(v[1]) or 1
+			if not tonumber(v[1]) then
+				local f1 = alphabet:find(tostring(v[1]))
+				if f1 then
+					world = 9+f1
+				else
+					world = 1
+				end
+			end
+			local worldstring = world
 			if hudworldletter and tonumber(world) and world > 9 and world <= 9+#alphabet then
-				world = alphabet:sub(world-9, world-9)
+				worldstring = alphabet:sub(world-9, world-9)
 			end
 
+			self.worldstring = worldstring
 			self.world = world
 			self.level = v[2] or 1
 			if v[3] then
@@ -119,7 +129,7 @@ function pipe:init(t, x, y, r)
 		self.quad = pipesquad[2][self.dir]
 	elseif self.t == "warppipe" then
 		--insert warp pipe numbers
-		table.insert(warpzonenumbers, {x, y, self.world})
+		table.insert(warpzonenumbers, {x, y, self.worldstring})
 		self.quad = pipesquad[3][self.dir]
 	end
 
@@ -182,7 +192,16 @@ function pipe:inside(dir, c, b) --direction of entrance, cox or coy, player
 				end
 			elseif enterdir == "left" or enterdir == "right" then
 				if c == self.cox then
-					if py >= self.y-self.height and py+ph <= self.y then
+					--accurate pipe entering
+					--[[if py >= self.y-self.height and py+ph <= self.y then
+						return true
+					end]]
+
+					--mari0 1.6 pipe entering
+					--all it needs is a collision
+					if (ph <= self.height) and --should he fit at all?
+						py+ph > self.coy-1 and py < self.coy and --is the player touching the pipe entity
+						py+ph*.5 < self.coy then --is the middle of the player within the pipe? (just to make it resonable)
 						return true
 					end
 				end

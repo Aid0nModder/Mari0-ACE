@@ -34,6 +34,10 @@ function ice:init(x, y, w, h, a, enemy)
 	if enemy.static or math.abs(enemy.speedy) > 2 or (enemy.gravity and enemy.gravity == 0) then
 		self.static = true
 		self.y = enemy.y+enemy.height/2-self.height/2
+		self.dontfallafterfreeze = enemy.dontfallafterfreeze
+	end
+	if enemy.dontfallafterfreeze then
+		self.oldenemytrackspeed = enemy.trackspeed
 	end
 	enemy.iceblock = self
 	self.falling = false
@@ -67,7 +71,7 @@ function ice:update(dt)
 	if math.abs(self.speedx) < 1 then
 		self.timer = self.timer + dt
 	end
-	if self.static then
+	if self.static and (not self.dontfallafterfreeze) then
 		--start falling if static
 		if self.timer > iceblockairtime then
 			self.static = false
@@ -208,6 +212,11 @@ function ice:floorcollide(a, b)
 
 	if self.falling then
 		self:meltice("destroy")
+		return false
+	end
+	if (a == "player" and b.gravitydir == "down") then
+		self:meltice("destroy")
+		return false
 	end
 end
 
@@ -220,7 +229,7 @@ end
 function ice:globalcollide(a, b)
 	if a == "screenboundary" then
 		return true
-	elseif (a == "fireball" and b.t == "fireball") or a == "castlefirefire" or a == "longfire" or a == "fire" or a == "plantfire" or (a == "brofireball" and b.t ~= "ice") or a == "upfire" or (a == "angrysun" and b.t == "sun") or b.meltsice then
+	elseif (a == "fireball" and b.t == "fireball") or a == "castlefirefire" or a == "longfire" or a == "fire" or a == "plantfire" or (a == "brofireball" and b.t ~= "ice") or a == "upfire" or a == "angrysun" or b.meltsice then
 		self:meltice()
 	end
 end
@@ -235,7 +244,11 @@ function ice:hold()
 	b.y = self.y+self.height/2-b.height/2
 	b.frozen = true
 	b.customscissor = {self.x, self.y, self.width, self.height}
-	b.trackable = false
+	if b.dontfallafterfreeze then
+		b.trackspeed = 0
+	else
+		b.trackable = false
+	end
 end
 
 function ice:release()
@@ -247,6 +260,9 @@ function ice:release()
 	b.customscissor = self.oldenemycustomscissor
 	b.frozen = false
 	b.iceblock = nil
+	if b.dontfallafterfreeze then
+		b.trackspeed = self.oldenemytrackspeed
+	end
 end
 
 function ice:meltice(destroy)
@@ -264,6 +280,7 @@ function ice:meltice(destroy)
 		end
 		
 		local b = self.enemy
+		b.frozen = true
 		if mariohammerkill[self.a] then
 			b:shotted("right")
 			if a ~= "bowser" then
@@ -274,6 +291,7 @@ function ice:meltice(destroy)
 		else
 			b.instantdelete = true
 		end
+		b.frozen = false
 	end
 
 	self.instantdelete = true

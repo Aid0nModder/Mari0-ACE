@@ -14,6 +14,7 @@ function enemytool:init(x, y, r, e)
 		self.xvel = v[2]
 		self.yvel = v[3]
 		if v[4] == nil then
+			self.legacy = true
 			if tablecontains(customenemies, self.enemy) then
 				self.customenemy = true
 			else
@@ -27,6 +28,7 @@ function enemytool:init(x, y, r, e)
 		end
 	else
 		self.enemy = e or "goomba"
+		self.legacy = true
 		self.xvel = 0
 		self.yvel = 0
 	end
@@ -37,8 +39,6 @@ function enemytool:init(x, y, r, e)
 	self.pass = false
 	self.outtable = {}
 	self.timer = 0
-
-	print(self.animation)
 	if self.animation == "cannon" then
 		self.time = math.random(bulletbilltimemin*10, bulletbilltimemax*10)/10
 	elseif self.animation == "pipeup" or self.animation == "pipedown" or self.animation == "pipeleft" or self.animation == "piperight" then
@@ -51,6 +51,7 @@ function enemytool:init(x, y, r, e)
 	--is it supersized?
 	if ismaptile(x, y) and map[x][y]["argument"] then
 		if map[x][y]["argument"] == "b" then --supersized
+			self:dosupersize()
 			self.supersized = 2
 		end
 	end
@@ -147,6 +148,88 @@ function enemytool:spawn()
 		return false
 	end
 
+	--backwards compatibility fuck
+	if (not self.customenemy) and self.legacy then
+		if i == "red koopa" then
+			i = "koopared"
+		elseif i == "buzzy beetle" then
+			i = "beetle"
+		elseif i == "flying koopa" then
+			i = "koopaflying"
+		elseif i == "cheep cheep" then
+			i = "cheepred"
+		elseif i == "white cheep" then
+			i = "cheepwhite"
+		elseif i == "spiny" then
+			i = "spikey"
+		elseif i == "spiny shell" then
+			i = "spikeyshell"
+		elseif i == "lakitu" then
+			i = "lakito"
+		elseif i == "blooper" then
+			i = "squid"
+		elseif i == "crab" then
+			i = "sidestepper"
+		elseif i == "bigicicle" then
+			i = "iciclebig"
+		elseif i == "angry sun" or i == "sun" then
+			i = "angrysun"
+		elseif i == "pumpkin" then
+			i = "splunkin"
+		elseif i == "big goomba" then
+			i = "biggoomba"
+		elseif i == "big spikey" then
+			i = "bigspikey"
+		elseif i == "big koopa" then
+			i = "bigkoopa"
+		elseif i == "dry bones" then
+			i = "drybones"
+		elseif i == "big beetle" then
+			i = "bigbeetle"
+		elseif i == "dry goomba" then
+			i = "drygoomba"
+		elseif i == "bob omb" then
+			i = "bomb"
+		elseif i == "boom boom" then
+			i = "boomboom"
+		elseif i == "? ball" then
+			i = "levelball"
+		elseif i == "blue koopa" then
+			i = "koopablue"
+		elseif i == "flying koopa 2" then
+			i = "koopaflying2"
+		elseif i == "pink squid" then
+			i = "pinksquid"
+		elseif i == "rip van fish" then
+			i = "sleepfish"
+		elseif i == "shy guy" then
+			i = "shyguy"
+		elseif i == "hammer bro" then
+			i = "hammerbro"
+		elseif i == "boomerang bro" then
+			i = "boomerangbro"
+		elseif i == "fire bro" then
+			i = "firebro"
+		elseif i == "down plant" then
+			i = "downplant"
+		elseif i == "venus firetrap" then
+			i = "fireplant"
+		elseif i == "torpedo ted" then
+			i = "torpedolauncher"
+		elseif i == "podoboo" then
+			i = "upfire"
+		elseif i == "dk hammer" then
+			i = "dkhammer"
+		elseif i == "bony beetle" then
+			i = "drybeetle"
+		elseif i == "beetle shell" then
+			i = "beetleshell"
+		elseif i == "smb3 bowser" then
+			i = "bowser3"
+		end
+	end
+
+	--actually spawn the enemy
 	local obj, wasenemy, objtable
 	if self.customenemy and tablecontains(customenemies, i) then
 		obj, wasenemy, objtable = enemy:new(x, y, i)
@@ -213,7 +296,7 @@ function enemytool:spawn()
 		obj = flyingfish:new()
 		table.insert(objects["flyingfish"], obj)
 	elseif i == "meteor" then
-		obj = meteor:new(x-1)
+		obj = meteor:new()
 		table.insert(objects["meteor"], obj)
 	elseif i == "turretleft" or i == "turret left" then
 		table.insert(objects["turret"], turret:new(x, y, "left"))
@@ -261,22 +344,22 @@ function enemytool:spawn()
 			objects["coin"][tilemap(x, y)] = coin:new(x, y)
 		end
 	elseif i == "spikeyfall" then
-		obj = goomba:new(x+6/16, y, "spikeyfall")
+		obj = goomba:new(self.x+6/16, self.y, "spikeyfall")
 		table.insert(objects["goomba"], obj)
 	elseif i == "gel1" then
-		obj = gel:new(x, y, 1)
+		obj = gel:new(self.x+1, self.y+1, 1)
 		table.insert(objects["gel"], obj)
 	elseif i == "gel2" then
-		obj = gel:new(x, y, 2)
+		obj = gel:new(self.x+1, self.y+1, 2)
 		table.insert(objects["gel"], obj)
 	elseif i == "gel3" then
-		obj = gel:new(x, y, 3)
+		obj = gel:new(self.x+1, self.y+1, 3)
 		table.insert(objects["gel"], obj)
 	elseif i == "gel4" then
-		obj = gel:new(x, y, 4)
+		obj = gel:new(self.x+1, self.y+1, 4)
 		table.insert(objects["gel"], obj)
 	elseif i == "gelcleanse" then
-		obj = gel:new(x, y, 5)
+		obj = gel:new(self.x+1, self.y+1, 5)
 		table.insert(objects["gel"], obj)
 	elseif i == "core1" then
 		obj = core:new(x, y, "morality")
@@ -377,4 +460,8 @@ function enemytool:translateenemy()
 	if t == "? ball" then
 		self.enemy = "levelball"
 	end
+end
+
+function enemytool:dosupersize()
+
 end

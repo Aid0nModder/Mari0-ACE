@@ -95,7 +95,7 @@ function belt:update(dt)
 	if self.on then
 		local speed = self.speed
 		--animation
-		self.animtimer = math.mod(self.animtimer - speed*2*dt, 1)
+		self.animtimer = math.fmod(self.animtimer - speed*2*dt, 1)
 		while self.animtimer < 0 do
 			self.animtimer = self.animtimer + 1
 		end
@@ -103,7 +103,7 @@ function belt:update(dt)
 		
 		for i, v in pairs(self.checktable) do
 			for j, w in pairs(objects[v]) do
-				if w.width and (not w.ignoreplatform) and w.active and (not w.ignorebelt) and inrange(w.x, self.x-w.width, self.x+self.width) then
+				if w.width and (not w.ignorebelt) and (not w.ignoreplatform) and w.active and inrange(w.x, self.x-w.width, self.x+self.width) then
 					if w.y == self.y - w.height then
 						if #checkrect(w.x+speed*dt, w.y, w.width, w.height, {"exclude", w}, true) == 0 then
 							w.x = w.x + speed*dt

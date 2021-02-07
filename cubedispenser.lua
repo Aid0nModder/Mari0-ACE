@@ -69,10 +69,10 @@ function cubedispenser:link()
 			for i, v in pairs(objects[w]) do
 				if tonumber(self.r[2]) == v.cox and tonumber(self.r[3]) == v.coy then
 					v:addoutput(self, self.r[4])
-					if self.t == "cube" and self.legacy and (entityquads[map[v.cox][v.coy][2]].t == "box2" or entityquads[map[v.cox][v.coy][2]].t == "edgelessbox") then
-						if entityquads[map[v.cox][v.coy][2]].t == "box2" then
+					if self.t == "cube" and self.legacy and (map[v.cox][v.coy][2] and (entityquads[map[v.cox][v.coy][2]].t == "box2" or entityquads[map[v.cox][v.coy][2]].t == "edgelessbox")) then
+						if map[v.cox][v.coy][2] and entityquads[map[v.cox][v.coy][2]].t == "box2" then
 							self.t = "companion cube"
-						elseif entityquads[map[v.cox][v.coy][2]].t == "edgelessbox" then
+						elseif map[v.cox][v.coy][2] and entityquads[map[v.cox][v.coy][2]].t == "edgelessbox" then
 							self.t = "edgeless cube"
 						end
 					end
@@ -89,63 +89,71 @@ end
 function cubedispenser:update(dt)
 	if self.timer < cubedispensertime then
 		self.timer = self.timer + dt
+		if self.timer > 0.6 and not self.boxexists then
+			local spawndir
+			if self.t == "turret" or self.t == "defective turret" then
+				local closestplayer = 1
+				local closestdist = math.sqrt((objects["player"][1].x-self.cox)^2+(objects["player"][1].y-self.coy)^2)
+				for i = 2, players do
+					local v = objects["player"][i]
+					local dist = math.sqrt((v.x-self.cox)^2+(v.y-self.coy)^2)
+					if dist < closestdist then
+						closestdist = dist
+						closestplayer = i
+					end
+				end
 		
-		if self.timer > 0.6 and self.boxexists == false then
-			local temp
-			if self.t == "cube" then
-				temp = box:new(self.cox+.5, self.coy)
-				if self.spawnondestroy then
-					temp:addoutput(self, "drop")
+				if objects["player"][closestplayer].x + objects["player"][closestplayer].width/2 > self.cox + self.width/2 then
+					spawndir = "right"
+				else
+					spawndir = "left"
 				end
-				table.insert(objects["box"], temp)
-			elseif self.t == "companion cube" then
-				temp = box:new(self.cox+.5, self.coy, "box2")
-				if self.spawnondestroy then
-					temp:addoutput(self, "drop")
-				end
-				table.insert(objects["box"], temp)
-			elseif self.t == "edgeless cube" then
-				temp = box:new(self.cox+.5, self.coy, "edgeless")
-				if self.spawnondestroy then
-					temp:addoutput(self, "drop")
-				end
-				table.insert(objects["box"], temp)
-			elseif self.t == "core1" then
-				temp = core:new(self.cox+.5, self.coy, "morality")
-				if self.spawnondestroy then
-					temp:addoutput(self, "drop")
-				end
-				table.insert(objects["core"], temp)
-			elseif self.t == "core2" then
-				temp = core:new(self.cox+.5, self.coy, "curiosity")
-				if self.spawnondestroy then
-					temp:addoutput(self, "drop")
-				end
-				table.insert(objects["core"], temp)
-			elseif self.t == "core3" then
-				temp = core:new(self.cox+.5, self.coy, "cakemix")
-				if self.spawnondestroy then
-					temp:addoutput(self, "drop")
-				end
-				table.insert(objects["core"], temp)
-			elseif self.t == "core4" then
-				temp = core:new(self.cox+.5, self.coy, "anger")
-				if self.spawnondestroy then
-					temp:addoutput(self, "drop")
-				end
-				table.insert(objects["core"], temp)
-			elseif tablecontains(customenemies, self.t) then
-				temp = enemy:new(self.cox+.5, self.coy+2-enemiesdata[self.t].height, self.t)
-				
-				if self.spawnondestroy then
-					temp:addoutput(self, "drop_enemy_triggered")
-				end
-				
-				temp.mask[7] = true
-				table.insert(objects["enemy"], temp)
 			end
-			
-			self.box = temp
+
+			local obj, tble, enemy
+			if self.t == "cube" then
+				obj = box:new(self.cox+.5, self.coy)
+				tble = "box"
+			elseif self.t == "companion cube" then
+				obj = box:new(self.cox+.5, self.coy, "box2")
+				tble = "box"
+			elseif self.t == "edgeless cube" then
+				obj = box:new(self.cox+.5, self.coy, "edgeless")
+				tble = "box"
+			elseif self.t == "core1" then
+				obj = core:new(self.cox+.5, self.coy, "morality")
+				tble = "core"
+			elseif self.t == "core2" then
+				obj = core:new(self.cox+.5, self.coy, "curiosity")
+				tble = "core"
+			elseif self.t == "core3" then
+				obj = core:new(self.cox+.5, self.coy, "cakemix")
+				tble = "core"
+			elseif self.t == "core4" then
+				obj = core:new(self.cox+.5, self.coy, "anger")
+				tble = "core"
+			elseif self.t == "turret" then
+				obj = turret:new(self.cox+.5, self.coy, spawndir, "turret")
+				tble = "turret"
+			elseif self.t == "defective turret" then
+				obj = turret:new(self.cox+.5, self.coy, spawndir, "turret2")
+				tble = "turret"
+			elseif tablecontains(customenemies, self.t) then
+				obj = enemy:new(self.cox+.5, self.coy+2-enemiesdata[self.t].height, self.t)
+				obj.mask[7] = true
+				tble = "enemy"
+				enemy = true
+			end
+			if self.spawnondestroy then
+				if enemy then
+					obj:addoutput(self, "drop_enemy_triggered")
+				else
+					obj:addoutput(self, "drop")
+				end
+			end
+			table.insert(objects[tble], obj)
+
+			self.box = obj
 			self.boxexists = true
 		elseif self.timer > 1 then
 			self.timer = 1

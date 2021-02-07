@@ -47,7 +47,15 @@ function enemies_load()
 		if mariocharacter[i] and (not characterenemiesloaded[mariocharacter[i]]) and love.filesystem.exists("alesans_entities/characters/" .. mariocharacter[i] .. "/enemies/") then
 			local fl3 = love.filesystem.getDirectoryItems("alesans_entities/characters/" .. mariocharacter[i] .. "/enemies/")
 			for i2 = 1, #fl3 do
-				table.insert(realfl, "alesans_entities/characters/" .. mariocharacter[i] .. "/enemies/" .. fl3[i2]) --STANDARD ENEMIES
+				if love.filesystem.isDirectory("alesans_entities/characters/" .. mariocharacter[i] .. "/enemies/" .. fl3[i2]) then
+					--load enemies from folder
+					local fl4 = love.filesystem.getDirectoryItems("alesans_entities/characters/" .. mariocharacter[i] .. "/enemies/" .. fl3[i2])
+					for i3 = 1, #fl4 do
+						table.insert(realfl, "alesans_entities/characters/" .. mariocharacter[i] .. "/enemies/" .. fl3[i2] .. "/" .. fl4[i3])
+					end
+				else
+					table.insert(realfl, "alesans_entities/characters/" .. mariocharacter[i] .. "/enemies/" .. fl3[i2]) --CHARACTER ENEMIES
+				end
 			end
 			characterenemiesloaded[mariocharacter[i]] = true
 		end
@@ -98,7 +106,7 @@ function loadenemy(filename)
 	if not skip then --bad letter
 		local data = love.filesystem.read(filename)
 		if not data then
-			print("COULD NOT READ FILE " .. filename)
+			print("-- ERROR -- Couldn't read file " .. filename)
 			return
 		end
 		data = data:gsub("\r", "")
@@ -139,10 +147,6 @@ function loadenemy(filename)
 					end
 					table.insert(loaddelayed[base], filename)
 				end
-				print("DON'T HAVE BASE " .. base .. " FOR " .. s)
-				if editormode then
-					--notice.new("don't have base " .. base .. " for " .. s)
-				end
 				return
 			end
 		else
@@ -157,8 +161,8 @@ function loadenemy(filename)
 
 		if type(enemiesdata[s]) == "string" then
 			--I have no idea why this happens
-			print("ENEMY DATA FOR " .. s .. " IS CORRUPT:", enemiesdata[s])
-			notice.new("enemy data for " .. s .. "|is corrupted|" .. enemiesdata[s], notice.red, 5)
+			print("-- ERROR -- Enemy data for " .. s .. " is corrupt:", enemiesdata[s])
+			notice.new("enemy data for " .. s .. "\nis corrupted" .. enemiesdata[s], notice.red, 5)
 			return false
 		end
 		
@@ -187,6 +191,17 @@ function loadenemy(filename)
 			--doing it up there messed up the order or something
 			enemiesdata[s][i] = v
 		end
+
+		if enemiesdata[s].fireenemy then
+			for i, v in pairs(enemiesdata[s].fireenemy) do
+				local a = i:lower()
+				if type(v) == "string" then
+					enemiesdata[s].fireenemy[a] = v:lower()
+				else
+					enemiesdata[s].fireenemy[a] = v
+				end
+			end
+		end
 		
 		for i, v in pairs(defaultvalues) do
 			if enemiesdata[s][i] == nil then
@@ -200,7 +215,7 @@ function loadenemy(filename)
 		elseif love.filesystem.exists(folder .. s .. ".PNG") then --case sensitivity FTW
 			enemiesdata[s].graphic = love.graphics.newImage(folder .. s .. ".PNG")
 			if editormode then
-				notice.new("graphic for " .. s .. " needs|a lowercase file extension!", notice.red, 4)
+				notice.new("graphic for " .. s .. " needs\na lowercase file extension!", notice.red, 4)
 			end
 		end
 		
@@ -218,7 +233,7 @@ function loadenemy(filename)
 		if love.filesystem.exists(folder .. s .. ".ogg") then
 			enemiesdata[s].sound = love.audio.newSource(folder .. s .. ".ogg", "static")
 		end
-		
+
 		--Set up quads if given
 		if enemiesdata[s].graphic and enemiesdata[s].quadcount then
 			local imgwidth, imgheight = enemiesdata[s].graphic:getWidth(), enemiesdata[s].graphic:getHeight()
@@ -242,11 +257,9 @@ function loadenemy(filename)
 					end
 				end
 			elseif math.floor(quadwidth) ~= quadwidth then
-				print("IMAGE FOR " .. s .. " NOT DIVISIBLE BY QUADCOUNT")
-				notice.new("image width for " .. s .. "|not divisible by quadcount", notice.red, 5)
+				notice.new("image width for " .. s .. "\nnot divisible by quadcount", notice.red, 5)
 			elseif math.floor(quadheight) ~= quadheight then
-				print("IMAGE FOR " .. s .. " NOT DIVISIBLE BY 4")
-				notice.new("image height for " .. s .. "|not divisible by 4 spritesets", notice.red, 5)
+				notice.new("image height for " .. s .. "\nnot divisible by 4 spritesets", notice.red, 5)
 			end
 		end
 
@@ -265,8 +278,7 @@ function loadenemy(filename)
 		loadenemyquad(s)
 		
 		table.insert(customenemies, s)
-		
-		
+
 		if loaddelayed[s] and #loaddelayed[s] > 0 then
 			for j = #loaddelayed[s], 1, -1 do
 				loadenemy(loaddelayed[s][j]) --RECURSIVE PROGRAMMING AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH
@@ -295,11 +307,11 @@ function loadenemyquad(s, no_notices)
 	if enemiesdata[s].quadbase and enemiesdata[s].graphic then
 		enemiesdata[s].drawable = true
 		enemiesdata[s].quadgroup = enemiesdata[s].quadbase[spriteset]
-		if enemiesdata[s].animationtype == "frames" then
+		if enemiesdata[s].animationtype == "frames" or enemiesdata[s].animationtype == "character" then
 			if not no_notices then
 				if not enemiesdata[s].animationstart then
-					print(s .. " IS MISSING ANIMATIONSTART")
-					notice.new(s .. " is missing|animationstart frame", notice.red, 5)
+					print("-- ERROR -- " .. s .. " is missing animationstart")
+					notice.new(s .. " is missing\nanimationstart frame", notice.red, 5)
 				end
 			end
 			enemiesdata[s].quad = enemiesdata[s].quadbase[spriteset][enemiesdata[s].animationstart]

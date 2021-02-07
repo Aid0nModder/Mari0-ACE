@@ -559,6 +559,19 @@ function OBJDEF:decode(text, etc)
    end
 end
 
+function OBJDEF:decodelower(text, etc)
+	--AE ADDITION
+	local value = self:decode(text, etc)
+	if not value then
+		return nil
+	end
+	local out = {}
+	for i, v in pairs(value) do
+		out[i:lower()] = v
+	end
+	return value
+end
+
 local function backslash_replacement_function(c)
    if c == "\n" then
       return "\\n"

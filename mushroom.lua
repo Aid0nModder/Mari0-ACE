@@ -1,6 +1,6 @@
 mushroom = class:new()
 
-function mushroom:init(x, y, t, r)
+function mushroom:init(x, y, t, r, heel, wings)
 	--PHYSICS STUFF
 	self.x = x-6/16
 	self.y = y-11/16
@@ -31,6 +31,10 @@ function mushroom:init(x, y, t, r)
 	self.quadcenterX = 8
 	self.quadcenterY = 8
 	
+	self.heel = heel or false
+	self.wings = wings or false
+	
+	self.light = 1
 	if t == "oneup" then
 		self.t = "oneup"
 		self.graphic = itemsimg
@@ -58,6 +62,18 @@ function mushroom:init(x, y, t, r)
 		self.animationscaley = 2
 		self.offsetX = 13
 		self.offsetY = -1
+	elseif t == "mini" then
+		self.t = "mini"
+		self.x = x-3/16
+		self.y = y-11/16
+		self.width = 6/16
+		self.height = 6/16
+		self.graphic = itemsimg
+		self.quad = itemsquad[spriteset][7]
+		self.offsetX = 3
+		self.offsetY = 6
+		self.quadcenterX = 8
+		self.quadcenterY = 12
 	elseif t == "weird" then
 		self.t = "weird"
 		self.graphic = itemsimg
@@ -71,6 +87,7 @@ function mushroom:init(x, y, t, r)
 		self.speedx = 0
 		self.pipespawnmax = 1
 		self.resistsyoshitounge = true
+		self.light = false
 	elseif t == "bigcloud" then
 		self.t = "bigcloud"
 		self.starty = y+27/16
@@ -85,6 +102,7 @@ function mushroom:init(x, y, t, r)
 			self.infinite = true
 		end
 		self.resistsyoshitounge = true
+		self.light = false
 	elseif t == "drybonesshell" then
 		self.t = "drybonesshell"
 		self.starty = y+27/16
@@ -94,18 +112,18 @@ function mushroom:init(x, y, t, r)
 		self.speedx = 0
 		self.pipespawnmax = 1
 		self.resistsyoshitounge = true
+		self.light = false
 	end
 	
 	self.rotation = 0 --for portals
 	self.uptimer = 0
 	
 	self.falling = false
-	self.light = 1
 end
 
 function mushroom:update(dt)
 	--rotate back to 0 (portals)
-	self.rotation = math.mod(self.rotation, math.pi*2)
+	self.rotation = math.fmod(self.rotation, math.pi*2)
 	if self.rotation > 0 then
 		self.rotation = self.rotation - portalrotationalignmentspeed*dt
 		if self.rotation < 0 then
@@ -120,7 +138,11 @@ function mushroom:update(dt)
 	
 	if self.uptimer < mushroomtime then
 		self.uptimer = self.uptimer + dt
-		self.y = self.y - dt*(1/mushroomtime)
+		if self.t == "mini" then
+			self.y = self.y - dt*(1/mushroomtime-8/16)
+		else
+			self.y = self.y - dt*(1/mushroomtime)
+		end
 		if self.t ~= "goombashoe" and self.t ~= "bigcloud" and self.t ~= "drybonesshell" then
 			self.speedx = mushroomspeed
 		elseif self.heel then
@@ -133,15 +155,36 @@ function mushroom:update(dt)
 			self.active = true
 			self.drawable = true
 		end
-		
+
 		if self.t == "goombashoe" then
+			if self.wings then
+				self.graphic = goombashoewingsimg
+				self.quad = goombashoequad[spriteset][5]
+			end
 			self.animationtimer = (self.animationtimer + dt)%(goombaanimationspeed*2)
-			if self.heel then
+			if self.heel and not self.wings then
 				self.quad = goombashoequad[spriteset][6]
 			elseif self.animationtimer > goombaanimationspeed then
-				self.quad = goombashoequad[spriteset][5]
+
+				if self.wings then
+					if self.heel then
+						self.quad = goombashoewingsquad[spriteset][8]
+					else
+						self.quad = goombashoewingsquad[spriteset][6]
+					end
+				else
+					self.quad = goombashoequad[spriteset][5]
+				end
 			else
-				self.quad = goombashoequad[spriteset][4]
+				if self.wings then
+					if self.heel then
+						self.quad = goombashoewingsquad[spriteset][7]
+					else
+						self.quad = goombashoewingsquad[spriteset][5]
+					end
+				else
+					self.quad = goombashoequad[spriteset][4]
+				end
 			end
 		end
 		
@@ -167,6 +210,8 @@ function mushroom:draw()
 		--Draw it coming out of the block.
 		if not self.t or self.t == "goombashoe" or self.t == "weird" or self.t == "bigcloud" or self.t == "drybonesshell" or self.t == "oneup" then
 			love.graphics.draw(self.graphic, self.quad, math.floor(((self.x-xscroll)*16+self.offsetX)*scale), math.floor(((self.y-yscroll)*16-self.offsetY)*scale), 0, (self.animationscalex or 1)*scale, (self.animationscaley or 1)*scale, self.quadcenterX, self.quadcenterY)
+		elseif self.t == "mini" then
+			love.graphics.draw(itemsimg, self.quad, math.floor(((self.x-xscroll)*16+self.offsetX)*scale), math.floor(((self.y-yscroll)*16-self.offsetY)*scale), 0, scale, scale, self.quadcenterX, self.quadcenterY)
 		elseif self.t == "big" then
 			love.graphics.draw(self.graphic, math.floor(((self.x-xscroll)*16+self.offsetX)*scale), math.floor(((self.y-yscroll)*16-self.offsetY)*scale), 0, scale/2*(self.uptimer/mushroomtime)+scale/2, scale/2*(self.uptimer/mushroomtime)+scale/2, self.quadcenterX, self.quadcenterY)
 		elseif self.t == "bigclassic" then
@@ -201,6 +246,8 @@ function mushroom:use(a, b) --DUDE MUSHROOMS LMAO
 			end
 		elseif self.t == "bigclassic" then
 			b:grow(16)
+		elseif self.t == "mini" then
+			b:grow(-1)
 		elseif self.t == "weird" then
 			b:grow(12)
 		elseif self.t == "goombashoe" or self.t == "bigcloud"  or self.t == "drybonesshell" then
@@ -209,7 +256,19 @@ function mushroom:use(a, b) --DUDE MUSHROOMS LMAO
 				self.destroy = false
 				self.drawable = true
 			elseif self.heel then
-				b:shoed("heel")
+				if self.wings then
+					if self.supersized then
+						b:shoed("heelwingsbig")
+					else
+						b:shoed("heelwings")
+					end
+				else
+					if self.supersized then
+						b:shoed("heelbig")
+					else
+						b:shoed("heel")
+					end
+				end
 			elseif self.t == "bigcloud" then
 				if self.infinite then
 					b:shoed("cloudinfinite")
@@ -219,7 +278,19 @@ function mushroom:use(a, b) --DUDE MUSHROOMS LMAO
 			elseif self.t == "drybonesshell" then
 				b:shoed("drybonesshell")
 			else
-				b:shoed(true)
+				if self.wings then
+					if self.supersized then
+						b:shoed("shoewingsbig")
+					else
+						b:shoed("shoewings")
+					end
+				else
+					if self.supersized then
+						b:shoed("shoebig")
+					else
+						b:shoed(true)
+					end
+				end
 			end
 		end
 	end
@@ -263,12 +334,7 @@ function mushroom:floorcollide(a, b)
 		self:use(a, b)
 	end	
 	if a == "tile" then
-		local x, y = b.cox, b.coy
-		if self.speedx ~= 0 and inmap(x, y) and tilequads[map[x][y][1]].noteblock then
-			hitblock(x, y, self, {dir="down"})
-			self.falling = true
-			self.speedy = -mushroomjumpforce
-		end
+		b:noteblock(self)
 	end
 end
 

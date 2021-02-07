@@ -17,8 +17,6 @@ function errorwindow:init(title, text)
 
 	self.button = {}
 	self.button["ignore"] = guielement:new("button", self.x+padding, self.y+self.height-15-padding, "ignore", function() end, 2)
-	self.button["ignore"].bordercolor = {255, 0, 0}
-	self.button["ignore"].bordercolorhigh = {255, 127, 127}
 	self.button["retry"] = guielement:new("button", self.x+self.width-8-padding, self.y+self.height-15-padding, "retry", function() end, 2)
 	self.button["retry"].x = self.button["retry"].x - self.button["retry"].width
 
