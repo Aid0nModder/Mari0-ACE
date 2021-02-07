@@ -1,0 +1,83 @@
+{
+	"quadcount": 1,
+
+	"dontenterinclearpipes": true,
+	
+	"friction": true,
+
+	"quadno": 1,
+	
+	"width": 0.75,
+	"height": 0.75,
+	
+	"static": false,
+	"active": true,
+	
+	"category": 3,
+	
+	"dontmirror": true,
+	"resistseverything": true,
+	"nospritesets": true,
+
+	"right": "right",
+	"left": "left",
+	"sheesh": false,
+
+	"autodelete": true,
+
+	"haveplayercolors": [
+		[50,190,50],
+		[170,90,30],
+		[255,190,110],
+		[255,255,255,"exclude"],
+		[255,86,51,"exclude"],
+		[80,80,255,"exclude"],
+		[252,252,252,"exclude"],
+		[57,61,230,"exclude"],
+		[41,206,255,"exclude"]
+	],
+
+	"transforms": true,
+	"transformsinto": ["linkbowmiddlefall","linkbowmiddlewalkleft","linkbowmiddlewalkright","linkbowmiddlejump","linkbowup","linkbowdown","nothinbutshotarrow"],
+	"transformtrigger": ["falling", "animation", "animation", "animation", "animation", "animation", "animation"],
+	"transformanimation": [false,"keyleft","keyright","keyjump","keyup","keydown","keyuserelease"],
+	"transformpassedparameters": ["animationdirection","colors","speedx","speedy","arrowspeedx","arrowspeedy","arrowcustomtimer","middlearrowscript"],
+
+	"customtimer": [
+	[0,"runtimer","middlearrowscript"]
+	],
+
+	"dontloopcustomtimer": true,
+
+	"middlearrowscript": [
+	[0,["set","middlearrowspeedy"],-3],
+	[0,"if",["animationdirection","==","right",["set","middlearrowspeedx"],20]],
+	[0,"if",["animationdirection","==","right",["set","middlearrowcustomtimer"],[
+	[0,["set","animationdirection"],"left"],
+	[0.00001,"if",["speedy","<=",-1,["set","rotationanimationspeed"],1]]
+	]]],
+
+	[0,"if",["animationdirection","==","left",["set","middlearrowspeedx"],-20]],
+	[0,"if",["animationdirection","==","left",["set","middlearrowcustomtimer"],[
+	[0,["set","animationdirection"],"right"],
+	[0.00001,"if",["speedy","<=",-1,["set","rotationanimationspeed"],-1]]
+	]]],
+
+	[0,["set","arrowspeedx"],["property","middlearrowspeedx"]],
+	[0,["set","arrowspeedy"],["property","middlearrowspeedy"]],
+	[0,["set","arrowcustomtimer"],["property","middlearrowcustomtimer"]]
+	],
+
+	"Thank you aidan for the runtimers": ":clawpog:",
+
+	"killsenemies": false,
+
+	"offsetX": 5.8,
+	"offsetY": 18,
+	"quadcenterX": 11.5,
+	"quadcenterY": 8,
+	
+	"gravity": 80,
+
+	"hidden": true
+}

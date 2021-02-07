@@ -1,0 +1,67 @@
+{
+	"quadcount": 3,
+
+	"animationtype": "frames",
+	"animationframes": 3,
+	"animationstart": 1,
+	"animationspeed": 0.05,
+
+	"dontenterinclearpipes": true,
+	
+	"friction": false,
+
+	"quadno": 1,
+	
+	"width": 0.75,
+	"height": 0.75,
+	
+	"static": false,
+	"active": true,
+	
+	"category": 3,
+	
+	"dontmirror": true,
+	"resistseverything": true,
+	"nospritesets": true,
+
+	"right": "right",
+	"left": "left",
+	"sheesh": false,
+
+	"autodelete": true,
+
+	"haveplayercolors": [
+		[50,190,50],
+		[170,90,30],
+		[255,190,110],
+		[255,255,255,"exclude"],
+		[255,86,51,"exclude"],
+		[80,80,255,"exclude"],
+		[252,252,252,"exclude"],
+		[57,61,230,"exclude"],
+		[41,206,255,"exclude"]
+	],
+
+	"transforms": true,
+	"transformsinto": ["linkbowdownfall","linkbowdown","linkbowdownwalkright","linkbowdownjump","linkbowup","linkbowmiddle","nothinbutshotarrow"],
+	"transformtrigger": ["falling", "animation", "animation", "animation", "animation", "animation", "animation"],
+	"transformanimation": [false,"keyleftrelease","keyright","keyjump","keyup","keydownrelease","keyuserelease"],
+	"transformpassedparameters": ["animationdirection","colors","speedx","speedy","arrowspeedx","arrowspeedy","arrowcustomtimer","downarrowscript"],
+
+	"killsenemies": false,
+
+	"customtimer": [
+	[0,"runtimer","downarrowscript"],
+
+	[0.1,"if",["speedx",">",-8,["add","speedx"],-3]],
+	[0.1,"if",["speedx","<",-8,["set","speedx"],-8]]
+	],
+	"offsetX": 5.8,
+	"offsetY": 18,
+	"quadcenterX": 11.5,
+	"quadcenterY": 8,
+	
+	"gravity": 80,
+
+	"hidden": true
+}

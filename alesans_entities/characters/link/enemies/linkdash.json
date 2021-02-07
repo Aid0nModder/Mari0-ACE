@@ -1,0 +1,91 @@
+{
+	"quadcount": 3,
+
+	"dontenterinclearpipes": true,
+	
+	"animationtype": "frames",
+	"animationframes": 3,
+	"animationstart": 1,
+	"animationspeed": 0.08,
+	
+	"quadno": 1,
+	
+	"width": 0.75,
+	"height": 0.75,
+	
+	"static": false,
+	"active": true,
+	
+	"category": 3,
+	
+	"dontmirror": false,
+	"resistseverything": true,
+	"nospritesets": true,
+
+	"right": "right",
+	"left": "left",
+	"sheesh": true,
+
+	"autodelete": true,
+
+	"haveplayercolors": [
+		[50,190,50],
+		[170,90,30],
+		[255,190,110],
+		[255,255,255,"exclude"],
+		[255,86,51,"exclude"],
+		[80,80,255,"exclude"],
+		[252,252,252,"exclude"],
+		[57,61,230,"exclude"]
+	],
+
+	"transforms": true,
+	"transformsinto": ["missfortunewhatareyoudoing"],
+	"transformtrigger": ["animation"],
+	"transformanimation": ["keyrunrelease"],
+	"transformpassedparameters": ["animationdirection","colors","speedxstore"],
+
+	"killsenemies": false,
+
+	"checkif": [
+
+	["speedx",">=",0.001,["set","animationdirection"],"right"],
+	["speedx","<=",-0.001,["set","animationdirection"],"left"],
+
+	["animationdirection","==","right",["set","ignoreleftcollide"],true],
+	["animationdirection","==","right",["set","ignorerightcollide"],false],
+	["animationdirection","==","right",["set","spawnsenemy"],"linkdashobjr"],
+
+	["animationdirection","==","left",["set","ignorerightcollide"],true],
+	["animationdirection","==","left",["set","ignoreleftcollide"],false],
+	["animationdirection","==","left",["set","spawnsenemy"],"linkdashobjl"]
+
+	],
+
+	"customtimer": [
+	[2,["set","category"],13],
+	[0,"playsound","linkdash"],
+	[0,"if",["animationdirection","==","left",["set","spawnsenemy"],"linkdashsparkl"]],
+	[0,"if",["animationdirection","==","right",["set","spawnsenemy"],"linkdashspark"]],
+	[0,"spawnenemy"],
+	[0,["set","transformsinto"],["linkdashattack"]]
+	],
+
+	"spawnsenemy": "linkdashobj",
+	"spawnenemydelays": [0.2],
+	"spawnenemyspeedy": 0,
+	"spawnenemyspeedx": 0,
+	"spawnenemyspeed": 0,
+	"spawnenemyoffsety": -0.5,
+	"spawnmax": 1,
+
+	"dontloopcustomtimer": true, 
+	"offsetX": 5.8,
+	"offsetY": 18,
+	"quadcenterX": 11.5,
+	"quadcenterY": 8,
+	
+	"gravity": 80,
+
+	"hidden": true
+}

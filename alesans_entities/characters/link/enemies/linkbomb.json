@@ -1,0 +1,78 @@
+{
+	"quadcount": 2,
+
+	"movement": "truffleshuffle",
+	"truffleshufflespeed": 0,
+	"truffleshuffleacceleration": 8,
+	
+	"spawnsound": "linkbomb",
+
+	"animationtype": "frames",
+	"animationspeed": 0.3,
+	"animationframes": 2,
+	"animationstart": 1,
+	
+	"kickable": true,
+	"kickspeed": 8,
+	"kickspeedy": -10, 
+	
+	"quadno": 1,
+	
+	"width": 0.75,
+	"height": 0.75,
+	
+	"static": false,
+	"active": true,
+	
+	"category": 4,
+	
+	"lifetime": 3, 
+	
+	"mask": [	true, 
+				false, false, false, false, true,
+				false, true, false, true, false,
+				false, false, false, false, false,
+				true, true, false, false, false,
+				false, true, true, false, false,
+				true, false, true, true, true],
+	
+	"resistsenemykill": true,
+	"nospritesets": true,
+	
+	"emancipatecheck": true,
+	"autodelete": true,
+	"dontmirror": true,
+	
+	"carryable": true,
+	"carryrange": [0, 0, 0.75, 0.75],
+	"carryoffsety": -0.17,
+	"activeoncarry": false,
+	"activeonthrow": true,
+	"fliponcarry": false,
+	"thrownbounce": 0,
+	"throwndamping": 1, 
+	"throwntime": 0.2,
+	"throwncombo": false,
+	"thrownignorecarryspeed": false,
+	"thrownspeedx": 14,
+	"thrownspeedy": -1,
+	"noplayercollisiononthrow": true,
+	"carryifholdingrunbutton": true,
+	"dontkillwhenthrown": true,
+	"grabsound": "linkbomb",
+
+	"offsetX": 6,
+	"offsetY": 3,
+	"quadcenterX": 8,
+	"quadcenterY": 8,
+	
+	"transforms": true,
+	"transformsinto": ["linkbombexplosion"],
+	"transformtrigger": ["lifetime"],
+
+	"customtimer": [
+		[0.0001,["set","carryrange"],[-999,-999,-1,-1]],
+		[2.90,["set","claw"],false]
+	],
+	"hidden": true
+}

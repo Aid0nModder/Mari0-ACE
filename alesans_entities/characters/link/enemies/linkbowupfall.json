@@ -1,0 +1,9 @@
+base=linkbowupjump
+{
+	"checkif": false,
+
+	"customtimer": [
+	[0,"runtimer","uparrowscript"],
+	[0.05,["set","transforms"],true]
+	],
+}

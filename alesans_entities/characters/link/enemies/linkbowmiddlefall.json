@@ -1,0 +1,9 @@
+base=linkbowmiddlejump
+{
+	"checkif": false,
+
+	"customtimer": [
+	[0,"runtimer","middlearrowscript"],
+	[0.05,["set","transforms"],true]
+	],
+}

@@ -1,0 +1,16 @@
+base=linkbowmiddlewalkleft
+{
+	"transformsinto": ["linkbowmiddlefall","linkbowmiddlewalkleft","linkbowmiddle","linkbowmiddlejump","linkbowup","linkbowdown","nothinbutshotarrow"],
+	"transformtrigger": ["falling", "animation", "animation", "animation", "animation", "animation", "animation"],
+	"transformanimation": [false,"keyleft","keyrightrelease","keyjump","keyup","keydown","keyuserelease"],
+
+	"killsenemies": false,
+
+	"customtimer": [
+	[0,"runtimer","middlearrowscript"],
+	
+	[0.1,"if",["speedx","<",8,["add","speedx"],3]],
+	[0.1,"if",["speedx",">",8,["set","speedx"],8]]
+
+	],
+}

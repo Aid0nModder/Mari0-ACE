@@ -1,0 +1,71 @@
+{
+	"quadcount": 2,
+
+	"dontenterinclearpipes": true,
+	
+	"friction": false,
+
+	"quadno": 1,
+	
+	"width": 0.75,
+	"height": 0.75,
+	
+	"static": false,
+	"active": true,
+	
+	"fall": "false",
+
+	"category": 3,
+	
+	"dontmirror": true,
+	"resistseverything": true,
+	"nospritesets": true,
+
+	"right": "right",
+	"left": "left",
+
+	"autodelete": true,
+
+	"haveplayercolors": [
+		[50,190,50],
+		[170,90,30],
+		[255,190,110],
+		[255,255,255,"exclude"],
+		[255,86,51,"exclude"],
+		[80,80,255,"exclude"],
+		[252,252,252,"exclude"],
+		[57,61,230,"exclude"],
+		[41,206,255,"exclude"]
+	],
+
+	"transforms": false,
+	"transformsinto": ["linkbowup","nothinbutshotarrow"],
+	"transformtrigger": ["floorcollide","animation"],
+	"transformanimation": [false,"keyuserelease"],
+	"transformpassedparameters": ["animationdirection","colors","speedx","speedy","arrowspeedx","arrowspeedy","arrowcustomtimer","uparrowscript"],
+
+	"killsenemies": false,
+
+	"checkif": [
+	["speedy","<",0,["set","quadno"],1],
+	["speedy",">",0,["set","quadno"],2],
+
+	["fall","==","false",["set","speedy"],-28],
+	["speedy","<=",-27,["set","fall"],"true"]
+
+	],
+
+	"customtimer": [
+	[0,"runtimer","uparrowscript"],
+	[0.05,["set","transforms"],true]
+	],
+	"dontloopcustomtimer": true,
+	"offsetX": 5.8,
+	"offsetY": 18,
+	"quadcenterX": 11.5,
+	"quadcenterY": 8,
+	
+	"gravity": 80,
+
+	"hidden": true
+}

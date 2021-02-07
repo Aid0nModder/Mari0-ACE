@@ -1,0 +1,43 @@
+{
+	"quadcount": 1,
+	"nospritesets": true,
+
+	"spawnsound": "linksword",
+
+	"animationtype": "frames",
+	"animationspeed": 55,
+	"animationframes": 1,
+	"animationstart": 1,
+	
+	"notkilledfromblocksbelow": true,
+	"width": 0.5,
+	"height": 0.5,
+	
+	"static": false,
+	"active": true,
+
+	"category": 13,
+
+	"gravity": 0,
+
+	"dontcollidestops": true,
+	"dontstopmario": true,
+	"resistseverything": true,
+
+	"killsenemies": true,
+	"breaksblocks": true,
+	"hitspowblocks": true,
+	"flipsflipblocks": true,
+
+	"emancipatecheck": true,
+	"autodelete": true,
+	
+	"lifetime": 0.1,
+	
+	"offsetX": 4,
+	"offsetY": 4,
+	"quadcenterX": 8,
+	"quadcenterY": 8,
+
+	"hidden": true
+}

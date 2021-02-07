@@ -1,0 +1,54 @@
+{
+	"quadcount": 1,
+
+	"spawnsound": "arrow",
+	"movement": "truffleshuffle",
+	"truffleshufflespeed": 0,
+	"truffleshuffleacceleration": 0,
+	
+	"width": 0.65,
+	"height": 0.65,
+	
+	"rotationanimation": true,
+
+	"static": false,
+	"active": true,
+	
+	"category": 13, 
+	
+	"mask": [true,false,true],
+	"killsenemies": true,
+	"nospritesets": true,
+
+	"collidetransformlowpriority": true,
+
+	"breaksblocks": true,
+	"breakblockside": "global",
+	"hitspowblocks": true,
+	"activateswitches": true,
+	"flipsflipblocks": true,
+	
+	"emancipatecheck": false,
+	"autodelete": true,
+	"dontmirror": false,
+	
+	"offsetX": 6,
+	"offsetY": 3,
+	"quadcenterX": 8,
+	"quadcenterY": 8,
+
+	"pickupcoins": true,
+	
+	"gravity": 25,
+	"transforms": true,
+	"transformsinto": "arrowdie",
+	"transformtrigger": "collide",
+	"transformtriggerobjectcollide": "tile",
+	"transformpassedparameters": ["rotation","speedx","speedy","animationdirection"],
+	"transformpassedparametersbeforespawn": ["rotationanimationspeed"],
+
+	"customtimer": [
+		[0.01,["set","customtimer"],["property","arrowcustomtimer"]]
+	],
+	"hidden": false
+}

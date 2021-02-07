@@ -1,0 +1,79 @@
+{
+	"quadcount": 1,
+
+	"dontenterinclearpipes": true,
+
+	"friction": false,
+	
+	"animationtype": "none",
+	
+
+	"quadno": 1,
+	
+	"width": 0.75,
+	"height": 0.75,
+	
+	"static": false,
+	"active": true,
+	
+	"category": 3,
+	
+	"dontmirror": false,
+	"resistseverything": true,
+	"nospritesets": true,
+	"right": "right",
+	"left": "left",
+	"sheesh": true,
+	"autodelete": true,
+
+	"haveplayercolors": [
+		[50,190,50],
+		[170,90,30],
+		[255,190,110],
+		[255,255,255,"exclude"],
+		[255,86,51,"exclude"],
+		[80,80,255,"exclude"]
+	],
+
+	"transforms": false,
+	"transformsinto": ["linkdash"],
+	"transformtrigger": ["animation"],
+	"transformanimation": ["keyrun"],
+	"transformpassedparameters": ["animationdirection","speedxstore"],
+
+	"checkif": [
+	["speedx",">=",0.001,["set","animationdirection"],"right"],
+	["speedx","<=",-0.001,["set","animationdirection"],"left"],
+
+	["autodelete","==",true,["set","friction"],true],
+
+	["animationdirection","==","right",["set","blowrange"],[0.5,0,0.5,0.70]],
+	["animationdirection","==","right",["set","blowmaxspeedx"],10],
+
+	["animationdirection","==","left",["set","blowmaxspeedx"],-10],
+	["animationdirection","==","left",["set","blowrange"],[-0.3,0,0.5,0.70]]
+	],
+
+	"customtimer": [
+	[0.5,["set","transforms"],true]
+	],
+	"blowrange": [0.5,0,0.5,0.70],
+	"blowspeedx":0,
+	"blowspeedy":0,
+	"blowmaxspeedx":10,
+	"blowminspeedx":8,
+	"blowmaxspeedy": 0,
+	"blowminspeedy": 0,
+	"blowstrong":false,
+
+	"blowchecktable":["goomba","koopa","gel","bulletbill","hammerbro","hammer","fireball","fire","bowser","cheep","flyingfish","lakito","poisonmush","barrel","brofireball","thwomp","fishbone","drybones","muncher","meteor","boomerang","ninji","mole","bigmole","bomb","plantfire","torpedoted","boomboom","energyball","turret","turretshot","amp","fuzzy","cannonball","turretrocket","core","iceball","pokey","chainchomp","wrench","koopaling","spike","spikeball","ice"],
+
+	"offsetX": 5.8,
+	"offsetY": 18,
+	"quadcenterX": 11.5,
+	"quadcenterY": 8,
+	
+	"gravity": 80,
+
+	"hidden": false
+}

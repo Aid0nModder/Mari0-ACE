@@ -1,0 +1,29 @@
+
+{
+	"trackable": false,
+	"dontEnterClearPipes":true,
+	"quadcount": 1,
+	"animationtype": "none",
+	"lifetime": 0.001,
+	"gravity":0,
+	"hidden":true,
+
+	"category": 1,
+	"static":false,
+	"active":true,
+	"width": 0.75,
+	"height": 1.5,
+	"resistsEverything":true,
+	"moveToTopOnPassiveCollide":false,
+
+	"offsetx": 8,
+	"offsety": 0,
+	"quadcenterx": 8,
+	"quadcentery": 8,
+
+	"customtimer":[
+	[100000,"wait"],
+	[100000,"wait"],
+	[0,["set","speedx"],0]
+	]
+}

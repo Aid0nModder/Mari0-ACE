@@ -1,0 +1,38 @@
+
+{
+	"trackable": false,
+	"dontEnterClearPipes":true,
+	"quadcount": 1,
+	"animationtype": "none",
+	"lifetime": 0.05,
+	"gravity":0,
+	"hidden":true,
+
+	"category": 1,
+
+	"spawnsenemy": "arrow",
+	"spawnenemydelays": [0.02],
+	"spawnenemyspeedx": 0,
+	"spawnenemyspeedy": 0,
+	"spawnenemyoffsety": -0.3,
+	"spawnpassedparameters": ["animationdirection","arrowcustomtimer"],
+	"spawnmax": 1,
+
+	"static":true,
+	"active":true,
+	"width": 0.75,
+	"height": 0.75,
+	"resistsEverything":true,
+	"moveToTopOnPassiveCollide":false,
+
+	"offsetx": 8,
+	"offsety": 0,
+	"quadcenterx": 8,
+	"quadcentery": 8,
+
+	"customtimer":[
+	[0,["set","spawnenemyspeedx"],["property","arrowspeedx"]],
+	[0,["set","spawnenemyspeedy"],["property","arrowspeedy"]]
+	],
+	"dontloopcustomtimer": true
+}

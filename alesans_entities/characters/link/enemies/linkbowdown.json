@@ -1,0 +1,101 @@
+{
+	"quadcount": 1,
+
+	"dontenterinclearpipes": true,
+	
+	"friction": true,
+
+	"quadno": 1,
+	
+	"width": 0.75,
+	"height": 0.75,
+	
+	"static": false,
+	"active": true,
+	
+	"category": 3,
+	
+	"dontmirror": true,
+	"resistseverything": true,
+	"nospritesets": true,
+
+	"right": "right",
+	"left": "left",
+	"sheesh": false,
+
+	"autodelete": true,
+
+	"haveplayercolors": [
+		[50,190,50],
+		[170,90,30],
+		[255,190,110],
+		[255,255,255,"exclude"],
+		[255,86,51,"exclude"],
+		[80,80,255,"exclude"],
+		[252,252,252,"exclude"],
+		[57,61,230,"exclude"],
+		[41,206,255,"exclude"]
+	],
+
+	"transforms": true,
+	"transformsinto": ["linkbowdownfall","linkbowdownwalkleft","linkbowdownwalkright","linkbowdownjump","linkbowup","linkbowmiddle","nothinbutshotarrow"],
+	"transformtrigger": ["falling", "animation", "animation", "animation", "animation", "animation", "animation"],
+	"transformanimation": [false,"keyleft","keyright","keyjump","keyup","keydownrelease","keyuserelease"],
+	"transformpassedparameters": ["animationdirection","colors","speedx","speedy","arrowspeedx","arrowspeedy","arrowcustomtimer","downarrowscript"],
+
+	"customtimer": [
+	[0,"runtimer","downarrowscript"]
+	],
+
+	"dontloopcustomtimer": true,
+
+	"downarrowscript": [
+	[0,["set","downarrowspeedy"],15],
+	[0,"if",["animationdirection","==","right",["set","downarrowspeedx"],18]],
+	[0,"if",["animationdirection","==","right",["set","downarrowcustomtimer"],[
+	[0,["set","doesntunrotate"],true],
+	[0,["set","rotation"],0.65],
+	[0,["set","rotationanimationspeed"],0],
+	[0,["set","truffleshuffleacceleration"],0],
+	[0,["set","customtimer"],[
+	[0,["set","animationdirection"],"left"],
+	[0.0001,"ifa",["rotation",">=",-1.55,"if",["speedx",">=",-13,["set","rotationanimationspeed"],-1]]],
+	[0,"ifa",["rotation",">=",-1.55,"if",["speedy",">=",-4,["set","rotationanimationspeed"],-3.5]]],
+	[0,"if",["rotation","<=",-1.55,["set","rotationanimationspeed"],0]],
+	[0,"if",["rotation","<=",-1.55,["set","rotation"],-1.54]]
+	]]
+	]]],
+
+	[0,"if",["animationdirection","==","left",["set","downarrowspeedx"],-18]],
+	[0,"if",["animationdirection","==","left",["set","downarrowcustomtimer"],[
+	[0,["set","doesntunrotate"],true],
+	[0,["set","rotation"],-0.65],
+	[0,["set","rotationanimationspeed"],0],
+	[0,["set","truffleshuffleacceleration"],0],
+	[0,["set","customtimer"],[
+	[0,["set","animationdirection"],"right"],
+	[0.0001,"ifa",["rotation",">=",-1.55,"if",["speedx",">=",-13,["set","rotationanimationspeed"],-1]]],
+	[0,"ifa",["rotation",">=",-1.55,"if",["speedy",">=",-4,["set","rotationanimationspeed"],-3.5]]],
+	[0,"if",["rotation","<=",-1.55,["set","rotationanimationspeed"],0]],
+	[0,"if",["rotation","<=",-1.55,["set","rotation"],-1.54]]
+	]]
+	]]],
+
+	[0,["set","arrowspeedx"],["property","downarrowspeedx"]],
+	[0,["set","arrowspeedy"],["property","downarrowspeedy"]],
+	[0,["set","arrowcustomtimer"],["property","downarrowcustomtimer"]]
+	],
+
+	"Thank you aidan for the runtimers": ":clawpog:",
+
+	"killsenemies": false,
+
+	"offsetX": 5.8,
+	"offsetY": 18,
+	"quadcenterX": 11.5,
+	"quadcenterY": 8,
+	
+	"gravity": 80,
+
+	"hidden": true
+}

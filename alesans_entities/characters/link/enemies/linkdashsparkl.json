@@ -1,0 +1,42 @@
+{
+
+	"hidden": false,
+	"quadcount": 8,
+
+	"spawnsound": "linkdashsparkl",
+	"animationtype": "frames",
+	"animationframes": 3,
+	"animationstart": 1,
+	"animationspeed": 0.05,
+
+	"nospritesets": true,
+	
+	"movement": "none",
+	
+	"lifetime": 0.20,
+		
+	"width": 0.1,
+	"height": 0.1,
+
+	"active": true,
+	"static": false,
+	"category": 1,
+				
+	"emancipatecheck": false,
+	"autodelete": true,
+	
+	"sticktonearestplayer": true,
+	"sticktoplayeroffsetx": -1,
+	"sticktoplayeroffsety": 0,
+
+	"gravity": 0,
+
+	"offsetx": 2,
+	"offsety": 6,
+	"quadcenterX": 4,
+	"quadcenterY": 4,
+
+	"breaksblocks": true,
+	"KillsEnemies": true,
+	"resistseverything": true,
+}
