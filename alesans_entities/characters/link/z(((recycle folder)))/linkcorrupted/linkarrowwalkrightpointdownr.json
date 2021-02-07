@@ -1,0 +1,21 @@
+base=linkarrowpointdownr
+{
+	"quadcount": 3,
+	
+	"animationtype": "frames",
+	"animationframes": 3,
+	"animationstart": 1,
+	"animationspeed": 0.05,
+
+	"animationdirection": "right",
+				
+	"transformsinto": ["linkarrowpointdownfallr","linkarrowr","nothinbutshotarrow"],
+	"transformtrigger": ["falling","animation","animation","animation","animation","animation"],
+	"transformanimation": [false,"keyrightrelease","keyuserelease"],
+
+	"customtimer": [
+	[0.000001,"if",["speedx",">=",8,["add","speedx"],0.00003]]
+	],
+	"offsetx": 5,
+	"offsetY": 6,
+}

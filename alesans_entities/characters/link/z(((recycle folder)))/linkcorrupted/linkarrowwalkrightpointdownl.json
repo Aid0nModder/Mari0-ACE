@@ -1,0 +1,21 @@
+base=linkarrowpointdownl
+{
+	"quadcount": 3,
+	
+	"animationtype": "frames",
+	"animationframes": 3,
+	"animationstart": 1,
+	"animationspeed": 0.05,
+
+	"animationdirection": "left",
+				
+	"transformsinto": ["linkarrowpointdownfalll","linkarrowl","linkarrowwalkrightl","linkarrowwalkrightpointdownjumpl","nothinbutshotarrow"],
+	"transformtrigger": ["animation","animation","animation","animation","animation"],
+	"transformanimation": ["keyrightrelease","keydownrelease","keyjump","keyuserelease"],
+
+	"customtimer": [
+	[0.000001,"if",["speedx",">=",8,["add","speedx"],0.00003]]
+	],
+	"offsetx": 5,
+	"offsetY": 6,
+}

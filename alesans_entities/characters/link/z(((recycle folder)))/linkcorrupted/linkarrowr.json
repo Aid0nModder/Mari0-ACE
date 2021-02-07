@@ -1,0 +1,33 @@
+base=linkarrowstart
+{
+	"quadcount": 3,
+
+	"movement": "truffleshuffle",
+	"truffleshufflespeed": 0,
+	"truffleshuffleacceleration": 6,
+
+	"animationtype": "none",
+	"quadno": 3,
+	"spawnsound": false,
+	"lifetime": false,
+	"dontmirror": true,
+	"animationdirection": "right",
+				
+	"transformsinto": ["linkarrowfallr","linkarrowwalkleftr","linkarrowwalkrightr","linkarrowpointupr","linkarrowpointdownr","nothinbutshotarrow"],
+	"transformtrigger": ["falling","animation","animation","animation","animation","animation"],
+	"transformanimation": [false,"keyleft","keyright","keyup","keydown","keyuserelease"],
+	"transformpassedparameters": ["speedx","speedy","arrowspeedx","arrowspeedy","arrowcustomtimer","animationdirection"],
+
+	"middlearrowspeedx": -20,
+	"middlearrowspeedy": -3,
+	"middlearrowcustomtimer": [
+	[0.00001,"if",["speedy","<=",-1,["set","rotationanimationspeed"],-1]]
+	],
+
+	"checkif": [
+	["middlearrowspeedx","==",true,["set","arrowspeedx"],["property","middlearrowspeedx"]],
+	["middlearrowspeedy","==",true,["set","arrowspeedy"],["property","middlearrowspeedy"]],
+	["middlearrowcustomtimer","==",true,["set","arrowcustomtimer"],["property","middlearrowcustomtimer"]]
+	],
+	"offsetx": 3,
+}

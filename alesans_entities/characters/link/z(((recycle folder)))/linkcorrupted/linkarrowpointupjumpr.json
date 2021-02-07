@@ -1,0 +1,27 @@
+base=linkarrowpointupr
+{
+	"quadcount": 2,
+
+	"movement": "none",
+	"spawnsound": "jump",
+	"quadno": 1,
+	"animationdirection": "right",
+
+	"transformsinto": ["linkarrowpointupr","nothinbutshotarrow"],
+	"transformtrigger": ["floorcollide","animation"],
+	"transformanimation": [false,"keyuserelease"],
+
+	"enemyKillsDontFlyAway":true,
+
+	
+	"customtimer": [
+	[0,"setspeedy",-26],  
+	[0,"aidan","i know you are reading this lol"], 
+	[0,["set","customtimer"],[
+	[0.000001,"if",["speedy",">",0,["set","quadno"],1]],
+	[0,"if",["speedy","<",0,["set","quadno"],2]]
+	]
+	]],
+	"offsetx": 5,
+	"offsetY": 6,
+}

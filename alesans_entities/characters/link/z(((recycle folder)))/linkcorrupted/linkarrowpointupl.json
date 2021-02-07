@@ -1,0 +1,43 @@
+base=linkarrowstart
+{
+	"quadcount": 1,
+
+	"movement": "truffleshuffle",
+	"truffleshufflespeed": 0,
+	"truffleshuffleacceleration": 6,
+
+	"animationtype": "none",
+	"quadno": 1,
+	"spawnsound": false,
+	"lifetime": false,
+	"dontmirror": true,
+	"animationdirection": "left",
+			
+	"transformsinto": ["linkarrowpointupfalll","linkarrowpointupfallr","linkarrowwalkleftpointupl","linkarrowwalkrightpointupl","linkarrowl","nothinbutshotarrow","linkarrowpointupjumpl"],
+	"transformtrigger": ["animation","animation","animation","animation","animation","animation","animation"],
+	"transformanimation": [false,"keyleft","keyright","keyuprelease","keyuserelease","keyjump"],
+	"transformpassedparameters": ["speedx","speedy","arrowspeedx","arrowspeedy","arrowcustomtimer","animationdirection"],
+
+	"diagonalarrowupspeedx": 18,
+	"diagonalarrowupspeedy": -20,
+	"diagonalarrowupcustomtimer": [
+	[0,["set","doesntunrotate"],true],
+	[0,["set","rotation"],-0.65],
+	[0,["set","rotationanimationspeed"],0],
+	[0,["set","truffleshuffleacceleration"],8],
+	[0,["set","customtimer"],[
+	[0.0001,"if",["rotation","<=",1.59,"if",["speedx","<=",13,["set","rotationanimationspeed"],1]]],
+	[0,"if",["rotation","<=",1.59,"if",["speedy",">=",-4,["set","rotationanimationspeed"],3.5]]],
+	[0,"if",["rotation",">=",1.59,["set","rotationanimationspeed"],0]],
+	[0,"if",["rotation",">=",1.59,["set","rotation"],1.60]]
+	]]
+	],
+
+	"checkif": [
+	["diagonalarrowupspeedx","==",true,["set","arrowspeedx"],["property","diagonalarrowupspeedx"]],
+	["diagonalarrowupspeedy","==",true,["set","arrowspeedy"],["property","diagonalarrowupspeedy"]],
+	["diagonalarrowupcustomtimer","==",true,["set","arrowcustomtimer"],["property","diagonalarrowupcustomtimer"]]
+	],
+	"offsetx": 6,
+	"offsetY": 6,
+}

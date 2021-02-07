@@ -1,0 +1,16 @@
+base=linkbowdownwalkleft
+{
+	"transformsinto": ["linkbowdownfall","linkbowdownwalkleft","linkbowdown","linkbowdownjump","linkbowup","linkbowmiddle","nothinbutshotarrow"],
+	"transformtrigger": ["falling", "animation", "animation", "animation", "animation", "animation", "animation"],
+	"transformanimation": [false,"keyleft","keyrightrelease","keyjump","keyup","keydownrelease","keyuserelease"],
+
+	"killsenemies": false,
+
+	"customtimer": [
+	[0,"runtimer","downarrowscript"],
+	
+	[0.1,"if",["speedx","<",8,["add","speedx"],3]],
+	[0.1,"if",["speedx",">",8,["set","speedx"],8]]
+
+	],
+}
