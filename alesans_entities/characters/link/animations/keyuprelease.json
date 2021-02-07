@@ -1,0 +1,5 @@
+{
+    "actions": [ [ "transformenemy", "keyuprelease" ], [ "setnumber", "keyup", "=", "0" ] ],
+    "conditions": [  ],
+    "triggers": [ [ "buttonreleased", "up", "everyone" ] ]
+}

@@ -1,0 +1,5 @@
+{
+    "actions": [ [ "transformenemy", "keyrightrelease" ] ],
+    "conditions": [  ],
+    "triggers": [ [ "whennumber", "keyright", "=", "0" ] ]
+}

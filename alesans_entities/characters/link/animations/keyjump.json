@@ -1,0 +1,5 @@
+{
+    "actions": [ [ "transformenemy", "keyjump" ], [ "setnumber", "keyjump", "=", "1" ] ],
+    "conditions": [ [ "buttonhelddown", "jump", "everyone" ] ],
+    "triggers": [ [ "mariotimeless", "9999999999" ] ]
+}
