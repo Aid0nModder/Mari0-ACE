@@ -16,7 +16,6 @@ function tilegravity:init(x, y, r, t)
 	self.storecanpush = false
 	self.static = false
 	self.active = true
-	self.portalable = true
 	self.first = true
 	self.dir = "left"
 
@@ -64,14 +63,14 @@ function tilegravity:init(x, y, r, t)
 	self.canpush = self.storecanpush
 
 	self.category = 2
-	self.mask = {	true,
-					false, false, false, false, false,
-					false, false, false, true, true,
-					false, false, true, false, false,
-					true, true, false, false, true,
-					false, true, true, false, false,
-					true, false, true, true, true,
-					false, true, false}
+	self.mask = {true,
+		false, false, false, false, false,
+		false, false, false, true, true,
+		false, false, true, false, false,
+		true, true, false, false, true,
+		false, true, true, false, false,
+		true, false, true, true, true,
+		false, true, false}
 					
 	self.emancipatecheck = false
 
@@ -229,33 +228,12 @@ function tilegravity:draw()
 	if onscreen(self.x, self.y, self.width, self.height) then
 		for x = 1, self.width do
 			for y = 1, self.height do
-				if self.t[x][y] and self.t[x][y] ~= 1 then
-					local img
-					if self.t[x][y] > 90000 then
-						img = tilequads[self.t[x][y]].image
-					elseif math.floor(self.t[x][y]) <= smbtilecount then
-						img = smbtilesimg
-					elseif self.t[x][y] <= smbtilecount+portaltilecount then
-						img = portaltilesimg
-					elseif self.t[x][y] <= smbtilecount+portaltilecount+customtilecount then
-						img  = customtilesimg
-					else
-						for i = 1, modcustomtiles do
-							local loop = true
-							if loop and self.t[x][y] <= smbtilecount+portaltilecount+customtilecount+modcustomtilecount[i] then
-								img = modcustomtilesimg[i]
-								loop = false
-							end
-						end
-					end
-
-					if tilequads[self.t[x][y]].coinblock and self.t[x][y] < 90000 then --coinblock
-						love.graphics.draw(coinblockimage, coinblockquads[spriteset][coinframe], math.floor(((self.x+(x-1)-xscroll)*16+self.offsetX)*scale), ((self.y+(y-1)-yscroll)*16-self.offsetY)*scale, 0, scale, scale, self.quadcenterX, self.quadcenterY)
-					elseif tilequads[self.t[x][y]].coin and self.t[x][y] < 90000 then --coin
-						love.graphics.draw(coinimage, coinquads[spriteset][coinframe], math.floor(((self.x+(x-1)-xscroll)*16+self.offsetX)*scale), ((self.y+(y-1)-yscroll)*16-self.offsetY)*scale, 0, scale, scale, self.quadcenterX, self.quadcenterY)
-					else
-						love.graphics.draw(img, tilequads[self.t[x][y]].quad, math.floor(((self.x+(x-1)-xscroll)*16+self.offsetX)*scale), ((self.y+(y-1)-yscroll)*16-self.offsetY)*scale, 0, scale, scale, self.quadcenterX, self.quadcenterY)
-					end
+				if tilequads[self.t[x][y]].coinblock and self.t[x][y] < 90000 then --coinblock
+					love.graphics.draw(coinblockimage, coinblockquads[spriteset][coinframe], math.floor(((self.x+(x-1)-xscroll)*16+self.offsetX)*scale), ((self.y+(y-1)-yscroll)*16-self.offsetY)*scale, 0, scale, scale, self.quadcenterX, self.quadcenterY)
+				elseif tilequads[self.t[x][y]].coin and self.t[x][y] < 90000 then --coin
+					love.graphics.draw(coinimage, coinquads[spriteset][coinframe], math.floor(((self.x+(x-1)-xscroll)*16+self.offsetX)*scale), ((self.y+(y-1)-yscroll)*16-self.offsetY)*scale, 0, scale, scale, self.quadcenterX, self.quadcenterY)
+				elseif self.t[x][y] ~= 1 then
+					love.graphics.draw(tilequads[self.t[x][y]].image, tilequads[self.t[x][y]].quad, math.floor(((self.x+(x-1)-xscroll)*16+self.offsetX)*scale), ((self.y+(y-1)-yscroll)*16-self.offsetY)*scale, 0, scale, scale, self.quadcenterX, self.quadcenterY)
 				end
 			end
 		end

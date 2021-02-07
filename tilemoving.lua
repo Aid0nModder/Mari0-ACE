@@ -4,12 +4,11 @@ function tilemoving:init(x, y, t)
 	--Get Tile
 	self.cox = x
 	self.coy = y
-	self.entity = false
 	self.t = t or map[x][y][1]
 	self.item = false
 	if not t then
-		if map[x][y][2] and ((entitylist[map[x][y][2]] and entitylist[map[x][y][2]].block)
-			or (tablecontains(customenemies, map[x][y][2]) and (tilequads[map[x][y][1]]["breakable"] or tilequads[map[x][y][1]]["coinblock"]))) then
+		if map[x][y][2] and ((entitylist[map[x][y][2]] and entitylist[map[x][y][2]].block and (tilequads[self.t]["breakable"] or (not tilequads[self.t]["breakable"]) and tilequads[self.t]["coinblock"]))
+			or (tablecontains(customenemies, map[x][y][2]) and (tilequads[self.t]["breakable"] or tilequads[self.t]["coinblock"]))) then
 			--item in block
 			self.item = map[x][y][2]
 			map[x][y][2] = nil
@@ -51,35 +50,16 @@ function tilemoving:init(x, y, t)
 	self.static = false
 	self.active = true
 	self.category = 2
-	self.parent = nil
-	self.portaloverride = true
-
 	self.gravity = 0
 	self.portalable = false
+	
 	self.mask = {true}
 	self.dontchangetilemask = true
 	
 	self.extremeautodelete = true
 
-	--self.drawable = true
-	--[[local img = customtilesimg
-	if self.t > 90000 then
-		img = tilequads[self.t].image
-	elseif self.t <= smbtilecount then
-		img = smbtilesimg
-	elseif self.t <= smbtilecount+portaltilecount then
-		img = portaltilesimg
-	end
-	self.graphic = img]]
-	
-	self.offsetX = 8
-	self.offsetY = 0
-	self.quadcenterX = 8
-	self.quadcenterY = 8
-
 	self.quad = tilequads[self.t].quad
 	self.breakable = tilequads[self.t].breakable
-	self.hardblock = tilequads[self.t].debris and blockdebrisquads[tilequads[self.t].debris]
 	self.coinblock = tilequads[self.t].coinblock
 	self.coin = tilequads[self.t].coin
 	self.invisible = tilequads[self.t].invisible
@@ -87,33 +67,10 @@ function tilemoving:init(x, y, t)
 	self.ice = tilequads[self.t].ice
 	self.noteblock = tilequads[self.t].noteblock
 	self.glass = tilequads[self.t].glass
-
-	--[[if tilequads[self.t].rightslant and tilequads[self.t].leftslant then
-		self.height = 0.5
-		if (not tilequads[self.t].downslant) and self.height ~= 1 then
-			self.y = self.y + 0.5
-		end
-	elseif tilequads[self.t].rightslant and tilequads[self.t].halfleftslant1 then
-		self.height = 0.5
-		self.width = 0.5
-		if (not tilequads[self.t].downslant) and self.height ~= 1 then
-			self.y = self.y + 0.5
-		end
-	elseif tilequads[self.t].rightslant and tilequads[self.t].halfleftslant2 then
-		self.width = 0.5
-	elseif tilequads[self.t].halfrightslant1 and tilequads[self.t].leftslant then
-		self.height = 0.5
-		self.width = 0.5
-		self.x = self.x + 0.5
-		self.offsetX = 0
-		if (not tilequads[self.t].downslant) and self.height ~= 1 then
-			self.y = self.y + 0.5
-		end
-	elseif tilequads[self.t].halfrightslant2 and tilequads[self.t].leftslant then
-		self.width = 0.5
-		self.x = self.x + 0.5
-		self.offsetX = 0
-	end]]
+	self.offsetX = 8
+	self.offsetY = 0
+	self.quadcenterX = 8
+	self.quadcenterY = 8
 
 	self.gels = {}
 
@@ -125,6 +82,7 @@ function tilemoving:init(x, y, t)
 	self.trackplatform = true
 	self.trackplatformpush = true
 
+	self.hardblock = (tilequads[self.t] and tilequads[self.t].debris)
 	if self.platform then
 		self.PLATFORM = true
 	elseif self.invisible then
@@ -222,20 +180,12 @@ function tilemoving:draw()
 		if self.customscissor then
 			love.graphics.setScissor(math.floor((self.customscissor[1]-xscroll)*16*scale), math.floor((self.customscissor[2]-.5-yscroll)*16*scale), self.customscissor[3]*16*scale, self.customscissor[4]*16*scale)
 		end
-		local img = customtilesimg
-		if self.t > 90000 then
-			img = tilequads[self.t].image
-		elseif math.floor(self.t) <= smbtilecount then
-			img = smbtilesimg
-		elseif self.t <= smbtilecount+portaltilecount then
-			img = portaltilesimg
-		end
 		if tilequads[self.t].coinblock and self.t < 90000 then --coinblock
 			love.graphics.draw(coinblockimage, coinblockquads[spriteset][coinframe], math.floor(((self.x-xscroll)*16+self.offsetX)*scale), ((self.y-yscroll)*16-self.offsetY)*scale, 0, scale, scale, self.quadcenterX, self.quadcenterY)
 		elseif tilequads[self.t].coin and self.t < 90000 then --coin
 			love.graphics.draw(coinimage, coinquads[spriteset][coinframe], math.floor(((self.x-xscroll)*16+self.offsetX)*scale), ((self.y-yscroll)*16-self.offsetY)*scale, 0, scale, scale, self.quadcenterX, self.quadcenterY)
 		else
-			love.graphics.draw(img, tilequads[self.t].quad, math.floor(((self.x-xscroll)*16+self.offsetX)*scale), ((self.y-yscroll)*16-self.offsetY)*scale, 0, scale, scale, self.quadcenterX, self.quadcenterY)
+			love.graphics.draw(tilequads[self.t].image, tilequads[self.t].quad, math.floor(((self.x-xscroll)*16+self.offsetX)*scale), ((self.y-yscroll)*16-self.offsetY)*scale, 0, scale, scale, self.quadcenterX, self.quadcenterY)
 		end
 
 		for i = 1, 4 do
@@ -270,7 +220,7 @@ function tilemoving:hit(a, b, getbroken)
 	if getbroken then
 		self.getbroken = true
 	end
-	if (self.breakable or self.hardblock) and a == "player" and (b.size == 8 or b.size == 16) then
+	if a == "player" and (b.size == 8 or b.size == 16) then
 		--big mario destroy
 		self.getbroken = true
 	end

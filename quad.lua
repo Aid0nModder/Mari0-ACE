@@ -192,6 +192,9 @@ function getquadprops(imgdata, x, y, self)
 	local r, g, b, a = imgdata:getPixel(x*17-4, (y-1)*17+16)
 	if a > 127 then
 		self.noteblock = true
+		if r == 100 and g == 0 and b == 100 then
+			self.musicnoteblock = true
+		end
 	end
 	
 	--get vine
@@ -242,7 +245,7 @@ function getquadprops(imgdata, x, y, self)
 	if a > 127 then
 		self.glass = true
 	end
-	
+		
 	--return self
 end
 

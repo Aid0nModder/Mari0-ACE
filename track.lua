@@ -183,7 +183,6 @@ function trackcontroller:init(x, y, a, b, travel, fast, on)
 
 	if (not self.b) or (((not self.b.active) and (not b.trackable)) and (not b.trackspeed)) or (b.width and (self.x-.5)-(b.x+b.width/2) > 2) or (b.trackable == false) then
 		--reject enemy
-		print("f")
 		self.delete = true
 		return false
 	end

@@ -33,7 +33,7 @@ function snakeblocksline:init(x, y, r)
 				end
 			end
 			--length
-			self.length = math.max(1, v[2])
+			self.length = math.max(3, v[2])
 			--speed
 			self.speed = math.max(0.2, v[3])
 			--loop

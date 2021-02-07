@@ -29,7 +29,6 @@ function rsflipflop:link()
 				end
 			end
 		end
-		
 		table.remove(self.r, 1)
 		table.remove(self.r, 1)
 		table.remove(self.r, 1)

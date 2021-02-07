@@ -3,19 +3,12 @@
 --also maxyspeed, bounceheight, koopajumpforce need to be updated in game.lua as well.
 mariolives = {3}
 
---working on it
-jetpack = false
-jetpackstrength = 60
-jetpackmaxspeed = 12
-
 portalgundelay = 0.2
 gellifetime = 2
 bulletbilllifetime = 20
 bigbilllifetime = 20
 kingbilllifetime = 50
-
 playertypelist = {"portal", "minecraft", "gelcannon", "cappy", "classic"}
-entitytypelist = {"default", "mario", "portal"}
 
 joystickdeadzone = 0.2
 joystickaimdeadzone = 0.5
@@ -27,6 +20,7 @@ walkaccelerationair = 8 --acceleration of walking in the air
 runaccelerationair = 16 --acceleration of running in the air
 minspeed = 0.7 --When friction is in effect and speed falls below this, speed is set to 0
 frogminspeed = 6.3
+frogfriction = 100
 maxwalkspeed = 6.4 --fastest speedx when walking
 maxrunspeed = 9.0 --fastest speedx when running
 friction = 14 --amount of speed that is substracted when not pushing buttons, as well as speed added to acceleration when changing directions
@@ -98,6 +92,7 @@ firepoints = {	goomba = 100,
 				boomboom = 2000,
 				cannonball = 200,
 				amp = 1000,
+				fuzzy = 200,
 				pokey = 100,
 				thwomp = 200,
 				chainchomp = 200,
@@ -135,6 +130,8 @@ smbbounceheight = bounceheight
 smb2jbounceheight = 2 --2-4.5?
 passivespeed = 4 --speed that mario is moved against the pointing direction when inside blocks (by crouch sliding under low blocks and standing up for example)
 hugemarioblockbounceforce = 6
+groundpoundtime = 0.3
+groundpoundforce = 10
 
 --Variables that are different for underwater
 uwwalkacceleration = 8
@@ -180,7 +177,7 @@ cloudacceleration = 16
 cloudspeed = 8.0 --speed for mario's cloud
 cloudtime = 12 --time mario can ride cloud
 
-drybonesshelltime = 6
+drybonesshelltime = 3
 
 --levelstuff
 mappacklevels = {}
@@ -191,7 +188,7 @@ fireballkill = {
 	goomba = t, koopa = t, hammerbro = t, plant = t, cheep = t, bowser = t, squid = t, flyingfish = t, lakito = t, sidestepper = t, icicle = t, splunkin = t, ninji = t, mole = t, pokey = t, barrel = t, rockywrench = t, koopaling = t, spike = t, magikoopa = t, plantcreeper = t, fuzzy = t,
 	}
 iceballfreeze = {
-	goomba = t, koopa = t, hammerbro = t, plant = t, cheep = t, bowser = t, squid = t, flyingfish = t, lakito = t, sidestepper = t, icicle = t, splunkin = t, ninji = t, mole = t, firebro = t, bomb = t, koopaling = t, drybones = t, spike = t, magikoopa = t, bowser = t, hammer = t, spikeball = t, bulletbill = t, bigbill = t, sidestepper = t, barrel = t, enemy = t, fuzzy = t
+	goomba = t, koopa = t, hammerbro = t, plant = t, cheep = t, bowser = t, squid = t, flyingfish = t, lakito = t, sidestepper = t, icicle = t, splunkin = t, ninji = t, mole = t, firebro = t, bomb = t, koopaling = t, drybones = t, spike = t, magikoopa = t, bowser = t, hammer = t, spikeball = t, bulletbill = t, bigbill = t, sidestepper = t, barrel = t, enemy = t, fuzzy = t, amp = t
 	}
 mariohammerkill = {
 	goomba = t, koopa = t, hammerbro = t, plant = t, cheep = t, bowser = t, squid = t, flyingfish = t, lakito = t, sidestepper = t, icicle = t, splunkin = t, ninji = t, drygoomba = t, drybones = t, fishbone = t, boo = t, mole = t, bomb = t, bulletbill = t, torpedoted = t, parabeetle = t, pokey = t, barrel = t, chainchomp = t, thwomp = t, thwimp = t, rockywrench = t, koopaling = t, spike = t, spikeball = t, magikoopa = t, plantcreeper = t, fuzzy = t
@@ -200,11 +197,11 @@ mariotailkill = {
 	goomba = t, koopa = t, hammerbro = t, plant = t, cheep = t, bowser = t, squid = t, flyingfish = t, lakito = t, sidestepper = t, icicle = t, splunkin = t, ninji = t, mole = t, drybones = t, fishbone = t, drygoomba = t, boo = t, bomb = t, pokey = t, barrel = t, rockywrench = t, koopaling = t, spike = t, magikoopa = t, plantcreeper = t, fuzzy = t
 	}
 
-yoshitoungekill = {"mushroom", "goomba", "koopa", "hammerbro", "hammer", "plant", "cheep", "bowser", "squid", "flyingfish", "lakito", "sidestepper", "icicle", "splunkin", "ninji", "mole", "pokey", "barrel", "rockywrench", "enemy", "spike", "magikoopa"}
+yoshitoungekill = {"mushroom", "goomba", "koopa", "hammerbro", "hammer", "plant", "cheep", "bowser", "squid", "flyingfish", "lakito", "sidestepper", "icicle", "splunkin", "ninji", "mole", "pokey", "barrel", "rockywrench", "enemy", "spike", "magikoopa", "fuzzy"}
 dkhammerkill = {"goomba", "koopa", "hammerbro", "plant", "cheep", "bowser", "squid", "flyingfish", "lakito", "sidestepper", "icicle", "splunkin", "ninji", "mole", "pokey", "barrel", "chainchomp", "rockywrench", "enemy", "spike", "spikeball", "magikoopa"}
 
 tileentities = {"tile", "buttonblock", "flipblock", "platform", "donut", "frozencoin", "tilemoving", "belt"}
-tileentitieswind = {"tile", "buttonblock", "flipblock", "platform", "donut", "frozencoin", "tilemoving", "belt", "smallspring", "box"}
+tileentitieswind = {"tile", "buttonblock", "flipblock", "platform", "donut", "frozencoin", "tilemoving", "belt", "smallspring", "box", "spring"}
 
 freezetime = 6.5 --8
 iceblockspeed = 10
@@ -253,6 +250,7 @@ fighterflyjumpdelay = 0.5 --how long it stays on the floor
 
 goombashoejumpforce = 32 --goomba in shoe, not mario in shoe
 goombashoejumpdelay = 1 --how long it stays on the floor
+goombashoeflydelay = 1.4 --flyshoe, for mario and HIM
 
 wigglerspeed = 2
 wigglerspeedangry = 4
@@ -812,9 +810,19 @@ windspeedslow = 1 --1px every 2 frames
 autoscrollingdefaultspeed = 3
 autoscrollingmaxspeed = 8
 
-
 dropshadow = false
 dropshadowcolor = {0, 0, 0, 80}
+--[[dropshadownooverlap = true --no overlapping dropshadows
+dropshadowoverlapshader = love.graphics.newShader[[
+	vec4 effect( vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords )
+    {
+		vec4 texcolor = Texel(tex, texture_coords);
+		if (texcolor[3] == 0.0) {
+			discard;
+		};
+        return texcolor * color;
+    }
+]]
 
 anyiteminblock = false --allows any entity to be in block (doesn't work, use block=true instead)
 
@@ -857,6 +865,8 @@ end
 powerupslist = {"small", "big", "fire", "hammer", "frog", "raccoon", "ice", "mega", "tanooki",
 	"cape", "bunny", "skinny", "superball", "blueshell", "boomerang", "huge", "tiny"}
 
+onlysaveiflevelmodified = true
+
 --colors for text entity and hud
 textcolors = {
 	white = {255,255,255},
@@ -898,7 +908,7 @@ calendarcolors = {
 
 --levels
 alphabet = "abcdefghijklmnopqrstuvwxyz "
-maxworlds = 99--9+26 --nine worlds + alphabet (not including -1 world)
+maxworlds = 999--9+26 --nine worlds + alphabet (not including -1 world)
 maxlevels = 99--9+26
 maxsublevels = 13 --any more than this doesn't even fit, but yea change it if you want
 extramaxsublevels = 24
@@ -913,128 +923,6 @@ for k = 0, maxsublevels do
 	table.insert(maxsublevelstable, k)
 end
 
---level editor tool descriptions
-tooldesc = {
-	"to link testing equipment, drag|a line from the red devices to|a yellow activator to turn them|green and connected.",
-	"for testing purposes,|use this to shoot portals!",
-	"click and drag|to select entities.|rightclick to configure|all at once.||hit del to delete.",
-	"click and drag|to draw power lines.||rightclick to erase."
-}
-
-entitiesforms = {}
-
-entitiesforms["default"] = {
-		
-	{name = "level markers",
-		1,8,100,312,11, --erase and start
-		21,--[[161,]]31,--[[233,256,]]81, --pipes (possibly combine them later?)
-		257, --celing block (possibly camera block too?)
-		23,24,25, 89, 33,34, 95,96, 131,132, 159,160, --zones
-		35, --drag in
-		304,--camera stop
-		},
-	{name = "platforming elements",
-		309,--[[18,19,]]32,41,--[[42,]]92,80,289, --platforms
-		258,137, --donut
-		148,278, --block like entities
-		266,287, --conveyors
-		290, --snake block
-		93,122,281,282, --springs
-		14,219,--vines
-		163,248,249,250, --doors
-		79,--[[82,]]265,--[[191,]] 228,  --fire
-		315, --grinder
-		285,164, --water
-		211,292,293, 178,208,279,179,180,--buttons
-		300,301, --helmet boxes
-		302,--clear pipe
-		306,--tracks!
-		317,--moving bloccs
-		327, --CLAWWS
-		},
-	{name = "items",
-		--[[297,]]2,3,101,4,187,296,5, --regulars
-		121,269,217,218,113, --smbs items
-		299,202,155,141,151,252,253,254,255,239,311,193,286,307,308, --new powerups
-		207, --yoshi
-		154, --? Ball
-		328, --roulette block
-		},
-	{name = "enemies",
-		6,--[[9,]]103,114,237,118,--[[119,]] --goomba
-		7,--[[10,]]117,78,158,116, 12,--[[13,]]77, 156,--[[157,]] --koopa, red, blue
-		98,--[[99,]]263,261,115, --spiny
-		75,--[[76,]]209,262,130, --beetle
-		212,--[[213,]] --spiketop
-		70,--[[102,]]123,--[[124,]]147,--[[149,]]129,305, --plants
-		15,120,241,138,221, --hammer bros
-		16,17,298,184, 94,162,242, --fishies (and bloopers)
-		22,83,264, 109,110, --lakitu and sun
-		188, --fuzzy
-		60,246,104,105,150,192,303,145,--[[146,]] --bullets and military stuff
-		142,260,247, 111,--[[112,]]--boos and splunkins
-		--[[125,224,283,284,]]318,234,259, 127,--[[128,]]288,126,133,--[[134,]]235,--[[236,]]135,--[[136,]] 97, --castle stuffs
-		90,91,153,238,316,240, --bowser bosses
-		106,216,107,--[[108,]]320,280,319, --smbs enemies
-		203,--[[204,]]140,214,215,--smb2 enemies
-		139,152,189,190, --flying beetles
-		--[[143,]]314,144,223, --moles
-		220, 243, 244,251, 245, 294,295, --mario maker enemies
-		329, --crowber
-		
-		313, --super size
-		},
-	{name = "i/o objects",
-		275,210,271,270,291,200,199,276,277,201,205},
-	{name = "gates",
-		30,74, --not really logic gates
-		84,274,273,186,272,185,206},
-	{name = "portal elements",
-		20,165,222, --cubes
-		40,267,268, 68,--[[69,]] --buttons
-		28,--[[29,]] --doors
-		--[[26,]]27, --emancipation grill
-		36,--[[37,38,39,]] 52,--[[53,54,55,]] 56,--[[57,58,59,]] --lasers
-		43,44,45,46,47,48, 321,322,323,324,325,326, --antlines
-		49,--[50,51,]] --faithplate
-		67, 61,--[[62,63, 64,65,66, 71,72,73, 181,182,183, 225,226,227,]] --dispensers
-		85,--[[86,87,88,]] --gel
-		166,--[[167,168,169,]] 170,--[[171,172,173,]] --energy launcher
-		174,--[[175, 176,177,]] 194, --turrets
-		195, --glados
-		196,
-		197,198, --portals
-		231,--[[229,230,232]] --funnels
-		310,--pneumatic tube (just clearpipe but shhh)
-	},
-	{name = "custom enemies",
-
-	},
-}
-
-entitiesforms["classic"] = {
-	
-	{name = "entities",
-		1, 2, 3, 101, 4, 187, 296, 5, 8, 100, 11, 14, 219, 18, 19, 32, 41, 42, 80, 92, 21, 161, 31, 233, 256,
-		23, 24, 25, 33, 34, 35, 79, 82, 81, 83, 89, 90, 91, 93, 122, 95, 96, 110, 113, 121, 131, 132, 258,
-		137, 202, 141, 151, 155, 252, 253, 254, 255, 239, 193, 286, 148, 275, 154, 159, 160, 163, 248, 249, 250, 164, 
-		178, 208, 279, 179, 180, 211, 292, 293, 265, 191, 199, 200, 270, 291, 201, 205, 207, 217, 218, 269, 257, 266, 287,
-		276, 277, 278, 281, 282, 285, 289, 290, 297, 299, 300, 301, 302, 304, 306, 307, 308, 309, 311, 312, 313, 315,
-	},
-	{name = "enemies",
-		6, 9, 103, 7, 10, 117, 12, 13, 156, 157, 77, 78, 158, 15, 221, 120, 138, 241, 16, 17, 184, 22, 264, 60,
-		246, 104, 105, 150, 192, 70, 102, 123, 124, 147, 149, 129, 75, 76, 262, 209, 94, 162, 242, 97, 98, 99, 261,
-		263, 106, 216, 107, 108, 280, 109, 111, 112, 114, 115, 116, 130, 118, 119, 125, 224, 283, 284, 234, 259, 126, 127, 128,
-		133, 134, 135, 136, 235, 236, 288, 139, 152, 189, 190, 140, 142, 247, 260, 143, 144, 145, 146, 188, 203, 204,
-		212, 213, 214, 215, 220, 223, 228, 237, 153, 238, 240, 243, 244, 251, 245, 294, 295, 298, 303, 305, 314, 316, 318,
-	},
-	{name = "portal",
-		20, 165, 222, 26, 27, 28, 29, 30, 36, 37, 38, 39, 40, 267, 268, 43, 44, 45, 46, 47,  48, 49, 50, 51, 52, 53,
-		54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66, 71, 72, 73, 181, 182, 183, 225, 226, 227, 67, 68, 69, 74,
-		84, 273, 274, 185, 186, 206, 210, 271, 272, 85, 86, 87, 88, 166, 167, 168, 169, 170, 171, 172, 173, 174,
-		175, 176, 177, 194, 195, 196, 197, 198, 229, 230, 231, 232, 310, 317, 
-	},
-	{name = "custom",
-
-	},
+minecraftbreakingspeeds = {
+	{7, 1.5}, {8, 0.75}, {11, 0.5}, {29, 0.75}, {49, 1.5}, {78, 0.5}, {111, 0.5}, {122, 1.5}
 }

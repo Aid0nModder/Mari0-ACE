@@ -96,11 +96,13 @@ function portalprojectile:update(dt)
 	return false
 end
 
-function portalprojectile:draw()
+function portalprojectile:particledraw()
 	for i, v in pairs(self.particles) do
 		v:draw()
 	end
-	
+end
+
+function portalprojectile:draw()
 	if self.timer < self.time then
 		love.graphics.setColor(unpack(self.color))
 		
@@ -114,7 +116,6 @@ function portalprojectileparticle:init(x, y, color, r, g, b)
 	self.x = x
 	self.y = y
 	self.color = color
-	
 	
 	self.speedx = math.random(-10, 10)/70
 	self.speedy = math.random(-10, 10)/70
@@ -141,10 +142,8 @@ function portalprojectileparticle:update(dt)
 end
 
 function portalprojectileparticle:draw()
-	local r, g, b = unpack(self.color)
-	love.graphics.setColor(r, g, b, self.alpha)
-	
-	love.graphics.draw(portalprojectileparticleimg, math.floor((self.x-xscroll)*16*scale), math.floor((self.y-yscroll-.5)*16*scale), 0, scale, scale, 0.5, 0.5)
+	portalprojectilespritebatch:setColor(self.color[1],self.color[2],self.color[3],self.alpha)
+	portalprojectilespritebatch:add(math.floor((self.x-xscroll)*16*scale), math.floor((self.y-yscroll-.5)*16*scale), 0, scale, scale, 0.5, 0.5)
 end
 
 function portalprojectile:createportal()

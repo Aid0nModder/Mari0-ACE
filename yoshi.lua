@@ -1,6 +1,6 @@
 yoshi = class:new()
 
-function yoshi:init(x, y, r)
+function yoshi:init(x, y, r, t)
 	--PHYSICS STUFF
 	self.x = x-4/16
 	self.y = y-23/16
@@ -24,10 +24,12 @@ function yoshi:init(x, y, r)
 					false, true}
 	
 	self.autodelete = false
+
+	self.color = r
+	self.toungemaxwidth = t
 	
 	--IMAGE STUFF
 	self.drawable = false
-	self.color = r or 1
 	self.quad = yoshiquad[self.color][1]
 	self.offsetX = 11
 	self.offsetY = 7
@@ -41,8 +43,7 @@ function yoshi:init(x, y, r)
 	self.jumping = false
 	self.onground = false
 	self.tounge = false
-	self.toungewidth = 0
-	self.toungemaxwidth = 2.5
+	self.toungewidth = 5
 	self.toungeheight = 12/16
 	self.toungespeed = yoshitoungespeed
 	self.toungeenemy = false
@@ -275,7 +276,11 @@ function yoshiegg:init(x, y, r)
 	self.autodelete = true
 	self.gravity = 40
 	self.crack = false
-	self.color = r or 1
+
+	self.r = r
+	local v = convertr(self.r, {"num", "num"})
+	self.color = (v[1] or 1)
+	self.toungemaxwidth = (v[2] or 2.5)
 	
 	--IMAGE STUFF
 	self.drawable = false
@@ -314,7 +319,7 @@ function yoshiegg:update(dt)
 	if self.crack then
 		self.breaktimer = self.breaktimer + dt
 		if self.breaktimer > yoshieggbreaktime then
-			table.insert(objects["yoshi"], yoshi:new(self.x, self.y, self.color))
+			table.insert(objects["yoshi"], yoshi:new(self.x, self.y, self.color, self.toungemaxwidth))
 			self.destroy = true
 		end
 		self.quad = yoshieggquad[self.color][2]

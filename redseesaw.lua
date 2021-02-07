@@ -83,8 +83,11 @@ function redseesaw:update(dt)
 
 						if (w.y+w.height >= targety) and w.speedy >= 0 then
 							if v == "player" then
-								if w.falling then
+								if w.falling and (not w.falloverride) and (not w.redseesaw) then
 									--w:floorcollide("redseesaw", self)
+								end
+								if w.falling then
+									animationsystem_playerlandtrigger(w.playernumber)
 								end
 								w.falling = false
 								w.falloverride = true
@@ -226,7 +229,7 @@ function redseesaw:draw()
 			q = 3
 			x = x - (self.size-math.floor(self.size))
 		end
-		love.graphics.draw(redseesawimg, spikeyquad[q], x*16*scale, (8/16)*16*scale, 0, scale, -scale)
+		love.graphics.draw(redseesawimg, redseesawquad[spriteset][q], x*16*scale, (8/16)*16*scale, 0, scale, -scale)
 	end
 	love.graphics.pop()
 	love.graphics.push()
@@ -234,7 +237,7 @@ function redseesaw:draw()
 	if self.track then
 		love.graphics.draw(platformtrackimg, goombaquad[3][math.floor(self.trackanimtimer)], (-.5)*16*scale, (-6/16)*16*scale, 0, scale, scale)
 	else
-		love.graphics.draw(redseesawimg, spikeyquad[4], (-.5)*16*scale, (-5/16)*16*scale, 0, scale, scale)
+		love.graphics.draw(redseesawimg, redseesawquad[spriteset][4], (-.5)*16*scale, (-5/16)*16*scale, 0, scale, scale)
 	end
 	love.graphics.pop()
 end
@@ -249,9 +252,9 @@ function redseesaweditordraw(dx, dy, size)
 			q = 3
 			x = x - (size-math.floor(size))
 		end
-		love.graphics.draw(redseesawimg, spikeyquad[q], (x*16*scale)+((dx-xscroll+.5)*16*scale), (16*scale)+(((dy-yscroll-1.5)*16*scale)), 0, scale, scale)
+		love.graphics.draw(redseesawimg, redseesawquad[spriteset][q], (x*16*scale)+((dx-xscroll+.5)*16*scale), (16*scale)+(((dy-yscroll-1.5)*16*scale)), 0, scale, scale)
 	end
-	love.graphics.draw(redseesawimg, spikeyquad[4], (-.5)*16*scale+((dx-xscroll+.5)*16*scale), (-5/16)*16*scale+(((dy-yscroll)*16*scale)), 0, scale, scale)
+	love.graphics.draw(redseesawimg, redseesawquad[spriteset][4], (-.5)*16*scale+((dx-xscroll+.5)*16*scale), (-5/16)*16*scale+(((dy-yscroll)*16*scale)), 0, scale, scale)
 end
 
 function redseesaw:rightcollide(a, b)

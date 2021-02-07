@@ -9,14 +9,18 @@ function text:init(x, y, r, text)
 	self.showtextdefault = true
 	self.centered = false
 	if text == nil then
-		self.text = "text"
+		self.text = "i fucked your mom shitlips"
 		self.color = {255, 255, 255}
 	else
-		local r = convertr(self.r[3], {"string", "string", "bool", "bool", "bool", "bool"}, true)
+		local r = convertr(self.r[3], {"string", "string", "bool", "bool", "bool", "bool", "num", "num", "num", "num"}, true)
 		--text
 		self.text = r[1]
 		--color
-		self.color = textcolors[r[2]] or textcolors["white"]
+		if r[2] == "rgb" then
+			self.color = {r[7], r[8], r[9], r[10]}
+		else
+			self.color = textcolors[r[2]] or textcolors["white"]
+		end
 		--outline
 		if r[3] ~= nil then
 			self.outline = r[3]
@@ -55,10 +59,10 @@ function text:draw()
 		end
 		if self.outline then
 			love.graphics.setColor(0,0,0,255)
-			properprintbackground(self.text, x*16*scale, y*16*scale, false, nil, nil, size)
+			properprintbackground(self.text, x*16*scale, y*16*scale, false, nil, size)
 		end
 		love.graphics.setColor(unpack(self.color))
-		properprint(self.text, x*16*scale, y*16*scale, nil, size)
+		properprint(self.text, x*16*scale, y*16*scale, size)
 	end
 end
 

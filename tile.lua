@@ -110,6 +110,19 @@ function tile:init(x, y)
 	end
 end
 
+function tile:noteblock(obj, always)
+	local t = tilequads[map[self.cox][self.coy][1]]
+	if (obj.speedx ~= 0 or always) and inmap(self.cox, self.coy) and t.noteblock then
+		if t.musicnoteblock then
+			noteblocksound:setPitch(self.coy/20)
+			playsound(noteblocksound)
+		end
+		hitblock(self.cox, self.coy, obj, {dir="down"})
+		obj.falling = true
+		obj.speedy = -mushroomjumpforce
+	end
+end
+
 pixeltile = class:new()
 
 function pixeltile:init(x, y, cox, coy, width, height, dir, step)

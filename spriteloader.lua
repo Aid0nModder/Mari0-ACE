@@ -1,33 +1,33 @@
 imagestable = {  	"1", "2", "3", "blockdebrisimage", "coinblockanimationimage", "coinanimationimage",
-						"coinblockimage", "flipblockimage", "blocktogglebuttonimage", "buttonblockimage", "coinimage", "axeimg", "levelballimg", 
-						"springimg", "springgreenimg", "toadimg", "peachimg", "platformimg", "platformbonusimg", "titleimage", "playerselectarrowimg", 
-						"flowerimg", "iceflowerimg", "fireballimg", "iceballimg", "vineimg", "gladosimage",
-						"coreimage", "pedestalimage", "donutimage", "energylauncherimage", "energyballimage", "shyguyimg", "goombratimage", 
-						"drygoombaimage", "goombaimage", "thwompimage", "biggoombaimage", "sidestepperimage", "barrelimage", "ninjiimage", 
-						"bigspikeyimg", "splunkinimage", "icicleimage", "paragoombaimage", "muncherimg", "spikeyimg", 
-						"parabeetleimg", "booimage", "moleimage", "bigmoleimage", "bombimage", "ampimage", "windleafimage", "lakitoimg", 
-						"angrysunimg", "koopaimage", "kooparedimage", "beetleimage", "koopablueimage", "drybonesimage",  "bigkoopaimage", 
-						"bigbeetleimage", "cheepcheepimg", "sleepfishimg", "meteorimg", "fishboneimg", "squidimg", "bigblocktogglebuttonimage",
-						"pinksquidimg", "bulletbillimg", "bigbillimg", "kingbillimg", "cannonballimg", "torpedotedimage", "torpedolauncherimg",
-						"hammerbrosimg", "firebrosimg", "boomerangbrosimg", "hammerimg", "boomerangimg", "plantimg", "redplantimg", 
-						"dryplantimg", "fireplantimg", "longfireimg", "fireimg", "upfireimg", "bowserimg", "decoysimg",
-						"boximage", "turretimg", "turret2img", "rocketturretimage", "flagimg", "castleflagimg", "bubbleimg", 
-						"boomboomimg", "emanceparticleimg", "emancesideimg", "doorpieceimg", "doorcenterimg", "buttonimg",
-						"pushbuttonimg", "wallindicatorimg", "walltimerimg", "lightbridgeimg", "lightbridgeglowimg", "lightbridgesideimg", "laserimg", 
-						"lasersideimg", "faithplateplateimg", "laserdetectorimg", "gel1img", "gel2img", "gel3img", "gel4img", "gel5img", "gel6img", "gel1ground", 
-						"gel2ground", "gel3ground", "gel4ground", "gel6ground", "geldispenserimg", "cubedispenserimg", "yoshieggimg", "yoshiimage", "fontimage", "fontbackimage", "seesawimg",
-						"starimg", "pbuttonimg", "spiketopimg", "turretrocketimage", "pokeyimg", "fighterflyimg", "dkhammerimg", "itemsimg", "chainchompimg",
-						"bighammerbrosimg", "rockywrenchimg", "wrenchimg", "rotodiscimg", "funnel1img", "funnel2img", "funnelend1img", "funnelend2img", "funnelbaseimg", "thwimpimg",
-						"drybeetleimg", "tinygoombaimage", "koopalingimg", "koopalingshotimg", "bigmushroomimg", "icebrosimg", "homingbulletimg",
-						"doorspriteimg", "squidbabyimg", "goombashoeimg", "wigglerimg", "keyimg", "magikoopaimg", "magikoopamagicimg",-- "bunnyearsimg", "capeimg",
-						"fizzleimg", "spikeyshellimg", "boocrawlerimg", "skewerimg", "bigcloudimg", "beltimg", "poofimg", "hudclockimg", "luckystarimg", "portalimg",
-						"groundlightimg", "portalglowimg", "actionblockimg", "gateimg", "collectableimg", "collectableuiimg", "keyuiimg",
-						"switchblockimg", "superballflowerimg", "superballimg", "powblockimg", "smallspringimg", "iciclebigimg", "risingwaterimg", "beltonimg", "beltoffimg",
-						"drybonesshellimg", "redseesawimg", "snakeblockimg", "oneuptextimage", "threeuptextimage", "boomboomflyingimg", "menuselectimg", "smallfont",
-						"pblockimg", "spikeimg", "spikeballimg", "coinfrozenimg", "coinbrickfrozenimg", "helmetshellimg", "boxgelimg", "helmetpropellerimg", "helmetcannonimg",
-						"cannonballcannonimg", "clearpipeimg", "plantcreeperimg", "trackimg", "pneumatictubeimg", "dustimg", "platformtrackimg", "checkpointflagimg", "iceimg",
-						"snowspikeimg", "grinderimg", "fuzzyimg", "emancelaserimg", "iciclehugeimg", "mushroomfrozenimg", "frozenimg", "coinblockfrozenimg", "redpowblockimg",
-						"clawimg", "moonimg", "rouletteblockimg", "crowberimg"}
+					"coinblockimage", "flipblockimage", "blocktogglebuttonimage", "buttonblockimage", "coinimage", "axeimg", "levelballimg", 
+					"springimg", "springgreenimg", "toadimg", "peachimg", "platformimg", "platformbonusimg", "titleimage", "playerselectarrowimg", 
+					"flowerimg", "iceflowerimg", "fireballimg", "iceballimg", "vineimg", "gladosimage",
+					"coreimage", "pedestalimage", "donutimage", "energylauncherimage", "energyballimage", "shyguyimg", "goombratimage", 
+					"drygoombaimage", "goombaimage", "thwompimage", "biggoombaimage", "sidestepperimage", "barrelimage", "ninjiimage", 
+					"bigspikeyimg", "splunkinimage", "icicleimage", "paragoombaimage", "muncherimg", "spikeyimg", 
+					"parabeetleimg", "booimage", "moleimage", "bigmoleimage", "bombimage", "ampimage", "windleafimage", "lakitoimg", 
+					"angrysunimg", "koopaimage", "kooparedimage", "beetleimage", "koopablueimage", "drybonesimage",  "bigkoopaimage", 
+					"bigbeetleimage", "cheepcheepimg", "sleepfishimg", "meteorimg", "fishboneimg", "squidimg", "bigblocktogglebuttonimage",
+					"pinksquidimg", "bulletbillimg", "bigbillimg", "kingbillimg", "cannonballimg", "torpedotedimage", "torpedolauncherimg",
+					"hammerbrosimg", "firebrosimg", "boomerangbrosimg", "hammerimg", "boomerangimg", "plantimg", "redplantimg", 
+					"dryplantimg", "fireplantimg", "longfireimg", "fireimg", "upfireimg", "bowserimg", "decoysimg",
+					"boximage", "turretimg", "turret2img", "rocketturretimage", "flagimg", "castleflagimg", "bubbleimg", 
+					"boomboomimg", "emanceparticleimg", "emancesideimg", "doorpieceimg", "doorcenterimg", "buttonimg",
+					"pushbuttonimg", "wallindicatorimg", "walltimerimg", "lightbridgeimg", "lightbridgeglowimg", "lightbridgesideimg", "laserimg", 
+					"lasersideimg", "faithplateplateimg", "laserdetectorimg", "gel1img", "gel2img", "gel3img", "gel4img", "gel5img", "gel6img", "gel1ground", 
+					"gel2ground", "gel3ground", "gel4ground", "gel6ground", "geldispenserimg", "cubedispenserimg", "yoshieggimg", "yoshiimage", "fontimage", "fontbackimage", "seesawimg",
+					"starimg", "pbuttonimg", "spiketopimg", "turretrocketimage", "pokeyimg", "fighterflyimg", "dkhammerimg", "itemsimg", "chainchompimg",
+					"bighammerbrosimg", "rockywrenchimg", "wrenchimg", "rotodiscimg", "funnel1img", "funnel2img", "funnelend1img", "funnelend2img", "funnelbaseimg", "thwimpimg",
+					"drybeetleimg", "tinygoombaimage", "koopalingimg", "koopalingshotimg", "bigmushroomimg", "icebrosimg", "homingbulletimg",
+					"doorspriteimg", "squidbabyimg", "goombashoeimg", "wigglerimg", "keyimg", "magikoopaimg", "magikoopamagicimg",-- "bunnyearsimg", "capeimg",
+					"fizzleimg", "spikeyshellimg", "boocrawlerimg", "skewerimg", "bigcloudimg", "beltimg", "poofimg", "hudclockimg", "luckystarimg", "portalimg",
+					"groundlightimg", "portalglowimg", "actionblockimg", "gateimg", "collectableimg", "collectableuiimg", "keyuiimg",
+					"switchblockimg", "superballflowerimg", "superballimg", "powblockimg", "smallspringimg", "iciclebigimg", "risingwaterimg", "beltonimg", "beltoffimg",
+					"drybonesshellimg", "redseesawimg", "snakeblockimg", "oneuptextimage", "threeuptextimage", "boomboomflyingimg", "menuselectimg", "smallfont",
+					"pblockimg", "spikeimg", "spikeballimg", "coinfrozenimg", "coinbrickfrozenimg", "helmetshellimg", "boxgelimg", "helmetpropellerimg", "helmetcannonimg",
+					"cannonballcannonimg", "clearpipeimg", "plantcreeperimg", "trackimg", "pneumatictubeimg", "dustimg", "platformtrackimg", "checkpointflagimg", "iceimg",
+					"snowspikeimg", "grinderimg", "fuzzyimg", "emancelaserimg", "iciclehugeimg", "mushroomfrozenimg", "frozenimg", "coinblockfrozenimg", "redpowblockimg",
+					"clawimg", "moonimg", "rouletteblockimg", "shoeghostimg", "goombashoewingsimg", "collectableuiblankimg", "antlineimg"}
 
 table.sort(imagestable, function(a, b) return a < b end)--sort alphabetically
 imagestable[1] = "smbtilesimg"
@@ -54,33 +54,13 @@ function loadcustomsprites(initial) --Sprite loader
 			customspritesexist = false
 		end
 	end
-
-	--------------
-	--GRAPHIC PACKS
-	--[[for i, t in pairs(entityquads) do
-		t.image = entitiesimg
-	end
-	customentityquads = false]]
-	--------------
-
 	if (not customspritesexist) and customsprites then
 		for i = 1, #imgtable do
 			if initial or loadedcustomsprites[imgtable[i]] then
-				if i == 3 and classic then
-					_G[imgtable[i]] = love.graphics.newImage("graphics/" .. string.gsub(string.gsub("entitiesclassic", "img", ""), "image", "") .. ".png")
-					loadedcustomsprites[imgtable[i]] = nil
-				else
-					_G[imgtable[i]] = love.graphics.newImage("graphics/" .. graphicspack .. "/" .. string.gsub(string.gsub(imgtable[i], "img", ""), "image", "") .. ".png")
-					loadedcustomsprites[imgtable[i]] = nil
-				end
+				_G[imgtable[i]] = love.graphics.newImage("graphics/" .. graphicspack .. "/" .. string.gsub(string.gsub(imgtable[i], "img", ""), "image", "") .. ".png")
+				loadedcustomsprites[imgtable[i]] = nil
 			end
 		end
-
-		for i, t in pairs(entityquads) do
-			t.image = entitiesimg
-		end
-		customentityquads = false
-
 		titlewidth = titleimage:getWidth()
 		titleframes = math.floor(titleimage:getWidth()/titlewidth)
 		titledelay = nil
@@ -176,7 +156,7 @@ function loadcustomsprites(initial) --Sprite loader
 	itemsquad = {}
 	for y = 1, 4 do
 		itemsquad[y] = {}
-		for x = 1, 18 do
+		for x = 1, 17 do
 			itemsquad[y][x] = love.graphics.newQuad((x-1)*16, (y-1)*16, 16, 16, itemsimg:getWidth(), 64)
 		end
 	end
@@ -239,9 +219,7 @@ function loadcustomsprites(initial) --Sprite loader
 	
 	updatetilequads()
 	
-	if initial then
-		print("done loading all " .. #imgtable+2 .. " images!")
-	else
+	if not initial then
 		if not sausagesound then
 			dothesausage(2)
 		end
@@ -293,6 +271,7 @@ function loadplayerquads(t)
 		t[set].duck = {} --hehe duck.
 		t[set].shoe = {}
 		t[set].fence = {}
+		t[set].groundpound = {}
 		--set-exclusive quads
 		if set == "small" or set == "tiny" then
 			t[set].die = {}
@@ -449,9 +428,9 @@ function loadplayerquads(t)
 			--FLYING
 			if t[set].runfast then
 				t[set].runfast[i] = {}
-				t[set].runfast[i][1] = makepquad(i, w, h, iw, ih, t)
-				t[set].runfast[i][2] = makepquad(i, w, h, iw, ih, t)
-				t[set].runfast[i][3] = makepquad(i, w, h, iw, ih, t)
+				for f = 1, t.runframes do
+					t[set].runfast[i][f] = makepquad(i, w, h, iw, ih, t)
+				end
 
 				if set == "cape" then
 					--cape flying
@@ -472,6 +451,11 @@ function loadplayerquads(t)
 					--statue
 					t[set].statue[i] = makepquad(i, w, h, iw, ih, t)
 				end
+			end
+
+			--GROUNDPOUND
+			if t.groundpoundframes and t.groundpoundframes > 0 then
+				t[set].groundpound[i] = makepquad(i, w, h, iw, ih, t)
 			end
 			
 			--SHOE
@@ -543,49 +527,47 @@ function loadquads(initial)
 		end
 	end
 			
-	--custom icons (oh boy)
-	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/hud/hud.png") then
-		hudiconsimg = love.graphics.newImage(mappackfolder .. "/" .. mappack .. "/hud/hud.png")
-
-		local imgheight = hudiconsimg:getHeight()
-		local imgwidth = hudiconsimg:getWidth()
-		local width = math.floor(imgwidth/5)
-		local height = math.floor(imgheight/width)
-
-		hudiconsquad = {}
-		for y = 1, height do
-			hudiconsquad[y] = {}
-			for x = 1, 5 do
-				hudiconsquad[y][x] = love.graphics.newQuad((x-1)*width, (y-1)*height, width, height, imgwidth, imgheight)
-			end
-		end
-	end
-
-	hudoverlay = false
-	--overlay
-	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/hud/overlay.png") then
-		hudoverlayimg = love.graphics.newImage(mappackfolder .. "/" .. mappack .. "/hud/overlay.png")
-		hudoverlayquad = love.graphics.newQuad(0, 0, 400, 224, 400, 224)
-		hudoverlay = true
-	end
-
-	--collects (think star coins)
-	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/hud/collects.png") then
-		collectsimg = love.graphics.newImage(mappackfolder .. "/" .. mappack .. "/hud/collects.png")
-
-		local imgheight = collectsimg:getHeight()
-		local imgwidth = collectsimg:getWidth()
-		local height = math.floor(imgheight/8)
-		local fullheight = math.floor(imgheight/16)
-		
-		collectsquad = {}
-		for y = 1, 10 do
-			collectsquad[y] = {}
-			for x = 1, 5 do
-				collectsquad[y][x] = {}
-				for q = 1, 2 do
-					collectsquad[y][x][q] = love.graphics.newQuad((x-1)*(imgwidth/5), (y-1)*(imgheight/fullheight)+(q-1)*(imgheight/height), imgheight/height, imgheight/height, imgwidth, imgheight)
+	--custom icons (oh boy) (OHHHHH BOOOOOOOOOY)
+	hudicon = false
+	hudicondata = {}
+	hudiconimg = {}
+	hudiconquad = {}
+	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/hud/icon1.json") then
+		hudicon = {}
+		local exist, t = true, 1
+		while exist do
+			if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/hud/icon" .. t .. ".json") and love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/hud/icon" .. t .. ".png") then
+				hudicon = true
+				-- img
+				hudiconimg[t] = love.graphics.newImage(mappackfolder .. "/" .. mappack .. "/hud/icon" .. t .. ".png")
+				-- props
+				hudicondata[t] = {}
+				local s = love.filesystem.read(mappackfolder .. "/" .. mappack .. "/hud/icon" .. t .. ".json")
+				local temp = JSON:decode(s)	
+				for i, v in pairs(temp) do
+					hudicondata[t][i] = v
 				end
+				hudicondata[t].timer = 0
+				hudicondata[t].frame = 1
+				-- quad
+				local imgwidth = hudiconimg[t]:getWidth()
+				local imgheight = hudiconimg[t]:getHeight()
+				hudiconquad[t] = {}
+				for x = 1, hudicondata[t].frames do
+					hudiconquad[t][x] = {}
+					for y = 1, 4 do
+						local yquad = y
+						if hudicondata[t].nospritesets then
+							yquad = 1
+						end
+						hudiconquad[t][x][y] = love.graphics.newQuad((x-1)*hudicondata[t].quadwidth, (yquad-1)*hudicondata[t].quadheight, hudicondata[t].quadwidth, hudicondata[t].quadheight, imgwidth, imgheight)
+					end
+				end
+				--print(hudicondata[t].frames)
+				-- thank you, next
+				t = t + 1
+			else
+				exist = false
 			end
 		end
 	end
@@ -611,6 +593,7 @@ function loadquads(initial)
 			lightsoutstuff[i] = v
 		end
 	end
+
 	------------------------------
 	------------QUADS-------------
 	------------------------------
@@ -660,6 +643,14 @@ function loadquads(initial)
 		end
 	end
 
+	collectableuiblankquad = {}
+	for i = 1, 10 do
+		collectableuiblankquad[i] = {}
+		for f = 1, 5 do
+			collectableuiblankquad[i][f] = love.graphics.newQuad((f-1)*8, (i-1)*8, 8, 8, 40, 80)
+		end
+	end
+
 	keyuiquad = {}
 	for j = 1, 4 do
 		keyuiquad[j] = {}
@@ -705,8 +696,11 @@ function loadquads(initial)
 	
 	--axe
 	axequads = {}
-	for i = 1, 5 do
-		axequads[i] = love.graphics.newQuad((i-1)*16, 0, 16, 16, 80, 16)
+	for y = 1, 4 do
+		axequads[y] = {}
+		for i = 1, 5 do
+			axequads[y][i] = love.graphics.newQuad((i-1)*16, (y-1)*16, 16, 16, 80, 16*4)
+		end
 	end
 
 	--gel dispensers
@@ -1254,16 +1248,33 @@ function loadquads(initial)
 		end
 	end
 	
-	goombashoequad = {}
-	for y = 1, 4 do
-		goombashoequad[y] = {}
-		for x = 1, 3 do --goombainshoe
-			goombashoequad[y][x] = love.graphics.newQuad((x-1)*16, (y-1)*24, 16, 24, 48, 96)
-		end --
-		for x = 4, 6 do --just shoe
-			goombashoequad[y][x] = love.graphics.newQuad((x-4)*16, 8+(y-1)*24, 16, 16, 48, 96)
-		end
-	end
+    goombashoequad = {}
+    for y = 1, 4 do
+        goombashoequad[y] = {}
+        for x = 1, 3 do --goombainshoe
+            goombashoequad[y][x] = love.graphics.newQuad((x-1)*16, (y-1)*24, 16, 24, 48, 96)
+        end --
+        for x = 4, 6 do --just shoe
+            goombashoequad[y][x] = love.graphics.newQuad((x-4)*16, 8+(y-1)*24, 16, 16, 48, 96)
+        end
+    end
+
+    goombashoewingsquad = {}
+    for y = 1, 8 do
+        goombashoewingsquad[y] = {}
+        for x = 1, 4 do --goombainshoe
+            goombashoewingsquad[y][x] = love.graphics.newQuad((x-1)*18, (y-1)*24, 18, 24, 72, 96)
+        end --
+        for x = 5, 8 do --just shoe
+            goombashoewingsquad[y][x] = love.graphics.newQuad((x-5)*18, 8+(y-1)*24, 18, 16, 72, 96)
+        end
+    end
+
+    shoeghostquad = {} --Shoe squishy bois
+    shoeghostquad[1] = {}
+    for x = 1, 5 do
+        shoeghostquad[1][x] = love.graphics.newQuad((x-1)*26, 0, 26, 16, 130, 16)
+    end
 	
 	wigglerquad = {}
 	for y = 1, 2 do
@@ -1467,9 +1478,20 @@ function loadquads(initial)
 
 	upfirequad = love.graphics.newQuad(0,0,16,16,16,16)
 
+	redseesawquad = {}
+	for y = 1, 4 do
+		redseesawquad[y] = {}
+		for x = 1, 4 do
+			redseesawquad[y][x] = love.graphics.newQuad(16*(x-1), 16*(y-1), 16, 16, 16*4, 16*4)
+		end
+	end
+
 	grinderquad = {}
-	for x = 1, 3 do
-		grinderquad[x] = love.graphics.newQuad(48*(x-1), 0, 48, 48, 48*3, 48)
+	for y = 1, 4 do
+		grinderquad[y] = {}
+		for x = 1, 3 do
+			grinderquad[y][x] = love.graphics.newQuad(48*(x-1), 48*(y-1), 48, 48, 48*3, 48*4)
+		end
 	end
 
 	doorpiecequad = {}
@@ -1559,6 +1581,63 @@ function fixsprites(reset)
 		platformquad[1.5] = love.graphics.newQuad((2-1)*16, 0, 8, 16, 48, 16)
 		platformquad[2.5] = love.graphics.newQuad((3-1)*16+8, 0, 8, 16, 48, 16)
 		SPRITESfixplatform = false
+	end
+	if redseesawimg:getHeight() == 16 and (not reset) then
+		SPRITESfixredseesaw = true
+		redseesawquad = {}
+		for y = 1, 4 do
+			redseesawquad[y] = {}
+			for x = 1, 4 do
+				redseesawquad[y][x] = love.graphics.newQuad(16*(x-1), 0, 16, 16, 16*4, 16)
+			end
+		end
+	elseif SPRITESfixredseesaw then
+		redseesawquad = {}
+		for y = 1, 4 do
+			redseesawquad[y] = {}
+			for x = 1, 4 do
+				redseesawquad[y][x] = love.graphics.newQuad(16*(x-1), 16*(y-1), 16, 16, 16*4, 16*4)
+			end
+		end
+		SPRITESfixredseesaw = false
+	end
+	if grinderimg:getHeight() == 48 and (not reset) then
+		SPRITESfixgrinder = true
+		grinderquad = {}
+		for y = 1, 4 do
+			grinderquad[y] = {}
+			for x = 1, 3 do
+				grinderquad[y][x] = love.graphics.newQuad(48*(x-1), 0, 48, 48, 48*3, 48)
+			end
+		end
+	elseif SPRITESfixgrinder then
+		grinderquad = {}
+		for y = 1, 4 do
+			grinderquad[y] = {}
+			for x = 1, 3 do
+				grinderquad[y][x] = love.graphics.newQuad(48*(x-1), 48*(y-1), 48, 48, 48*3, 48*4)
+			end
+		end
+		SPRITESfixgrinder = false
+	end
+	if axeimg:getHeight() == 16 and (not reset) then
+		SPRITESfixaxe = true
+		axequads = {}
+		for y = 1, 4 do
+			axequads[y] = {}
+			for i = 1, 5 do
+				axequads[y][i] = love.graphics.newQuad((i-1)*16, 0, 16, 16, 80, 16)
+			end
+		end
+	elseif SPRITESfixaxe then
+		axequads = {}
+		for y = 1, 4 do
+			axequads[y] = {}
+			for i = 1, 5 do
+				axequads[y][i] = love.graphics.newQuad((i-1)*16, (y-1)*16, 16, 16, 80, 16*4)
+			end
+		end
+		SPRITESfixaxe = false
 	end
 	if seesawimg:getHeight() == 16 and (not reset) then
 		SPRITESfixseesaw = true
@@ -1705,7 +1784,7 @@ function fixsprites(reset)
 		end
 		SPRITESfixsquidbaby = false
 	end
-	
+
 	if koopalingimg:getHeight() == 294 and (not reset) then
 		koopalingquad = {}
 		for y = 1, 7 do
@@ -1742,7 +1821,6 @@ function fixsprites(reset)
 		end
 		SPRITESfixkoopaling = false
 	end
-
 	if thwompimage:getWidth() == 120 and (not reset) then
 		SPRITESfixthwomp = true
 		thwompquad = {}
@@ -1764,7 +1842,6 @@ function fixsprites(reset)
 		end
 		SPRITESfixthwomp = false
 	end
-	
 	if risingwaterimg:getWidth() == 320 and (not reset) then
 		SPRITESfixrisingwater = true
 		risingwaterquad = {}
@@ -1797,7 +1874,6 @@ function fixsprites(reset)
 		end
 		SPRITESfixrisingwater = false
 	end
-
 	if pedestalimage:getWidth() == 160 and (not reset) then
 		SPRITESfixpedestal = true
 		pedestalquad = {}
@@ -1820,7 +1896,6 @@ function fixsprites(reset)
 		end
 		SPRITESfixpedestal = false
 	end
-
 	if emancesideimg:getWidth() == 10 and (not reset) then
 		SPRITESfixemanceside = true
 		emancesidequad = {}
@@ -1848,7 +1923,6 @@ function fixsprites(reset)
 		end
 		SPRITESfixemanceside = false
 	end
-
 	if emanceparticleimg:getWidth() == 1 and (not reset) then
 		SPRITESfixemanceparticle = true
 		emanceparticlequad = {}
@@ -1862,7 +1936,6 @@ function fixsprites(reset)
 		end
 		SPRITESfixemanceparticle = false
 	end
-
 	if vineimg:getWidth() == 32 and (not reset) then
 		SPRITESfixvine = true
 		vinequad = {}
@@ -1889,7 +1962,6 @@ function fixsprites(reset)
 		end
 		SPRITESfixvine = false
 	end
-
 	if geldispenserimg:getWidth() == 32 and (not reset) then
 		SPRITESfixgeldispenser = true
 		geldispenserquad = {}
@@ -1910,7 +1982,6 @@ function fixsprites(reset)
 		end
 		SPRITESfixgeldispenser = false
 	end
-
 	if energylauncherimage:getWidth() == 32 and (not reset) then
 		SPRITESfixenergylauncher = true
 		energylauncherquad = {}
@@ -1939,33 +2010,7 @@ function fixsprites(reset)
 		end
 		SPRITESfixenergylauncher = false
 	end
-
-	if groundlightimg:getWidth() == 96 and (not reset) then
-		SPRITESfixgroundlight = true
-		groundlightquad = {}
-		for s = 1, 4 do
-			groundlightquad[s] = {}
-			for x = 1, 12 do
-				groundlightquad[s][x] = {}
-				for y = 1, 2 do
-					groundlightquad[s][x][y] = love.graphics.newQuad((x-1)*16, (s-1)*32+(y-1)*16, 16, 16, 96, 128)
-				end
-			end
-		end
-	elseif SPRITESfixgroundlight then
-		groundlightquad = {}
-		for s = 1, 4 do
-			groundlightquad[s] = {}
-			for x = 1, 12 do
-				groundlightquad[s][x] = {}
-				for y = 1, 2 do
-					groundlightquad[s][x][y] = love.graphics.newQuad((x-1)*16, (s-1)*32+(y-1)*16, 16, 16, 192, 128)
-				end
-			end
-		end
-		SPRITESfixgroundlight = false
-	end
-
+	
 	if lasersideimg:getHeight() == 16 and (not reset) then
 		SPRITESfixlaserside = true
 		lasersidequad = {}
@@ -1979,7 +2024,6 @@ function fixsprites(reset)
 		end
 		SPRITESfixlaserside = false
 	end
-
 	if lightbridgesideimg:getHeight() == 16 and (not reset) then
 		SPRITESfixlightbridgeside = true
 		lightbridgesidequad = {}
@@ -1993,7 +2037,6 @@ function fixsprites(reset)
 		end
 		SPRITESfixlightbridgeside = false
 	end
-
 	if laserdetectorimg:getHeight() == 16 and (not reset) then
 		SPRITESfixlaserdetector = true
 		laserdetectorquad = {}
@@ -2016,56 +2059,191 @@ function fixsprites(reset)
 		SPRITESfixlaserdetector = false
 	end
 
-	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/custom/smbtiles.png") and (not reset) then
-		--add smb tiles
-		customsmbtiles = true
-		local imgwidth, imgheight = smbtilesimg:getWidth(), smbtilesimg:getHeight()
-		local width = math.floor(imgwidth/17)
-		local height = math.floor(imgheight/17)
-		local secretstart = 7
-		local imgdata = love.image.newImageData(mappackfolder .. "/" .. mappack .. "/custom/smbtiles.png")
+	--Convert Font
+	if (not reset) and fontimage:getWidth() == 512 and fontimage:getHeight() == 8 then
+		SPRITESfixfont = true
+		local d3, d4
+		local d1 = love.image.newImageData(mappackfolder .. "/" .. mappack .. "/custom/font.png")
+		local d2 = love.image.newImageData("graphics/" .. graphicspack .. "/font.png")
+		if loadedcustomsprites["fontbackimage"] then
+			d3 = love.image.newImageData(mappackfolder .. "/" .. mappack .. "/custom/fontback.png")
+			d4 = love.image.newImageData("graphics/" .. graphicspack .. "/fontback.png")
+		end
+		local oldglyphs = "0123456789abcdefghijklmnopqrstuvwxyz.:/,\"©-_>* !{}?+'()=><#%  "
+		--local locations = ""
+		local s = fontglyphs:split("\n")
 		
-		for y = 1, height do
-			for x = 1, width do
-				local i = ((y-1)*22)+x
-				if y >= secretstart then
-					i = ((secretstart-1)*22) + (.01*((y*22+x)-(secretstart*22)))
+		for i1, c1, b1 in utf8.chars(oldglyphs) do
+			local upperc = c1:upper()
+
+			--find position
+			for line = 1, #s do
+				for i2, c2, b2 in utf8.chars(s[line]) do
+					if c1 == c2 or upperc == c2 then
+						--locations = locations .. line .. "," .. i2 .. ","
+						--paste where the letter is
+						d2:paste(d1,(i2-1)*10+1,(line-1)*10+1,(i1-1)*8,0,8,8)
+						if loadedcustomsprites["fontbackimage"] then
+							d4:paste(d3,(i2-1)*10+1,(line-1)*10,(i1-1)*10,0,10,10)
+						end
+						break
+					end
 				end
-				tilequads[i] = nil
-				tilequads[i] = quad:new(smbtilesimg, imgdata, x, y, imgwidth, imgheight)
 			end
 		end
+		--love.system.setClipboardText(locations)
+		fontimage = love.graphics.newImage(d2)
+		--fix outlines too
+		if loadedcustomsprites["fontbackimage"] then
+			fontbackimage = love.graphics.newImage(d4)
+		end
+	elseif SPRITESfixfont then
+		SPRITESfixfont = false
+	end
+	
+	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/custom/smbtiles.png") and (not reset) then
+		customsmbtiles = true
+		loadtiles("smbcustom")
 		collectgarbage()
 	elseif customsmbtiles then
-		local imgwidth, imgheight = smbtilesimg:getWidth(), smbtilesimg:getHeight()
-		local width = math.floor(imgwidth/17)
-		local height = math.floor(imgheight/17)
-		local secretstart = 7
-		local imgdata = love.image.newImageData("graphics/" .. graphicspack .. "/smbtiles.png")
-		
-		for y = 1, height do
-			for x = 1, width do
-				local i = ((y-1)*22)+x
-				if y >= secretstart then
-					i = ((secretstart-1)*22) + (.01*((y*22+x)-(secretstart*22)))
-				end
-				tilequads[i] = nil
-				tilequads[i] = quad:new(smbtilesimg, imgdata, x, y, imgwidth, imgheight)
-			end
-		end
+		loadtiles("smb")
 		collectgarbage()
 		customsmbtiles = false
 	end
 
 	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/custom/entities.png") and (not reset) then
-		for i, t in pairs(entityquads) do
-			t.image = entitiesimg
-		end
+		loadtiles("entity")
 		customentityquads = true
 	elseif customentityquads then
-		for i, t in pairs(entityquads) do
-			t.image = entitiesimg
-		end
+		loadtiles("entity")
 		customentityquads = false
+	end
+end
+
+function loadtiles(i, initial)
+	if i == "smb" or i == "smbcustom" then
+		--add smb tiles
+		local imgwidth, imgheight = smbtilesimg:getWidth(), smbtilesimg:getHeight()
+		local width = math.floor(imgwidth/17)
+		local height = math.floor(imgheight/17)
+		local secretstart = 7
+		local imgdata
+		if i == "smbcustom" then
+			imgdata = love.image.newImageData(mappackfolder .. "/" .. mappack .. "/custom/smbtiles.png")
+		else
+			imgdata = love.image.newImageData("graphics/" .. graphicspack .. "/smbtiles.png")
+		end
+
+		for y = 1, height do
+			for x = 1, width do
+				if initial then
+					--start up
+					if y >= secretstart then
+						local i = ((secretstart-1)*22) + (.01*((y*22+x)-(secretstart*22)))
+						tilequads[i] = quad:new(smbtilesimg, imgdata, x, y, imgwidth, imgheight)
+						local r, g, b = getaveragecolor(imgdata, x, y)
+						rgblist[i] = {r, g, b}
+					else
+						table.insert(tilequads, quad:new(smbtilesimg, imgdata, x, y, imgwidth, imgheight))
+						local r, g, b = getaveragecolor(imgdata, x, y)
+						table.insert(rgblist, {r, g, b})
+					end
+				else
+					--custom sprites
+					local i = ((y-1)*22)+x
+					if y >= secretstart then
+						i = ((secretstart-1)*22) + (.01*((y*22+x)-(secretstart*22)))
+					end
+					tilequads[i] = nil
+					tilequads[i] = quad:new(smbtilesimg, imgdata, x, y, imgwidth, imgheight)
+				end
+			end
+		end
+
+		if initial then
+			smbtilecount = width*height-((height-secretstart+1)*22) --subtract secret rows of tiles
+		end
+	elseif i == "portal" then
+		local imgwidth, imgheight = portaltilesimg:getWidth(), portaltilesimg:getHeight()
+		local width = math.floor(imgwidth/17)
+		local height = math.floor(imgheight/17)
+		local imgdata = love.image.newImageData("graphics/" .. graphicspack .. "/portaltiles.png")
+		
+		for y = 1, height do
+			for x = 1, width do
+				table.insert(tilequads, quad:new(portaltilesimg, imgdata, x, y, imgwidth, imgheight))
+				local r, g, b = getaveragecolor(imgdata, x, y)
+				table.insert(rgblist, {r, g, b})
+			end
+		end
+		portaltilecount = width*height
+	elseif i == "entity" then
+		if initial then
+			local imgwidth, imgheight = entitiesimg:getWidth(), entitiesimg:getHeight()
+			local width = math.floor(imgwidth/17)
+			local height = math.floor(imgheight/17)
+			local imgdata = love.image.newImageData("graphics/" .. graphicspack .. "/entities.png")
+			for y = 1, height do
+				for x = 1, width do
+					table.insert(entityquads, entity:new(entitiesimg, x, y, imgwidth, imgheight))
+					entityquads[#entityquads]:sett(#entityquads)
+				end
+			end
+			entitiescount = width*height
+		else
+			--just update images
+			for i, t in pairs(entityquads) do
+				t.image = entitiesimg
+			end
+		end
+	elseif i == "custom" then
+		local limits = love.graphics.getSystemLimits()
+		--this is duplicated in game.lua and editor.lua because bad coding
+		--update: not anymore
+		local data = {}
+		data[1] = love.image.newImageData(mappackfolder .. "/" .. mappack .. "/tiles.png")
+		
+		customtilesimg = {}
+		
+		if limits.texturesize and data[1]:getWidth() > limits.texturesize then
+			notice.new("Tileset is too wide for device!\nMax for your device: " .. limits.texturesize .. "px", notice.red, 5)
+		end
+		--split image if it's too tall
+		if limits.texturesize and data[1]:getHeight() > limits.texturesize then
+			local splitdata = data[1]
+			local y = 0
+			local newh = math.floor(limits.texturesize/17)*17
+			for n = 1, math.ceil(splitdata:getHeight()/newh) do
+				data[n] = love.image.newImageData(splitdata:getWidth(), math.min(newh, splitdata:getHeight()-y))
+				data[n]:paste(splitdata, 0, 0, 0, y, splitdata:getWidth(), newh)
+				y = y + newh
+
+				--debug, outputs files
+				--local filedata = data[n]:encode("png", mappackfolder .. "/" .. mappack .. "/" .. n .. ".png")
+				--love.filesystem.write(mappackfolder .. "/" .. mappack .. "/" .. n .. ".png", filedata)
+			end
+		end
+
+		--cycle through all tile images
+		local sizes = {}
+		customtilecount = 0
+		for i = 1, #data do
+			--convert data into image
+			customtilesimg[i] = love.graphics.newImage(data[i])
+
+			local imgwidth, imgheight = customtilesimg[i]:getWidth(), customtilesimg[i]:getHeight()
+			local width = math.floor(imgwidth/17)
+			local height = math.floor(imgheight/17)
+			for y = 1, height do
+				for x = 1, width do
+					local q = quad:new(customtilesimg[i], data[i], x, y, imgwidth, imgheight)
+					q.ts = i --tileset number
+					table.insert(tilequads, q)
+					local r, g, b = getaveragecolor(data[i], x, y)
+					table.insert(rgblist, {r, g, b})
+				end
+			end
+			customtilecount = customtilecount + width*height
+		end
 	end
 end

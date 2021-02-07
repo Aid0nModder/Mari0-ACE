@@ -26,16 +26,13 @@ function rouletteblock:init(x, y, r)
 	self.time = 0.15
 	self.random = false
 
-	local v = convertr(r, {"string", "string", "string", "string", "string", "num", "boolean"})
-	for i = 1, 5 do
-		if v[i] ~= "none" then
-			table.insert(self.item, v[i])
-		end
+	local v = convertr(r, {"string", "num", "boolean"})
+	local list = v[1]:split("`")
+	self.item = list
+	if v[2] ~= nil then
+		self.time = tonumber(v[2])
 	end
-	if v[6] ~= nil then
-		self.time = tonumber(v[6])
-	end
-	if v[7] == "true" then
+	if v[3] == "true" then
 		self.random = true
 	end
 	self.timer = 0
@@ -78,6 +75,9 @@ function rouletteblock:draw()
 		quad = itemsquad[spriteset][1]
 	elseif i == "fireflower" then
 		img = flowerimg
+		quad = flowerquad[spriteset][1]
+	elseif i == "iceflower" then
+		img = iceflowerimg
 		quad = flowerquad[spriteset][1]
 	elseif i == "oneup" then
 		img = itemsimg
@@ -128,7 +128,7 @@ function rouletteblock:hit()
 	end
 
 	local t = self.item[self.curitem]
-	if t == "fireflower" then
+	if t == "fireflower" or t == "iceflower" then
 		playsound("mushroomappear")
 		item(t, self.x+1, self.y+1, 2)
 	elseif t == "coin" then

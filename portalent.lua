@@ -101,6 +101,6 @@ function portalent:rem()
 	if portals[self.id]["x" .. self.portal] == self.placedx and portals[self.id]["y" .. self.portal] == self.placedy and portals[self.id]["facing" .. self.portal] == self.dir then
 		portals[self.id]:removeportal(self.portal)
 	else
-		print("Portal wasn't removed because it isn't at this position")
+		print("-- ERROR -- Portal wasn't removed because it isn't at this position")
 	end
 end

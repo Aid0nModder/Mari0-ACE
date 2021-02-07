@@ -28,7 +28,11 @@ function tiletool:init(x, y, r, func)
 	for x = self.regionX, self.regionX + self.regionwidth-1 do
 		for y = self.regionY, self.regionY + self.regionheight-1 do
 			if inmap(x, y) then
-				self.tileid[tilemap(x, y)] = map[x][y][1] or 1
+				if string.find(self.func, "set back to ") then
+					self.tileid[tilemap(x, y)] = map[x][y]["back"] or 1--background tile
+				else
+					self.tileid[tilemap(x, y)] = map[x][y][1] or 1
+				end
 				if self.func == "group" then
 					map[x][y]["group"] = {self.regionX, self.regionY, self.regionX+self.regionwidth-1, self.regionY+self.regionheight-1}
 				end
@@ -70,7 +74,10 @@ function tiletool:update(dt)
 			for x = self.regionX, self.regionX + self.regionwidth-1 do
 				for y = self.regionY, self.regionY + self.regionheight-1 do
 					if inmap(x, y) then
-						if map[x][y]["gels"] ~= nil then
+						if map[x][y]["gels"]["top"] == self.checkgelid
+						 or map[x][y]["gels"]["bottom"] == self.checkgelid
+						 or map[x][y]["gels"]["left"] == self.checkgelid
+						 or map[x][y]["gels"]["right"] == self.checkgelid then
 							gel = true
 							break
 						end
@@ -230,7 +237,6 @@ function tiletool:action(cox, coy)
 			else
 				objects["tile"][tilemap(cox, coy)] = nil
 				map[cox][coy][1] = self.tileid[tilemap(cox, coy)]
-				print("result", map[cox][coy][1], tilequads[map[cox][coy][1]])
 				if tilequads[map[cox][coy][1]].collision then
 					objects["tile"][tilemap(cox, coy)] = tile:new(cox-1, coy-1, 1, 1, true)
 				end
@@ -267,25 +273,15 @@ function tiletool:action(cox, coy)
 			return true
 		end
 	elseif string.find(self.func, "set gel ") then
-		local s1 = self.func:split("set gel ")
-		local side = "top"
-		if string.find(s1[2], "left") then
-			side = "left"
-		elseif string.find(s1[2], "right") then
-			side = "right"
-		elseif string.find(s1[2], "down") then
+		local s = self.func:split(" ")
+		local side = s[3] or "all"
+		if side == "down" then
 			side = "bottom"
-		elseif string.find(s1[2], "all") then
-			side = "all"
+		elseif side == "up" then
+			side = "top"
 		end
-		local s2 = s1[2]:split(side .. " ")
-		if side == "bottom" then
-			s2 = s1[2]:split("down ")
-		elseif side == "top" then
-			s2 = s1[2]:split("up ")
-		end
-		local id = tonumber(s2[2])
-		if (self.on or not self.linked) then
+		local id = tonumber(s[4] or 1) or 1
+		if (self.on or (not self.linked)) then
 			if side ~= "all" then
 				if id ~= nil then
 					map[cox][coy]["gels"][side] = id
@@ -373,14 +369,14 @@ end
 
 function tiletool:checkgel()
 	local s = self.func:split(" ")
-	local id = tonumber(s[3])
-	local side = s[4]
+	local id = tonumber(s[3] or 1) or 1
+	local side = s[4] or "all"
+	if side == "up" then
+		side = "top"
+	elseif side == "down" then
+		side = "bottom"
+	end
 	if id ~= nil and side ~= nil then
-		if side == "up" then
-			side = "top"
-		elseif side == "down" then
-			side = "bottom"
-		end
 		self.checkgelside = side
 		self.checkgelid = id
 	end

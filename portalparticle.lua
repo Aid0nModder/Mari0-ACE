@@ -22,7 +22,6 @@ end
 function portalparticle:update(dt)
 	self.timer = self.timer + dt
 	self.x = self.x + self.speedx*dt
-
 	self.y = self.y + self.speedy*dt
 	
 	self.speedx = self.speedx + math.random(-10, 10)/70

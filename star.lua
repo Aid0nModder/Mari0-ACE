@@ -58,7 +58,7 @@ end
 
 function star:update(dt)
 	--rotate back to 0 (portals)
-	self.rotation = math.mod(self.rotation, math.pi*2)
+	self.rotation = math.fmod(self.rotation, math.pi*2)
 	if self.rotation > 0 then
 		self.rotation = self.rotation - portalrotationalignmentspeed*dt
 		if self.rotation < 0 then
@@ -176,8 +176,6 @@ function star:passivecollide(a, b)
 end
 
 function star:use(b)
-	self.claw = false
-	
 	if b.animation == "grow1" or b.animation == "grow2" or b.animation == "shrink" then
 		return false
 	end

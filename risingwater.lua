@@ -36,39 +36,25 @@ function risingwater:init(x, y, r)
 		self.filllow = 0
 	end
 
+	local q, d, a
 	if self.t == "clear water" then
-		self.quadi = 1
-		self.drawover = true
-		self.animdelay = 0.2
+		q, d, a = 1, true, 0.2
 	elseif self.t == "water" then
-		self.quadi = 2
-		self.drawover = false
-		self.animdelay = 0.2
+		q, d, a = 2, false, 0.2
 	elseif self.t == "poison" then
-		self.quadi = 3
-		self.drawover = true
-		self.animdelay = 0.2
+		q, d, a = 3, true, 0.2
 	elseif self.t == "poison water" then
-		self.quadi = 3
-		self.drawover = false
-		self.animdelay = 0.2
+		q, d, a = 3, false, 0.2
 	elseif self.t == "lava" then
-		self.quadi = 4
-		self.drawover = true
-		self.animdelay = 0.2
+		q, d, a = 4, true, 0.2
 	elseif self.t == "quicksand" then
-		self.quadi = 5
-		self.drawover = false
-		self.animdelay = 0.2
+		q, d, a = 5, false, 0.2
 	elseif self.t == "quicksandtop" then
-		self.quadi = 5
-		self.drawover = true
-		self.animdelay = 0.2
-	elseif self.t == "waterfall" then
-		self.quadi = 6
-		self.drawover = false
-		self.animdelay = 0.2
+		q, d, a = 5, true, 0.2
 	end
+	self.quadi = q
+	self.drawover = d
+	self.animdelay = a
 
 	if self.t == "clear water" or self.t == "water" then
 		self.water = true
@@ -86,14 +72,6 @@ function risingwater:init(x, y, r)
 	elseif self.t == "lava" or self.t == "poison" then
 		self.kill = true
 		self.checktable = {"player"}
-	elseif self.t == "waterfall" then
-		self.water = true
-		self.waterfall = true
-		self.sand = true
-		self.sandsink = 25
-		self.sandspeedy = 5
-		self.sandspeedx = 2
-		self.checktable = {"player", "cheep", "enemy"}
 	end
 
 	self.animtimer = 0
@@ -112,7 +90,7 @@ function risingwater:init(x, y, r)
 
 	if self.rw >= width and self.rh > 3 then
 		self.spritebatch = love.graphics.newSpriteBatch(risingwaterimg, 1000)
-		self.spritebatchupdated = true
+		self.spritebatchupdated = false
 	end
 end
 
@@ -186,6 +164,8 @@ function risingwater:update(dt)
 									b.y = targety
 									b.speedy = math.min(0, b.speedy)
 								end
+								b.groundpounding = false
+								b.groundpoundcanceled = false
 								b.falling = false
 								b.lavasurfing = true
 								if not b.jumping then
@@ -228,9 +208,7 @@ function risingwater:update(dt)
 							if b.speedy > 0 and b.falling then
 								b.falling = false
 								b.jumping = false
-								if not self.waterfall then
-									b.animationstate = "idle"
-								end
+								b.animationstate = "idle"
 							end
 							b.quicksand = true
 							b.speedx = math.min(self.sandspeedx, math.max(-self.sandspeedx, b.speedx))
@@ -248,6 +226,9 @@ function risingwater:update(dt)
 								speed = b.float
 							end
 							b.speedy = math.max(-120, b.speedy-speed*dt)
+						end
+						if a == "enemy" then
+							b.risingwater = 2
 						end
 						if a == "cheep" and b.color == 3 then
 							if b.initial then
