@@ -766,7 +766,7 @@ rightclickvalues["spikeball"] = {"type", "spike", "snow"}
 
 rightclickvalues["grinder"] = {"type", "grinder", "bumper"}
 
-rightclickvalues["frozencoin"] = {"type", "coin", "mushroom", "nothing", "brick", "coinblock"}
+rightclickvalues["frozencoin"] = {"type", "coin", "mushroom", "nothing", "brick", "muncher"}
 
 rightclickvalues["powblock"] = {"type", "blue", "red"}
 
@@ -1410,10 +1410,25 @@ rightclicktype["door"] = {
 		{"dropdown", 2, 4, function(v) rightclickobjects[4].var = v; rightclickvalues2[2] = v end, {1,2,3,4,5,6,7,8,9,10}},
 		{"checkbox", 3, "visible", function(v) rightclickvalues2[3] = v; rightclickobjects[5].var = v end},
 		{"button", 2, {"link exit", startrclink, {"exit", "exit"}}, {"x", resetrclink, {"exit"}, textcolor = {255, 0, 0}}},
+		{"button", 2, {"link openable", startrclink, {"openable", "openable"}}, {"x", resetrclink, {"openable"}, textcolor = {255, 0, 0}}},
 	},
 }
-rightclicktype["pdoor"] = rightclicktype["door"]
-rightclicktype["keydoor"] = rightclicktype["door"]
+rightclicktype["pdoor"] = {
+	name = "door",
+	default = "0|1|true",
+	objfunc = function()
+		rightclickobjects[2].entries = sublevelstable
+	end,
+	format = {
+		"target sub",
+		{"dropdown", 1, 4, function(v) rightclickobjects[2].var = v; rightclickvalues2[1] = v end, maxsublevelstable},
+		"exit id:",
+		{"dropdown", 2, 4, function(v) rightclickobjects[4].var = v; rightclickvalues2[2] = v end, {1,2,3,4,5,6,7,8,9,10}},
+		{"checkbox", 3, "visible", function(v) rightclickvalues2[3] = v; rightclickobjects[5].var = v end},
+		{"button", 2, {"link exit", startrclink, {"exit", "exit"}}, {"x", resetrclink, {"exit"}, textcolor = {255, 0, 0}}},
+	},
+}
+rightclicktype["keydoor"] = rightclicktype["pdoor"]
 
 rightclicktype["castlefirecw"] = {
 	name = "fire bar clockwise",

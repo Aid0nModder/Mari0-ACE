@@ -387,7 +387,7 @@ function game_update(dt)
 				startlowtime()
 			end
 			
-			if queuelowtime and queuelowtime < 0 then
+			if queuelowtime and queuelowtime < 0 and (not levelfinished) then
 				local star = false
 				for i = 1, players do
 					if objects["player"][i].starred then
@@ -1475,7 +1475,7 @@ function game_update(dt)
 		local dist = windentityspeed*dt
 		for i = 1, players do
 			local p = objects["player"][i]
-			if (not p.static) and p.active and (not (p.x < 0.1 and p.speedx > 0)) and (not (p.x > mapwidth-p.width-0.1 and p.speedx < 0)) then
+			if (not p.static) and p.active and (not (p.x < 0.1 and p.speedx > 0)) and (not (p.x > mapwidth-p.width-0.1 and p.speedx < 0)) and (not p.vine) and (not p.fence) then
 				if not checkintile(p.x+dist, p.y, p.width, p.height, tileentitieswind, p) then
 					p.x = p.x + dist
 				end
@@ -3168,6 +3168,22 @@ function drawentity(j, w, i, v, currentscissor)
 			if v.overlaygraphic then
 				love.graphics.draw(v.overlaygraphic, v.overlayquad, math.floor(((v.x-xscroll)*16+v.offsetX)*scale), math.floor(((v.y-yscroll)*16-v.offsetY)*scale), v.rotation, dirscale, horscale, v.quadcenterX, v.quadcenterY)
 			end
+		end
+
+		if v.drawtext then
+			local x, y = (v.x+v.drawtextoffsetx)-xscroll, ((v.y+v.drawtextoffsety)-(3/16))-yscroll
+			if v.drawtextcentre then
+				x = x - ((#v.drawtext*0.5)/2)+.5
+			end
+			if v.drawtextoutline then
+				love.graphics.setColor(0,0,0,255)
+				properprintbackground(v.drawtext, x*16*scale, y*16*scale)
+			end
+			love.graphics.setColor(255,255,255)
+			if v.drawtextcolor then
+				love.graphics.setColor(v.drawtextcolor)
+			end
+			properprint(v.drawtext, x*16*scale, y*16*scale)
 		end
 	end
 	
@@ -9385,7 +9401,7 @@ function rendercustombackground(xscroll, yscroll, scrollfactor, scrollfactory)
 			if xscroll < 0 or yscroll < 0 then
 				min = 0
 			end
-			if custombackgroundquad[i] then --optimized static background
+			if custombackgroundquad[i] and not SlowBackgrounds then --optimized static background
 				local x1, y1 = math.floor(xscroll*16*scale)/scale, math.floor(yscroll*16*scale)/scale
 				local qx, qy, qw, qh, sw, sh = custombackgroundquad[i]:getViewport()
 				custombackgroundquad[i]:setViewport( x1, y1, qw, qh, sw, sh )
@@ -9404,6 +9420,7 @@ function rendercustombackground(xscroll, yscroll, scrollfactor, scrollfactory)
 					end
 				end
 			end
+		end
 		end
 	end
 end

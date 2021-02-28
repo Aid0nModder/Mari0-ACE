@@ -70,7 +70,7 @@ end
 
 enemy = class:new()
 
-function enemy:init(x, y, t, a, properties)
+function enemy:init(x, y, t, a, properties, ignorespawnchildren)
 	if not enemiesdata[t] then
 		return nil
 	end
@@ -360,13 +360,23 @@ function enemy:init(x, y, t, a, properties)
 		end
 	end
 
-	if not (self.killsenemiesonsides == nil and self.killsenemiesontop == nil and self.killsenemiesonbottom == nil and self.killsenemiesonleft == nil and self.killsenemiesonright == nil and self.killsenemiesonpassive == nil) then
-		self.killsenemiesonsides = false
-		self.killsenemiesontop = false
-		self.killsenemiesonbottom = false
-		self.killsenemiesonleft = false
-		self.killsenemiesonright = false
-		self.killsenemiesonpassive = false
+	if self.killsenemiesonsides == nil then
+		self.killsenemiesonsides = true
+	end
+	if self.killsenemiesontop == nil then
+		self.killsenemiesontop = true
+	end
+	if self.killsenemiesonbottom == nil then
+		self.killsenemiesonbottom = true
+	end
+	if self.killsenemiesonleft == nil then
+		self.killsenemiesonleft = true
+	end
+	if self.killsenemiesonright == nil then
+		self.killsenemiesonright = true
+	end
+	if self.killsenemiesonpassive == nil then
+		self.killsenemiesonpassive = true
 	end
 	
 	self.firstmovement = self.movement
@@ -532,43 +542,77 @@ function enemy:init(x, y, t, a, properties)
 	end
 
 	if self.spawnchildren then
-		if not (self.a and self.a[1] == "ignorespawnchildren") then
+		if not ignorespawnchildren then
 			for i = 1, #self.spawnchildren do
+				--offsets
 				local offsetx = self.spawnchildrenoffsetx or 0
 				if type(self.spawnchildrenoffsetx) == "table" then
 					offsetx = self.spawnchildrenoffsetx[i]
 				end
+
 				local offsety = self.spawnchildrenoffsety or 0
 				if type(self.spawnchildrenoffsety) == "table" then
 					offsety = self.spawnchildrenoffsety[i]
 				end
-				local temp = enemy:new(self.x+self.width/2+.5+offsetx, self.y+self.height+offsety, self.spawnchildren[i], {"ignorespawnchildren"})
+
+				local properties
+				--set parameters before spawn
+				if self.spawnchildrenpassedparametersbeforespawn then
+					if self.spawnchildrenpassedparameters then
+						if not properties then properties = {} end
+						for i = 1, #self.spawnchildrenpassedparameters do
+							if self.spawnchildrenpassedparameters[i] ~= nil then
+								properties[self.spawnchildrenpassedparameters[i]] = self[self.spawnchildrenpassedparameters[i]]
+							end
+						end
+					end
+				end
+				if self.spawnchildrensetparametersbeforespawn then
+					if self.spawnchildrensetparameters then --set new parameters
+						if not properties then properties = {} end
+						for i = 1, #self.spawnchildrensetparameters do
+							if self.spawnchildrensetparameters[i] ~= nil then
+								properties[self.spawnchildrensetparameters[i][1]] = self.spawnchildrensetparameters[i][2]
+							end
+						end
+					end
+				end
+
+				--exist
+				local temp = enemy:new(self.x+self.width/2+.5+offsetx, self.y+self.height+offsety, self.spawnchildren[i], nil, properties, true)
+
+				--parent shit
 				if self.spawnchildrenparent then
 					temp.parent = self
+					if not self.children then
+						self.children = {temp}
+					else
+						table.insert(self.children, temp)
+					end
 				end
+
+				--set parameters after spawn
+				if not self.spawnchildrenpassedparametersbeforespawn then
+					if self.spawnchildrenpassedparameters then
+						for i = 1, #self.spawnchildrenpassedparameters do
+							if self.spawnchildrenpassedparameters[i] ~= nil then
+								temp[self.spawnchildrenpassedparameters[i]] = self[self.spawnchildrenpassedparameters[i]]
+							end
+						end
+					end
+				end
+				if not self.spawnchildrensetparametersbeforespawn then
+					if self.spawnchildrensetparameters then --set new parameters
+						for i = 1, #self.spawnchildrensetparameters do
+							if self.spawnchildrensetparameters[i] ~= nil then
+								temp[self.spawnchildrensetparameters[i][1]] = self.spawnchildrensetparameters[i][2]
+							end
+						end
+					end
+				end
+
+				--acctualy exist
 				table.insert(objects["enemy"], temp)
-
-				--set
-				local set = self.spawnchildrenset or nil
-				if type(self.spawnchildrenset) == "table" then
-					set = self.spawnchildrenset[i]
-				end
-				if set then
-					for p = 1, #set do
-						temp[set[p][1]] = set[p][2]
-					end
-				end
-
-				--pass
-				local pass = self.spawnchildrenpass or nil 
-				if type(self.spawnchildrenpass) == "table" then
-					pass = self.spawnchildrenpass[i]
-				end
-				if pass then
-					for p = 1, #pass do
-						temp[pass[1]] = self[pass[1]] or nil
-					end
-				end
 			end
 		end
 	end
@@ -1498,10 +1542,15 @@ function enemy:update(dt)
 		if p and (pass or onlyrotatepass) then
 			local oldhomingrotation = self.homingrotation
 			local angle = -math.atan2((p.x+p.width/2)-(self.x+self.width/2), (p.y+p.height/2)-(self.y+self.height/2))-math.pi/2
-			if angles(angle, self.homingrotation) then
+			local turnDir1 = angles(angle, self.homingrotation)
+			if turnDir1 then
 				self.homingrotation = self.homingrotation + self.homingturnspeed*dt
 			else
 				self.homingrotation = self.homingrotation - self.homingturnspeed*dt
+			end
+			local turnDir2 = angles(angle, self.homingrotation)
+			if turnDir1 ~= turnDir2 then --correct rotation if it over-shoots
+				self.homingrotation = angle
 			end
 			if pass then --sometimes the enemy is only allowed to aim
 				if self.onlymovewhenhomingrotationatplayer and anglesdiff(angle, self.homingrotation) > self.onlymovewhenhomingrotationatplayerthreshold then
@@ -1979,73 +2028,77 @@ function enemy:update(dt)
 	end
 
 	if self.animationtype == "character" then
-		--Mario-like animation
-		local xdiff = self.x-oldx
-		local ydiff = self.y-oldy
-		local running = math.abs(xdiff) > 0.001
-		local jumping = math.abs(ydiff) > 0.001
-		local falling = ydiff > 0.001
-		local runstart = self.idleframes+1
-		local jumpstart = self.idleframes+self.runframes+1
-		local fallstart = self.idleframes+self.runframes+self.jumpframes+1
-		if self.fallframes > 0 and falling then
-			if self.quadi < fallstart or self.quadi > fallstart+self.fallframes-1 then
-				self.quadi = fallstart
-				self.animationtimer = 0
+		if self.oldx then
+			--Mario-like animation
+			local xdiff = self.x-self.oldx
+			local ydiff = self.y-self.oldy
+			local running = math.abs(xdiff) > 0.001
+			local jumping = math.abs(ydiff) > 0.001
+			local falling = ydiff > 0.001
+			local runstart = self.idleframes+1
+			local jumpstart = self.idleframes+self.runframes+1
+			local fallstart = self.idleframes+self.runframes+self.jumpframes+1
+			if self.fallframes > 0 and falling then
+				if self.quadi < fallstart or self.quadi > fallstart+self.fallframes-1 then
+					self.quadi = fallstart
+					self.animationtimer = 0
+				end
+				self.animationtimer = self.animationtimer + dt
+				if self.quadi <= fallstart+self.fallframes-1 then
+					while self.animationtimer > (self.fallanimationspeed or 0.1) do
+						self.animationtimer = self.animationtimer - (self.fallanimationspeed or 0.1)
+						self.quadi = math.min(fallstart+self.fallframes-1, (self.quadi+1 -fallstart)%(self.fallframes) +fallstart)
+					end
+				end
+			elseif self.jumpframes > 0 and jumping then
+				if self.quadi < jumpstart or self.quadi > jumpstart+self.jumpframes-1 then
+					self.quadi = jumpstart
+					self.animationtimer = 0
+				end
+				self.animationtimer = self.animationtimer + dt
+				if self.quadi <= jumpstart+self.jumpframes-1 then
+					while self.animationtimer > (self.jumpanimationspeed or 0.1) do
+						self.animationtimer = self.animationtimer - (self.jumpanimationspeed or 0.1)
+						self.quadi = math.min(jumpstart+self.jumpframes-1, (self.quadi+1 -jumpstart)%(self.jumpframes) +jumpstart)
+					end
+				end
+			elseif self.runframes > 0 and running then
+				if self.quadi < runstart or self.quadi > runstart+self.runframes-1 then
+					self.quadi = runstart
+					self.animationtimer = 0
+				end
+				self.animationtimer = self.animationtimer + dt
+				while self.animationtimer > (self.runanimationspeed or 0.1) do
+					self.animationtimer = self.animationtimer - (self.runanimationspeed or 0.1)
+					self.quadi = (self.quadi+1 -runstart)%(self.runframes) +runstart
+				end
+			elseif self.idleframes > 1 then
+				if self.quadi < 1 or self.quadi > 1+self.runframes-1 then
+					self.quadi = 1
+					self.animationtimer = 0
+				end
+				while self.animationtimer > (self.idleanimationspeed or 0.1) do
+					self.animationtimer = self.animationtimer - (self.idleanimationspeed or 0.1)
+					self.quadi = (self.quadi+1 -1)%(self.idleframes-1) +1
+				end
+			else
+				if self.quadi < 1 or self.quadi > 1+self.runframes-1 then
+					self.quadi = 1
+				end
+				self.quadi = 1
 			end
-			self.animationtimer = self.animationtimer + dt
-			if self.quadi <= fallstart+self.fallframes-1 then
-				while self.animationtimer > (self.fallanimationspeed or 0.1) do
-					self.animationtimer = self.animationtimer - (self.fallanimationspeed or 0.1)
-					self.quadi = math.min(fallstart+self.fallframes-1, (self.quadi+1 -fallstart)%(self.fallframes) +fallstart)
+			self.quad = self.quadgroup[self.quadi]
+			
+			if not self.dontmirror then
+				if xdiff > 0 then
+					self.animationdirection = "left"
+				elseif xdiff < 0 then
+					self.animationdirection = "right"
 				end
 			end
-		elseif self.jumpframes > 0 and jumping then
-			if self.quadi < jumpstart or self.quadi > jumpstart+self.jumpframes-1 then
-				self.quadi = jumpstart
-				self.animationtimer = 0
-			end
-			self.animationtimer = self.animationtimer + dt
-			if self.quadi <= jumpstart+self.jumpframes-1 then
-				while self.animationtimer > (self.jumpanimationspeed or 0.1) do
-					self.animationtimer = self.animationtimer - (self.jumpanimationspeed or 0.1)
-					self.quadi = math.min(jumpstart+self.jumpframes-1, (self.quadi+1 -jumpstart)%(self.jumpframes) +jumpstart)
-				end
-			end
-		elseif self.runframes > 0 and running then
-			if self.quadi < runstart or self.quadi > runstart+self.runframes-1 then
-				self.quadi = runstart
-				self.animationtimer = 0
-			end
-			self.animationtimer = self.animationtimer + dt
-			while self.animationtimer > (self.runanimationspeed or 0.1) do
-				self.animationtimer = self.animationtimer - (self.runanimationspeed or 0.1)
-				self.quadi = (self.quadi+1 -runstart)%(self.runframes) +runstart
-			end
-		elseif self.idleframes > 1 then
-			if self.quadi < 1 or self.quadi > 1+self.runframes-1 then
-				self.quadi = 1
-				self.animationtimer = 0
-			end
-			while self.animationtimer > (self.idleanimationspeed or 0.1) do
-				self.animationtimer = self.animationtimer - (self.idleanimationspeed or 0.1)
-				self.quadi = (self.quadi+1 -1)%(self.idleframes-1) +1
-			end
-		else
-			if self.quadi < 1 or self.quadi > 1+self.runframes-1 then
-				self.quadi = 1
-			end
-			self.quadi = 1
 		end
-		self.quad = self.quadgroup[self.quadi]
-		
-		if not self.dontmirror then
-			if xdiff > 0 then
-				self.animationdirection = "left"
-			elseif xdiff < 0 then
-				self.animationdirection = "right"
-			end
-		end
+		self.oldx = self.x
+		self.oldy = self.y
 	end
 
 	--transform if falling
@@ -2242,10 +2295,9 @@ function enemy:update(dt)
 				self.quad = self.quadgroup[self.quadi]
 			end
 
-			--not sure if this needs to be edited for new grills??? guess i will find out later
-			--[[if self.emancipatecheck then
+			if self.emancipatecheck then
 				for h, u in pairs(emancipationgrills) do
-					if u.active then
+					if u.active and u.fizzleitems then
 						if u.dir == "hor" then
 							if inrange(self.x+6/16, u.startx-1, u.endx, true) and inrange(u.y-14/16, oldy, self.y, true) then
 								self:emancipate(h)
@@ -2257,7 +2309,7 @@ function enemy:update(dt)
 						end
 					end
 				end
-			end]]
+			end
 
 			--drop if not holding button
 			if self.carryifholdingrunbutton and not runkey(self.carryparent.playernumber) then
@@ -2329,7 +2381,7 @@ function enemy:update(dt)
 		self.customtimertimer = self.customtimertimer + dt
 		while self.customtimertimer > self.customtimer[self.currentcustomtimerstage][1] do
 			self.customtimertimer = self.customtimertimer - self.customtimer[self.currentcustomtimerstage][1]
-			self:customtimeraction(self.customtimer[self.currentcustomtimerstage][2], self.customtimer[self.currentcustomtimerstage][3], dt)
+			self:customtimeraction(self.customtimer[self.currentcustomtimerstage][2], self.customtimer[self.currentcustomtimerstage][3])
 			self.currentcustomtimerstage = self.currentcustomtimerstage + 1
 			if self.currentcustomtimerstage > #self.customtimer then
 				self.currentcustomtimerstage = 1
@@ -2340,11 +2392,12 @@ function enemy:update(dt)
 			end
 		end
 	end
+
 	if self.runtimer then
 		self.runtimertimer = self.runtimertimer + dt
 		while self.runtimertimer > self[self.runtimer][self.runtimerstage][1] do
 			self.runtimertimer = self.runtimertimer - self[self.runtimer][self.runtimerstage][1]
-			self:customtimeraction(self[self.runtimer][self.runtimerstage][2], self[self.runtimer][self.runtimerstage][3], "script")
+			self:customtimeraction(self[self.runtimer][self.runtimerstage][2], self[self.runtimer][self.runtimerstage][3], true)
 			self.runtimerstage = self.runtimerstage + 1
 			if self.runtimerstage > #self[self.runtimer] then
 				self.runtimer = false
@@ -2535,9 +2588,7 @@ function enemy:addoutput(a, t)
 	table.insert(self.outtable, {a, t})
 end
 
-function enemy:shotted(dir, cause, high, fireball, star)
-	self.claw = false
-
+function enemy:shotted(dir, cause, high, fireball, star, children)
 	if self.resistseverything then
 		return false
 	end
@@ -2553,6 +2604,19 @@ function enemy:shotted(dir, cause, high, fireball, star)
 	if cause and cause == "dkhammer" and self.resistsdkhammer then
 		return false
 	end
+
+	--so many things here sound so wrong
+	if (not children) and (not self.shot) and self.killfamilyonshot then
+		if self.parent then
+			self.parent:handlechildren("shotted", {dir, cause, high, fireball, star})
+			return true
+		elseif self.children then
+			self:handlechildren("shotted", {dir, cause, high, fireball, star})
+			return true
+		end
+	end
+
+	self.claw = false
 
 	if self.shothealth then
 		if self.shothealth > 1 then
@@ -2586,7 +2650,13 @@ function enemy:shotted(dir, cause, high, fireball, star)
 	end
 	
 	if not self.noshotsound then
-		playsound("shot")
+		if self.sound and self.shotsound == self.t then
+			playsound(self.sound)
+		elseif self.shotsound then
+			playsound(self.shotsound)
+		else
+			playsound("shot")
+		end
 	end
 	
 	if self.transforms then
@@ -2639,38 +2709,29 @@ function enemy:shotted(dir, cause, high, fireball, star)
 	return true
 end
 
-function enemy:edittable(s,arrindexs,a,arg)
+function enemy:edittable(s, arrindexs, a, arg)
 	arrindexs = deepcopy(arrindexs)
 	if arrindexs and #arrindexs ~= 1 then
 		local store = arrindexs[1]
-		table.remove(arrindexs,1)
-		return self:edittable(s[store],arrindexs,a,arg) --yes i did it again :HIM:
+		table.remove(arrindexs, 1)
+		return self:edittable(s[store], arrindexs, a, arg) --yes i did it again :HIM:
 	end
 	local p = arrindexs[1]
 	if a == "set" then
-		print("workd?",s[p])
 		s[p] = arg
-		print("workssssssssssss",s[p])
 	elseif a == "add" then
-		local ttype = type(s)
-		if ttype == "string" then
-			if string.sub(s, 0, 2) == "..." then
-				s[p] = arg .. s[p]
-			else
-				s[p] = s[p] .. arg
-			end
-		elseif ttype == "table" then
-			table.insert(s,arg)
+		if type(s) == "string" then
+			s[p] = s[p] .. arg
+		elseif type(s) == "table" then
+			table.insert(s, arg)
 		else
 			s[p] = s[p] + arg
 		end
 	elseif a == "minus" then
-		print(s)
-		local ttype = type(s[p])
-		if ttype == "string" then
-			s[p] = string.gsub(s[p],arg,"")
-		elseif ttype == "table" then
-			table.remove(s[p],tablecontainsi(arg))
+		if type(s[p]) == "string" then
+			s[p] = string.gsub(s[p], arg, "")
+		elseif type(s[p]) == "table" then
+			table.remove(s[p], tablecontainsi(arg))
 		else
 			s[p] = s[p] - arg
 		end
@@ -2685,19 +2746,45 @@ function enemy:edittable(s,arrindexs,a,arg)
 			s[p] = -s[p]
 		end
 	elseif a == "random" then
-		s[p] = arg[math.random(#arg)]
+		if arg[1] == "range" then
+			s[p] = math.random(arg[2], arg[3])
+		elseif type(arg) == "number" then
+			s[p] = math.random()*arg
+		else
+			s[p] = arg[math.random(#arg)]
+		end
 	elseif a == "abs" then
-		s[p] = math.abs(s)
+		s[p] = math.abs(s[p])
+	elseif a == "sqrt" then
+		s[p] = math.sqrt(s[p])
+	elseif a == "mod" then
+		s[p] = s[p]%arg
+	elseif a == "pow" then
+		s[p] = math.pow(s[p],arg)
+	elseif a == "round" then
+		s[p] = math.floor(s[p]+0.5)
 	elseif a == "floor" then
-		s[p] = math.floor(s)
-	elseif a == "ceil" or a == "ceiling" then
-		s[p] = math.ceil(s)
+		s[p] = math.floor(s[p])
+	elseif a == "ceil" then
+		s[p] = math.ceil(s[p])
+	elseif a == "sin" then
+		s[p] = math.sin(arg)
+	elseif a == "cos" then
+		s[p] = math.cos(arg)
+	elseif a == "tan" then
+		s[p] = math.tan(arg)
+	elseif a == "atan2" then
+		s[p] = math.atan2(arg[1],arg[2])
+	elseif a == "min" then
+		s[p] = math.min(s[p],arg)
+	elseif a == "max" then
+		s[p] = math.max(s[p],arg)
 	end
 end
 
-function enemy:customtimeraction(action, arg)
+function enemy:customtimeraction(action, arg, t)
 	--set to a variable
-	if arg and type(arg) == "table" and arg[1] and arg[2] then
+	if arg and type(arg) == "table" then
 		if arg[1] == "property" then
 			if type(arg[2]) == "table" then
 				arg = self[arg[2][1]][arg[2][2]]
@@ -2709,18 +2796,18 @@ function enemy:customtimeraction(action, arg)
 		end
 	end
 
+	local AN
 	if type(action) == "table" then --The new *better* custom timer format
 		local a = action[1] --action
 		local p = action[2] --parameter
-		if type(p) == "table" then
+		if p and type(p) == "table" then
 			if p[1] == "animationnumbers" then
 				AN = p
 				self[p[2]] = animationnumbers[p[2]]
 				p = p[2]
-				--print(AN,"animationnumbers")
 			elseif p[1] == "edittable" then 
 				--[0,["set",["edittable","collidevalueslast",[2,"t"]]]]
-				self:edittable(self[p[2]],p[3],a,arg)
+				self:edittable(self[p[2]], p[3], a, arg)
 				return
 			else
 				p = self[p[1]][p[2]]
@@ -2729,31 +2816,19 @@ function enemy:customtimeraction(action, arg)
 
 		if a == "set" then
 			self[p] = arg
-			if p == "quadno" then
-				--update frame
-				self.quad = self.quadgroup[self.quadno]
-			end
 		elseif a == "add" then
-			print(self[p])
-			local ttype = type(self[p])
-			if ttype == "string" then
-				if string.sub(self[p], 0, 2) == "..." then
-					self[p] = arg .. self[p] 
-				else
-					self[p] = self[p] .. arg
-				end
-			elseif ttype == "table" then
-				table.insert(self[p],arg)
+			if type(self[p]) == "string" then
+				self[p] = self[p] .. arg
+			elseif type(self[p]) == "table" then
+				table.insert(self[p], arg)
 			else
 				self[p] = self[p] + arg
 			end
 		elseif a == "minus" then
-			print(self[p])
-			local ttype = type(self[p])
-			if ttype == "string" then
-				self[p] = string.gsub(self[p],arg,"")
-			elseif ttype == "table" then
-				table.remove(self[p],tablecontainsi(arg))
+			if type(self[p]) == "string" then
+				self[p] = string.gsub(self[p], arg, "")
+			elseif type(self[p]) == "table" then
+				table.remove(self[p], tablecontainsi(arg))
 			else
 				self[p] = self[p] - arg
 			end
@@ -2768,35 +2843,46 @@ function enemy:customtimeraction(action, arg)
 				self[p] = -self[p]
 			end
 		elseif a == "random" then
-			self[p] = arg[math.random(#arg)]
+			if arg[1] == "range" then
+				self[p] = math.random(arg[2], arg[3])
+			elseif type(arg) == "number" then
+				self[p] = math.random()*arg
+			else
+				self[p] = arg[math.random(#arg)]
+			end
 		elseif a == "abs" then
 			self[p] = math.abs(self[p])
+		elseif a == "sqrt" then
+			self[p] = math.sqrt(self[p])
+		elseif a == "mod" then
+			self[p] = self[p]%arg
+		elseif a == "pow" then
+			self[p] = math.pow(self[p],arg)
+		elseif a == "round" then
+			self[p] = math.floor(self[p]+0.5)
 		elseif a == "floor" then
 			self[p] = math.floor(self[p])
-		elseif a == "ceil" or a == "ceiling" then
+		elseif a == "ceil" then
 			self[p] = math.ceil(self[p])
+		elseif a == "sin" then
+			self[p] = math.sin(arg)
+		elseif a == "cos" then
+			self[p] = math.cos(arg)
+		elseif a == "tan" then
+			self[p] = math.tan(arg)
+		elseif a == "atan2" then
+			self[p] = math.atan2(arg[1],arg[2])
+		elseif a == "min" then
+			self[p] = math.min(self[p],arg)
+		elseif a == "max" then
+			self[p] = math.max(self[p],arg)
+		end
+
+		if p == "quadno" then
+			self.quad = self.quadgroup[self.quadno]
 		end
 	else --backwards compatibility
-		if action == "break" then
-			if t then
-				self.runtimerstage = #self[self.runtimer]
-			else
-				self.currentcustomtimerstage = #self.customtimer
-			end
-		elseif action == "bounce" then
-			if self.speedy == 0 then self.speedy = -(arg or 10) end
-		elseif action == "playsound" then
-			if self.sound and arg == self.t then
-				playsound(self.sound)
-			else
-				playsound(arg)
-			end
-		elseif action == "spawnenemy" then
-			if self.spawnsenemyrandoms then
-				self.spawnsenemy = self.spawnsenemyrandoms[math.random(#self.spawnsenemyrandoms)]
-			end
-			self:spawnenemy(self.spawnsenemy)
-		elseif not t and action == "startloop" then
+		if not t and action == "startloop" then
 			table.insert(self.startstage, self.currentcustomtimerstage)
 			table.insert(self.endstage, 0)
 			table.insert(self.looped, 0)
@@ -2816,6 +2902,12 @@ function enemy:customtimeraction(action, arg)
 				self.looped[self.loops] = self.looped[self.loops] - 1
 				self.currentcustomtimerstage = self.startstage[self.loops]
 				self.customtimertimer = self.customtimer[self.currentcustomtimerstage][1]
+			end
+		elseif action == "break" then
+			if t then
+				self.runtimerstage = #self[self.runtimer]
+			else
+				self.currentcustomtimerstage = #self.customtimer
 			end
 		elseif action == "skip" then
 			if t then
@@ -2837,6 +2929,38 @@ function enemy:customtimeraction(action, arg)
 			self:ifstatement(arg[1],arg[2],arg[3],arg[4],arg[5],t)
 		elseif action == "runtimer" then
 			self:startruntimer(arg)
+		elseif action == "placetile" then
+			local cox = round(self.x+(self.placetileoffsetx or 0)+1)
+			local coy = round(self.y+(self.placetileoffsety or 0)+1)
+			local tile = arg or self.placetile or 2
+			self:addtile(cox, coy, tile)
+		elseif action == "transform" then
+			self:transform(arg)
+		elseif action == "spawnenemy" then
+			if arg then
+				self:spawnenemy(arg)
+			else
+				if self.spawnsenemyrandoms then
+					self.spawnsenemy = self.spawnsenemyrandoms[math.random(#self.spawnsenemyrandoms)]
+				end
+				self:spawnenemy(self.spawnsenemy)
+			end
+		elseif action == "print" then
+			if self[arg] then
+				print(self[arg])
+			else
+				print(arg)
+			end
+		elseif action == "playsound" then
+			if self.sound and arg == self.t then
+				playsound(self.sound)
+			else
+				playsound(arg)
+			end
+		elseif action == "bounce" then
+			if self.speedy == 0 then self.speedy = -(arg or 10) end
+		elseif action == "setframe" then
+			self.quad = self.quadgroup[arg]
 		elseif string.sub(action, 0, 7) == "reverse" then
 			local parameter = string.sub(action, 8, string.len(action))
 			self[parameter] = -self[parameter]
@@ -2846,25 +2970,11 @@ function enemy:customtimeraction(action, arg)
 		elseif string.sub(action, 0, 8) == "multiply" then
 			local parameter = string.sub(action, 9, string.len(action))
 			self[parameter] = self[parameter] * arg
-		elseif action == "setframe" then
-			self.quad = self.quadgroup[arg]
-		elseif action == "placetile" then
-			local cox = round(self.x+(self.placetileoffsetx or 0)+1)
-			local coy = round(self.y+(self.placetileoffsety or 0)+1)
-			local tile = arg or self.placetile or 2
-			self:addtile(cox, coy, tile)
-		elseif action == "transform" then
-			self:transform(arg)
-		elseif action == "print" then
-			if self[arg] then
-				print(self[arg])
-			else
-				print(arg)
-			end
 		elseif string.sub(action, 0, 3) == "set" then
 			self[string.sub(action, 4, string.len(action))] = arg
 		end
 	end
+
 	if AN then
 		animationnumbers[AN[2]] = self[AN[2]]
 		self[AN[2]] = nil
@@ -2876,74 +2986,45 @@ end
 function enemy:ifstatement(first, symbol, second, action, arg, t)
 	--["speedx","==","speedy",["set","speedy"],10]
 
-	if self[first] and symbol ~= " " and symbol ~= "!" then
+	if type(first) == "string" and self[first] then
 		first = self[first]
 	end	
-	if self[second] then
+	if type(second) == "string" and self[second] then
 		second = self[second]
 	end	
 	
+	local pass = false
+    if (symbol == "=" or symbol == "==") and (first == second) then
+		pass = true
+    elseif symbol == ">" and (first > second) then
+        pass = true
+    elseif symbol == "<" and (first < second) then
+		pass = true
+    elseif symbol == ">=" and (first >= second) then
+        pass = true
+    elseif symbol == "<=" and (first <= second) then
+        pass = true
+    elseif symbol == "~=" and (first ~= second) then
+        pass = true
+	elseif symbol == " " and self[first] then
+        pass = true
+	elseif symbol == "!" and (not self[first]) then
+        pass = true
+    end
 
-	if type(first) == "boolean" and type(second) == "boolean" then
-		if first and second then
-			self:customtimeraction(action,arg,t)
-			return true
-		elseif (not first) and (not second) then
-			self:customtimeraction(action,arg,t)
-			return true
-		end
-    end
-    if symbol == "=" or symbol == "==" then
-        if first == second then
-            self:customtimeraction(action,arg,t)
-            return true
-        end
-    elseif symbol == ">" then
-        if first > second then
-            self:customtimeraction(action,arg,t)
-            return true
-        end
-    elseif symbol == "<" then
-        if first < second then
-            self:customtimeraction(action,arg,t)
-            return true
-        end
-    elseif symbol == ">=" then
-        if first >= second then
-            self:customtimeraction(action,arg,t)
-            return true
-        end
-    elseif symbol == "<=" then
-        if first <= second then
-            self:customtimeraction(action,arg,t)
-            return true
-        end
-    elseif symbol == "~=" then
-        if first ~= second then
-            self:customtimeraction(action,arg,t)
-            return true
-        end
-	elseif symbol == " " then
-        if self[first] then
-            self:customtimeraction(action,arg,t)
-            return true
-        end
-	elseif symbol == "!" then
-        if not self[first] then
-            self:customtimeraction(action,arg,t)
-            return true
-        end
-    end
+	if pass then
+		self:customtimeraction(action, arg, t)
+	end
 end
 
 function enemy:startruntimer(arg)
 	self.runtimer = arg
 	self.runtimerstage = 1
 	self.runtimertimer = 0
-	for i = 1, #self.runtimer do
-		if type(self.runtimer[i]) == "string" then
+	for i = 1, #self[self.runtimer] do
+		if type(self[self.runtimer][i]) == "string" then
 			--comments
-			table.remove(self.runtimer, i)
+			table.remove(self[self.runtimer], i)
 		end
 	end
 end
@@ -3106,13 +3187,23 @@ function enemy:globalcollide(a, b, c, d, dir)
 		return true
 	end
 	
-	if not self.collidetransformlowpriority and self.transforms and (self:gettransformtrigger("globalcollide") or self:gettransformtrigger("collide")) and (not self.justspawned) then
+	if self.transforms and (self:gettransformtrigger("globalcollide") or self:gettransformtrigger("collide")) and (not self.justspawned) then
 		if self:gettransformtrigger("globalcollide") then
 			if self:handlecollisiontransform("globalcollide",a,b) then
-				return true
+				if not self.dotransformaftercollision then
+					return true
+				end
 			end
 		else
 			if self:handlecollisiontransform("collide",a,b) then
+				if not self.dotransformaftercollision then
+					return true
+				end
+			end
+		end
+	elseif self.transforms and dir == "passive" and self:gettransformtrigger("passivecollide") and (not self.justspawned) then
+		if self:handlecollisiontransform("passivecollide",a,b) then
+			if not self.dotransformaftercollision then
 				return true
 			end
 		end
@@ -3165,7 +3256,7 @@ function enemy:globalcollide(a, b, c, d, dir)
 	if a ~= "enemy" then
 		if self.freezesenemies then
 			if iceballfreeze[a] then
-				if b.freezable and (not b.frozen) and (not b.resistseverything) then
+				if b.freezable and (not b.frozen) then
 					table.insert(objects["ice"], ice:new(b.x+b.width/2, b.y+b.height, b.width, b.height, a, b))
 				end
 			end
@@ -3194,22 +3285,34 @@ function enemy:globalcollide(a, b, c, d, dir)
 		return true
 	end
 	
-	if b.freezesenemies and self.freezable and a == "enemy" then
-		if iceballfreeze[a] then
-			if b.freezable and (not b.frozen) and (not b.resistseverything) then
-				table.insert(objects["ice"], ice:new(b.x+b.width/2, b.y+b.height, b.width, b.height, a, b))
-				return true
-			end
+	if b.freezesenemies and self.freezable  then
+		if (not self.frozen) then
+			table.insert(objects["ice"], ice:new(self.x+self.width/2, self.y+self.height, self.width, self.height, "enemy", self))
+			return true
 		end
 	end
 	
-	if b.killsenemies and ((b.killsenemiesonsides == nil and b.killsenemiesontop == nil and b.killsenemiesonbottom == nil and b.killsenemiesonleft == nil and b.killsenemiesonright == nil and b.killsenemiesonpassive == nil) 
-	or (b.killsenemiesonsides and (dir == "left" or dir == "right")) or (b.killsenemiesonbottom and dir == "ceil") or (b.killsenemiesontop and dir == "floor") or
-	(b.killsenemiesonleft and dir == "right") or (b.killsenemiesonright and dir == "left") or (b.killsenemiesonpassive and dir == "passive")) and not (b.resistsenemykill or b.resistseverything) then
-		--print(dir, self.killseenmiesonpassive)
-		if self:enemykill(a,b) then
-			return true
+	if (b.killsenemies and ((b.killsenemiesonsides and (dir == "left" or dir == "right")) or (b.killsenemiesonbottom and dir == "ceil") or (b.killsenemiesontop and dir == "floor") or
+	(b.killsenemiesonleft and dir == "right") or (b.killsenemiesonright and dir == "left") or (b.killsenemiesonpassive and dir == "passive"))) and (not self.resistsenemykill) then
+		local dir = "right"
+		if b.speedx < 0 then
+			dir = "left"
 		end
+		if b.enemykillsdontflyaway then
+			self.doesntflyawayonfireball = true
+		end
+		self:shotted(dir)
+
+		if b.bouncesonenemykill then
+			b.speedy = -(b.bounceforce or 10)
+		end
+
+		if b.enemykillsinstantly then
+			self.instantdelete = true
+		end
+		
+		addpoints((firepoints[self.t] or 200), self.x, self.y)
+		return true
 	end
 	
 	if self.breaksblocks then
@@ -3233,18 +3336,6 @@ function enemy:globalcollide(a, b, c, d, dir)
 
 	if a == "powblock" and self.hitspowblocks then
 		b:hit()
-	end
-
-	if self.collidetransformlowpriority and self.transforms and (self:gettransformtrigger("globalcollide") or self:gettransformtrigger("collide")) and (not self.justspawned) then
-		if self:gettransformtrigger("globalcollide") then
-			if self:handlecollisiontransform("globalcollide",a,b) then
-				return true
-			end
-		else
-			if self:handlecollisiontransform("collide",a,b) then
-				return true
-			end
-		end
 	end
 
 	if self.nocollidestops or b.nocollidestops then
@@ -3275,9 +3366,11 @@ function enemy:leftcollide(a, b, c, d)
 		return false
 	end
 	
-	if not self.collidetransformlowpriority and self.transforms and self:gettransformtrigger("leftcollide") and (not self.justspawned) then
+	if self.transforms and self:gettransformtrigger("leftcollide") and (not self.justspawned) then
 		if self:handlecollisiontransform("leftcollide",a,b) then
-			return
+			if not self.dotransformaftercollision then
+				return
+			end
 		end
 	end
 
@@ -3411,9 +3504,11 @@ function enemy:rightcollide(a, b, c, d)
 		return false
 	end
 	
-	if not self.collidetransformlowpriority and self.transforms and self:gettransformtrigger("rightcollide") and (not self.justspawned) then
+	if self.transforms and self:gettransformtrigger("rightcollide") and (not self.justspawned) then
 		if self:handlecollisiontransform("rightcollide",a,b) then
-			return
+			if not self.dotransformaftercollision then
+				return
+			end
 		end
 	end
 
@@ -3534,9 +3629,11 @@ function enemy:ceilcollide(a, b, c, d)
 		return false
 	end
 	
-	if not self.collidetransformlowpriority and self.transforms and self:gettransformtrigger("ceilcollide") and (not self.justspawned) then
+	if self.transforms and self:gettransformtrigger("ceilcollide") and (not self.justspawned) then
 		if self:handlecollisiontransform("ceilcollide",a,b) then
-			return
+			if not self.dotransformaftercollision then
+				return
+			end
 		end
 	end
 
@@ -3631,9 +3728,11 @@ function enemy:floorcollide(a, b, c, d)
 		self.speedy = 0
 	end
 	
-	if not self.collidetransformlowpriority and self.transforms and self:gettransformtrigger("floorcollide") and (not self.justspawned) then
+	if self.transforms and self:gettransformtrigger("floorcollide") and (not self.justspawned) then
 		if self:handlecollisiontransform("floorcollide",a,b) then
-			return
+			if not self.dotransformaftercollision then
+				return
+			end
 		end
 	end
 
@@ -3781,11 +3880,23 @@ function enemy:startfall()
 	self.falling = true
 end
 
-function enemy:stomp(x, b)
-	self.claw = false
+function enemy:stomp(x, b, children)
 	if self.stompable or (self.shellanimal and self.small) then
+		self.claw = false
+
 		if self.pushmariowhenstomped and b then
 			b.y = self.y - b.height-1/16
+		end
+
+		--so many things here sound so wrong
+		if (not children) and (not self.shot) and (not self.kill) and self.killfamilyonstomp then
+			if self.parent then
+				self.parent:handlechildren("stomp", {x, b})
+				return true
+			elseif self.children then
+				self:handlechildren("stomp", {x, b})
+				return true
+			end
 		end
 
 		if self.stomphealth then
@@ -3899,6 +4010,7 @@ function enemy:output(transformed)
 		--for some reason the enemy hasn't spawned correctly
 		return false
 	end
+
 	for i = 1, #self.outtable do
 		if self.outtable[i][1].input then
 			self.outtable[i][1]:input("toggle", self.outtable[i][2])
@@ -3958,6 +4070,23 @@ function enemy:output(transformed)
 		if self.poofondeath then
 			makepoof(self.x+self.width/2, self.y+self.height/2, self.poofondeath)
 		end
+	end
+end
+
+function enemy:handlechildren(type, args)
+	if type == "shotted" then
+		table.insert(args, true)
+		for i, v in pairs(self.children) do
+			v:shotted(unpack(args))
+			v.shot = true
+		end
+		self:shotted(unpack(args))
+		self.shot = true
+	elseif type == "stomp" then
+		for i, v in pairs(self.children) do
+			v:stomp(v.x, args[2], true)
+		end
+		self:stomp(self.x, args[2], true)
 	end
 end
 
@@ -4293,14 +4422,14 @@ function enemy:used(id)
 	objects["player"][id]:pickupbox(self)
 	self.pickupready = false
 
-	if self.grabsound then
+	if not self.nograbsound then
 		if self.sound and self.grabsound == self.t then
 			playsound(self.sound)
-		else
+		elseif self.grabsound then
 			playsound(self.grabsound)
+		else
+			playsound(grabsound)
 		end
-	elseif not self.nograbsound then
-		playsound(grabsound)
 	end
 end
 
@@ -4341,11 +4470,16 @@ function enemy:dropped(gravitydir)
 	self.x = (self.carryparent.x+self.carryparent.width/2-self.width/2) + offsetx
 	self.y = (self.carryparent.y-self.height)+(self.carryoffsety or 0)
 
-	if self.throwsound then
-		playsound(self.throwsound)
-	elseif not self.nothrowsound then
-		playsound(throwsound)
+	if not self.nothrowsound then
+		if self.sound and self.throwsound == self.t then
+			playsound(self.sound)
+		elseif self.throwsound then
+			playsound(self.throwsound)
+		else
+			playsound(throwsound)
+		end
 	end
+
 	self.carryparent = nil
 	
 	if self.transforms and self:gettransformtrigger("thrown") then
@@ -4367,9 +4501,17 @@ function enemy:kick(dir)
 	if not (math.abs(self.speedx) < self.kickspeed*0.8) then
 		return false
 	end
+
 	if not self.nokicksound then
-		playsound(shotsound)
+		if self.sound and self.kicksound == self.t then
+			playsound(self.sound)
+		elseif self.kicksound then
+			playsound(self.kicksound)
+		else
+			playsound(kicksound)
+		end
 	end
+
 	if dir == "left" then
 		self.speedx = -self.kickspeed
 		if not self.dontmirror then
@@ -4381,6 +4523,7 @@ function enemy:kick(dir)
 			self.animationdirection = "left"
 		end
 	end
+
 	self.speedy = self.kickspeedy
 end
 
@@ -4481,121 +4624,6 @@ function enemy:handlecollisiontransform(side,a,b)
 	return true
 end
 
-function enemy:piss(time, to, take, a, piss) --handlecollisiontransform(side,a,b)
-	local docancel = false
-	if self.transformtriggerenemycollide then
-		--mutliple enemy collides
-		if type(self.transformtriggerenemycollide) == "table" and type(self.transformtrigger) == "table" then
-			for i, s in pairs(self.transformtrigger) do
-				if s == side and a == "enemy" and self.transformtriggerenemycollide[i] == b.t then
-					if type(self.transformsinto) == "table" then
-						self:transform(self.transformsinto[i])
-					else
-						self:transform(self:gettransformsinto(side))
-					end
-					if self.transformtriggerenemycollidekill then
-						if self.enemykillsdontflyaway then
-							b.doesntflyawayonfireball = true
-						end
-						b:shotted(dir)
-					end
-					return true
-				end
-			end
-		else
-			if a == "enemy" and b.t == self.transformtriggerenemycollide then
-				self:transform(self:gettransformsinto(side))
-				if self.transformtriggerenemycollidekill then
-					if self.enemykillsdontflyaway then
-						b.doesntflyawayonfireball = true
-					end
-					b:shotted(dir)
-				end
-				return true
-			end
-		end
-		docancel = true
-	end
-	if self.transformtriggerobjectcollide then
-		--mutliple entity collides
-		if type(self.transformtriggerobjectcollide) == "table" and type(self.transformtrigger) == "table" then
-			for i, s in pairs(self.transformtrigger) do
-				if s == side and self.transformtriggerobjectcollide[i] == a then
-					if self.transformtriggertilepropertycollide then
-						if type(self.transformtriggertilepropertycollide) == "table" then
-							if self.transformtriggertilepropertycollide[i] then
-								if self.transformtriggerobjectcollide[i] == "tile" and tilequads[map[b.cox][b.coy][1]][self.transformtriggertilepropertycollide[i]] then
-									if type(self.transformsinto) == "table" then
-										self:transform(self.transformsinto[i])
-									else
-										self:transform(self:gettransformsinto(side))
-									end
-									return true
-								else
-									return
-								end
-							end
-						else
-							if self.transformtriggerobjectcollide[i] == "tile" and tilequads[map[b.cox][b.coy][1]][self.transformtriggertilepropertycollide] then
-								if type(self.transformsinto) == "table" then
-									self:transform(self.transformsinto[i])
-								else
-									self:transform(self:gettransformsinto(side))
-								end
-								return true
-							else
-								return
-							end
-						end
-					end
-					if type(self.transformsinto) == "table" then
-						self:transform(self.transformsinto[i])
-					else
-						self:transform(self:gettransformsinto(side))
-					end
-					return true
-				end
-			end
-		else
-			if a == self.transformtriggerobjectcollide then
-				if self.transformtriggertilepropertycollide then
-					--print("tiletransformexists")
-					if type(self.transformtriggertilepropertycollide) == "table" then
-						for i,v in pairs(self.transformtriggertilepropertycollide) do
-							--print("itstable")
-							if self.transformtriggertilepropertycollide[i] then
-								--print("isn'tfalse")
-								if self.transformtriggerobjectcollide == "tile" and tilequads[map[b.cox][b.coy][1]][self.transformtriggertilepropertycollide[i]] then
-									--print("transformmeeeng")
-									self:transform(self:gettransformsinto(side))
-									return true
-								else
-									return
-								end
-							end
-						end
-					else
-						if self.transformtriggerobjectcollide == "tile" and tilequads[map[b.cox][b.coy][1]][self.transformtriggertilepropertycollide] then
-							self:transform(self:gettransformsinto(side))
-							return true
-						else
-							return
-						end
-					end
-				end
-				--print("fallo la condition")
-				self:transform(self:gettransformsinto(side))
-				return true
-			end
-		end
-	end
-	if docancel then
-		return false
-	end
-	self:transform(self:gettransformsinto(side))
-	return true
-end
-
 function enemy:dosupersize()
 	--set a custom set of properties when supersized
 	if self.supersizeproperties then
@@ -4612,27 +4640,6 @@ function enemy:dosupersize()
 	end
 end
 
-function enemy:enemykill(a, b)
-	local dir = "right"
-	if b.speedx < 0 then
-		dir = "left"
-	end
-	if b.enemykillsdontflyaway then
-		self.doesntflyawayonfireball = true
-	end
-	self:shotted(dir)
-
-	if b.bouncesonenemykill then
-		b.speedy = -(b.bounceforce or 10)
-	end
-
-	if b.enemykillsinstantly then
-		self.instantdelete = true
-	end
-	
-	addpoints((firepoints[self.t] or 200), self.x, self.y)
-end
-
 function enemy:addtile(x, y, id)
 	local all = smbtilecount + portaltilecount + customtilecount - 1
 	if inmap(x, y) and id > 0 and id < all then
@@ -4646,8 +4653,6 @@ function enemy:addtile(x, y, id)
 		updateranges()
 	end
 end
-
--- their used to be a function here, now their is only sadness
 
 function enemy:splitimage(img, color, exclude, imagedata) --split singe image into colorable images
 	local input = img

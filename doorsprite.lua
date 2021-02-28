@@ -3,15 +3,21 @@ doorsprite = class:new()
 function doorsprite:init(x, y, r, i)
 	self.cox = x
 	self.coy = y
-	self.r = r
 	self.i = i
 
-	local v = convertr(r[3], {"num", "num", "bool", "num"}, true)
-	self.targetsublevel = v[1] or 0
-	self.exitid = v[2] or 1
-	self.visible = true
-	if v[3] ~= nil then
-		self.visible = v[3]
+	self.r = {unpack(r)}
+	table.remove(self.r, 1)
+	table.remove(self.r, 1)
+
+	if #self.r > 0 and self.r[1] ~= "link" then
+		local v = convertr(r[3], {"num", "num", "bool", "num"}, true)
+		self.targetsublevel = v[1] or 0
+		self.exitid = v[2] or 1
+		self.visible = true
+		if v[3] ~= nil then
+			self.visible = v[3]
+		end
+		table.remove(self.r, 1)
 	end
 
 	if pipeexitid and pipeexitid > 1 and pipeexitid == self.exitid then
@@ -39,6 +45,7 @@ function doorsprite:init(x, y, r, i)
 end
 
 function doorsprite:draw()
+	print(self.locked)
 	if self.visible then
 		love.graphics.setColor(255, 255, 255)
 		love.graphics.draw(doorspriteimg, self.quad[self.frame], math.floor((self.cox-1-xscroll)*16*scale), math.floor((self.coy-2-(8/16)-yscroll)*16*scale), 0, scale, scale)
@@ -60,17 +67,25 @@ function doorsprite:lock(lock)
 end
 
 function doorsprite:link()
-	if #self.r > 3 then
+	while #self.r > 3 do
 		for j, w in pairs(outputs) do
 			for i, v in pairs(objects[w]) do
-				if tonumber(self.r[5]) == v.cox and tonumber(self.r[6]) == v.coy then
-					self.exit = true
-					self.exitx = v.cox
-					self.exity = v.coy
-					break
+				if tonumber(self.r[2]) == v.cox and tonumber(self.r[3]) == v.coy then
+					if self.r[4] == "exit" then
+						self.exit = true
+						self.exitx = v.cox
+						self.exity = v.coy
+					elseif self.r[4] == "openable" then
+						v:addoutput(self, self.r[4])
+						self.locked = true
+					end
 				end
 			end
 		end
+		table.remove(self.r, 1)
+		table.remove(self.r, 1)
+		table.remove(self.r, 1)
+		table.remove(self.r, 1)
 	end
 end
 
@@ -80,5 +95,14 @@ end
 function doorsprite:out()
 end
 
-function doorsprite:input(t)
+function doorsprite:input(t, input)
+	if input == "openable" then
+		if t == "on" then
+			self.locked = false
+		elseif t == "off" then
+			self.locked = true
+		elseif t == "toggle" then
+			self.locked = not self.locked
+		end
+	end
 end

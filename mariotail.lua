@@ -79,6 +79,10 @@ function mariotail:passivecollide(a, b)
 end
 
 function mariotail:hitstuff(a, b)
+	if self.used then
+		return
+	end
+
 	if a == "tile" then
 		if self.playhitsound then
 			playsound(blockhitsound)
@@ -86,12 +90,16 @@ function mariotail:hitstuff(a, b)
 		end
 		local x, y = b.cox, b.coy
 		hitblock(x, y, {size=2})
+
+		self.used = true
 	elseif a == "tilemoving" then
 		if self.playhitsound then
 			playsound(blockhitsound)
 			self.playhitsound = false
 		end
 		b:hit("mariotail", self)
+
+		self.used = true
 	elseif mariotailkill[a] then
 		local dir = "right"
 		if b.x+b.width/2 < self.x+self.width/2 then
@@ -120,6 +128,7 @@ function mariotail:hitstuff(a, b)
 		else
 			makepoof(self.x, self.y+self.height/2, "pow")
 		end
+		self.used = true
 	elseif a == "enemy" then
 		local dir = "right"
 		if b.x+b.width/2 < self.x+self.width/2 then
@@ -137,7 +146,7 @@ function mariotail:hitstuff(a, b)
 			else
 				makepoof(self.x, self.y+self.height/2, "pow")
 			end
-		elseif b:shotted(dir, false, false, true) ~= false then
+		elseif b:shotted(dir, "leaf", false, false) ~= false then
 			--kill normally
 			addpoints(b.firepoints or 200, self.x, self.y)
 			if dir == "right" then
@@ -146,5 +155,6 @@ function mariotail:hitstuff(a, b)
 				makepoof(self.x, self.y+self.height/2, "pow")
 			end
 		end
+		self.used = true
 	end
 end

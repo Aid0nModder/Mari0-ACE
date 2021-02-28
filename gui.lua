@@ -148,7 +148,7 @@ function guielement:init(...)
 
 		if arg[6] then
 			self.items = arg[6]
-			print(self.items[1])
+			--print(self.items[1])
 		else
 			self.items = {}
 		end
@@ -254,7 +254,7 @@ function guielement:update(dt)
 			--print(x,y,mx,my)
 			for i = 1, #self.items do
 				x, y = self.x*scale, (self.y+((i-1)*12))*scale
-				if ((mx > x) and (mx <= x+self.width*scale)) and ((my > y) and (my <= y+self.height)) then
+				if ((mx > x) and (mx <= x+(self.width*scale))) and ((my > y) and (my <= y+(self.height-(12*scale)))) then
 					self.select = i
 				end
 			end

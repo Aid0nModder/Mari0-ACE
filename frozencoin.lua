@@ -1,5 +1,6 @@
 --most simple entity ever
 --syke, they can be frozen now
+--syke syke? their not just coins anymore
 
 frozencoin = class:new()
 
@@ -17,8 +18,8 @@ function frozencoin:init(x, y, t)
 	
 	self.active = true
 	self.static = true
-	self.category = 32
 
+	self.category = 32
 	self.mask = {true}
 
 	self.rotation = 0
@@ -29,25 +30,27 @@ function frozencoin:init(x, y, t)
 end
 
 function frozencoin:draw()
+	local img
 	if self.t == "mushroom" then
-		love.graphics.draw(mushroomfrozenimg, coinquads[spriteset][coinframe], math.floor((self.x-xscroll)*16*scale), ((self.y-yscroll)*16-8)*scale, 0, scale, scale)
+		img = mushroomfrozenimg
 	elseif self.t == "nothing" then
-		love.graphics.draw(frozenimg, coinquads[spriteset][coinframe], math.floor((self.x-xscroll)*16*scale), ((self.y-yscroll)*16-8)*scale, 0, scale, scale)
-	elseif self.t == "coinblock" then
-		love.graphics.draw(coinblockfrozenimg, coinquads[spriteset][coinframe], math.floor((self.x-xscroll)*16*scale), ((self.y-yscroll)*16-8)*scale, 0, scale, scale)
+		img = frozenimg
+	elseif self.t == "muncher" then
+		img = muncherfrozenimg
 	elseif self.t == "brick" then
 		if self.brick then
-			love.graphics.draw(coinfrozenimg, coinquads[spriteset][coinframe], math.floor((self.x-xscroll)*16*scale), ((self.y-yscroll)*16-8)*scale, 0, scale, scale)
+			img = coinfrozenimg
 		else
-			love.graphics.draw(coinbrickfrozenimg, coinquads[spriteset][coinframe], math.floor((self.x-xscroll)*16*scale), ((self.y-yscroll)*16-8)*scale, 0, scale, scale)
+			img = coinbrickfrozenimg
 		end
 	else
 		if self.brick then
-			love.graphics.draw(coinbrickfrozenimg, coinquads[spriteset][coinframe], math.floor((self.x-xscroll)*16*scale), ((self.y-yscroll)*16-8)*scale, 0, scale, scale)
+			img = coinbrickfrozenimg
 		else
-			love.graphics.draw(coinfrozenimg, coinquads[spriteset][coinframe], math.floor((self.x-xscroll)*16*scale), ((self.y-yscroll)*16-8)*scale, 0, scale, scale)
+			img = coinfrozenimg
 		end
 	end
+	love.graphics.draw(img, coinquads[spriteset][coinframe], math.floor((self.x-xscroll)*16*scale), ((self.y-yscroll)*16-8)*scale, 0, scale, scale)
 end
 
 function frozencoin:rightcollide(a, b)
@@ -89,20 +92,15 @@ end
 function frozencoin:meltice(destroy)
 	self.active = false
 
-	if self.t == "mushroom" then
+	if self.t == "nothing" then
+	elseif self.t == "mushroom" then
 		--stupid animation
 		obj = mushroom:new(self.cox-0.5, self.coy-2/16)
 		obj.uptimer = mushroomtime+0.00001
 		obj.speedx = mushroomspeed
 		table.insert(objects["mushroom"], obj)
-	elseif self.t == "nothing" then
-		--none lol
-	elseif self.t == "coinblock" then
-		map[self.cox][self.coy][1] = 8
-		map[self.cox][self.coy][2] = nil
-		map[self.cox][self.coy].oldtile = 116
-		objects["tile"][tilemap(self.cox, self.coy)] = tile:new(self.x, self.y, 1, 1, true)
-		generatespritebatch()
+	elseif self.t == "muncher" then
+		table.insert(objects["muncher"], muncher:new(self.x+0.5, self.y+15/16, true))
 	elseif self.t == "brick" then
 		if self.brick then
 			objects["coin"][tilemap(self.cox, self.coy)] = coin:new(self.cox, self.coy)

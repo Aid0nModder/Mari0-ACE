@@ -241,9 +241,9 @@ function love.load()
 		.!?,:;'"-_+=><#%&*()[]{}/\
 		@©~¡¿°^$£€¥
 		ÁÂÀÄÅÃÆÇÉÊÈËÍÎÌÏÑÓÔÒÖÕØŒÚÛ
-		ÙÜŠÝŸẞÞÐĆŃŚŹĄĘŁĈĜĤĴŜŬŽİ
+		ÙÜŠÝŸẞÞÐĆŃŚŹĄĘŁĈĜĤĴŜŬŽİŞƏĞ
 		áâàäåãæçéêèëíîìïñóôòöõøœúû
-		ùüšýÿßþðćńśźąęłĉĝĥĵŝŭžı
+		ùüšýÿßþðćńśźąęłĉĝĥĵŝŭžışəğ
 		АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШ
 		ЩЪЫЬЭЮЯ№«»„
 		абвгдеёжзийклмнопрстуфхцчш
@@ -4045,8 +4045,9 @@ function loadnitpicks()
 		compactentity = t.compactentity
 		anyiteminclaw = t.anyiteminclaw
 		bettermoon = t.ctrlaltdel
-		usetoenterdoors = t.usetousedoors
 		separateusebutton = t.separateusebutton
+		SlowBackgrounds = t.slowbackgrounds
+		NoCharacterZipNotices = t.nocharacterzipnotices
 		if t.entities then
 			customent = true
 			entitiesforms["custom"] = {}

@@ -26,7 +26,7 @@ imagestable = {  	"1", "2", "3", "blockdebrisimage", "coinblockanimationimage", 
 					"drybonesshellimg", "redseesawimg", "snakeblockimg", "oneuptextimage", "threeuptextimage", "boomboomflyingimg", "menuselectimg", "smallfont",
 					"pblockimg", "spikeimg", "spikeballimg", "coinfrozenimg", "coinbrickfrozenimg", "helmetshellimg", "boxgelimg", "helmetpropellerimg", "helmetcannonimg",
 					"cannonballcannonimg", "clearpipeimg", "plantcreeperimg", "trackimg", "pneumatictubeimg", "dustimg", "platformtrackimg", "checkpointflagimg", "iceimg",
-					"snowspikeimg", "grinderimg", "fuzzyimg", "emancelaserimg", "iciclehugeimg", "mushroomfrozenimg", "frozenimg", "coinblockfrozenimg", "redpowblockimg",
+					"snowspikeimg", "grinderimg", "fuzzyimg", "emancelaserimg", "iciclehugeimg", "mushroomfrozenimg", "frozenimg", "coinblockfrozenimg", "muncherfrozenimg", "redpowblockimg",
 					"clawimg", "moonimg", "rouletteblockimg", "shoeghostimg", "goombashoewingsimg", "collectableuiblankimg", "antlineimg"}
 
 table.sort(imagestable, function(a, b) return a < b end)--sort alphabetically

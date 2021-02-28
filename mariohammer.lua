@@ -112,7 +112,7 @@ function mariohammer:hitstuff(a, b)
 			addpoints(firepoints[a], self.x, self.y)
 		end
 	elseif a == "enemy" then
-		if b:shotted("right", nil, nil, false, true) ~= false and (not b.resistsenemykill) and (not b.resistshammer) then
+		if b:shotted("right", "hammer", nil, false, false) ~= false and (not b.resistsenemykill) and (not b.resistshammer) then
 			addpoints(b.firepoints or 200, self.x, self.y)
 		else
 			return false

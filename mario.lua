@@ -87,6 +87,25 @@ function mario:init(x, y, i, animation, size, t, properties)
 			self.biggraphic[j] = self.characterdata["biganimations"][j]
 		end
 	end
+
+	if self.characterdata["fireanimations"] then
+		self.firegraphic = {}
+		for j = 0, #self.characterdata["fireanimations"] do
+			self.firegraphic[j] = self.characterdata["fireanimations"][j]
+		end
+	end
+	if self.characterdata["iceanimations"] then
+		self.icegraphic = {}
+		for j = 0, #self.characterdata["iceanimations"] do
+			self.icegraphic[j] = self.characterdata["iceanimations"][j]
+		end
+	end
+	if self.characterdata["superballanimations"] then
+		self.superballgraphic = {}
+		for j = 0, #self.characterdata["superballanimations"] do
+			self.superballgraphic[j] = self.characterdata["superballanimations"][j]
+		end
+	end
 	
 	self.hammergraphic = {}
 	if self.character and self.characterdata["hammeranimations"] then
@@ -195,6 +214,10 @@ function mario:init(x, y, i, animation, size, t, properties)
 	self.idleframe = 1
 	self.idleanimationprogress = 1
 	self.runframe = math.min(self.characterdata.runframes, 3)
+	self.jumpframe = 1
+	self.jumpanimationprogress = 1
+	self.fallframe = 1
+	self.fallanimationprogress = 1
 	self.swimframe = 1
 	self.swimpush = false
 	self.climbframe = 1
@@ -509,7 +532,6 @@ function mario:init(x, y, i, animation, size, t, properties)
 end
 
 function mario:update(dt)
-
 	self.dt = dt
 	--Enemies stuff AMAZING
 	if self.customtimer then
@@ -946,6 +968,16 @@ function mario:update(dt)
 		local frames = self.characterdata.idleframes
 		self.idleanimationprogress = ((self.idleanimationprogress+self.characterdata.idleanimationspeed*dt-1)%(frames))+1
 		self.idleframe = math.floor(self.idleanimationprogress)
+	end
+	if self.characterdata.jumpframes > 1 then
+		local frames = self.characterdata.jumpframes
+		self.jumpanimationprogress = math.min(frames,self.jumpanimationprogress+self.characterdata.jumpanimationspeed*dt)
+		self.jumpframe = math.floor(self.jumpanimationprogress)
+	end
+	if self.characterdata.fallframes > 1 then
+		local frames = self.characterdata.fallframes
+		self.fallanimationprogress = math.min(frames,self.fallanimationprogress+self.characterdata.fallanimationspeed*dt)
+		self.fallframe = math.floor(self.fallanimationprogress)
 	end
 		
 	if self.supersizedshoe and self.size ~= 8 and self.animation ~= "grow1" and self.animation ~= "grow2" and self.animation ~= "shrink" then
@@ -1467,11 +1499,13 @@ function mario:update(dt)
 				self.y = flagy-9+4/16 + flagydistance-self.height
 				self.climbframe = 2
 			else
-				if math.fmod(self.animationtimer, flagclimbframedelay*2) >= flagclimbframedelay then
+				self.climbframe = math.ceil(math.fmod(self.animationtimer, flagclimbframedelay*self.characterdata.climbframes)/flagclimbframedelay)
+				self.climbframe = math.max(self.climbframe, 1)
+				--[[if math.fmod(self.animationtimer, flagclimbframedelay*2) >= flagclimbframedelay then
 					self.climbframe = 1
 				else
 					self.climbframe = 2
-				end
+				end]]
 			end
 			
 			self.animationdirection = "right"
@@ -1756,7 +1790,7 @@ function mario:update(dt)
 		
 		self.vinemovetimer = self.vinemovetimer + dt
 		
-		self.climbframe = math.ceil(math.fmod(self.vinemovetimer, vineframedelay*2)/vineframedelay)
+		self.climbframe = math.ceil(math.fmod(self.vinemovetimer, self.characterdata.vineframedelay*self.characterdata.climbframes)/self.characterdata.vineframedelay)
 		self.climbframe = math.max(self.climbframe, 1)
 		self:setquad()
 		
@@ -1773,7 +1807,7 @@ function mario:update(dt)
 		if self.vineanimationclimb then
 			self.vinemovetimer = self.vinemovetimer + dt
 			
-			self.climbframe = math.ceil(math.fmod(self.vinemovetimer, vineframedelay*2)/vineframedelay)
+			self.climbframe = math.ceil(math.fmod(self.vinemovetimer, self.characterdata.vineframedelay*self.characterdata.climbframes)/self.characterdata.vineframedelay)
 			self.climbframe = math.max(self.climbframe, 1)
 			
 			self.y = self.y - vinemovespeed*dt
@@ -2120,7 +2154,7 @@ function mario:update(dt)
 		if upkey(self.playernumber) then
 			self.vinemovetimer = self.vinemovetimer + dt
 			
-			self.climbframe = math.ceil(math.fmod(self.vinemovetimer, vineframedelay*2)/vineframedelay)
+			self.climbframe = math.ceil(math.fmod(self.vinemovetimer, self.characterdata.vineframedelay*self.characterdata.climbframes)/self.characterdata.vineframedelay)
 			self.climbframe = math.max(self.climbframe, 1)
 			
 			self.y = self.y-vinemovespeed*dt
@@ -2133,7 +2167,7 @@ function mario:update(dt)
 		elseif downkey(self.playernumber) then
 			self.vinemovetimer = self.vinemovetimer + dt
 			
-			self.climbframe = math.ceil(math.fmod(self.vinemovetimer, vineframedelaydown*2)/vineframedelaydown)
+			self.climbframe = math.ceil(math.fmod(self.vinemovetimer, self.characterdata.vineframedelay*self.characterdata.climbframes)/self.characterdata.vineframedelay)
 			self.climbframe = math.max(self.climbframe, 1)
 			
 			checkportalHOR(self, self.y+vinemovedownspeed*dt)
@@ -2474,13 +2508,7 @@ function mario:update(dt)
 				end
 			end
 		end
-		
-		--door
-		if inmap(x, y) and #map[x][y] > 1 and entityquads[map[x][y][2]] and entityquads[map[x][y][2]].t == "door" and self.controlsenabled and (not editormode) and ((usekey(self.playernumber) and usetoenterdoors) or (upkey(self.playernumber) and not usetoenterdoors)) and self.falling == false and self.jumping == false then
-			self:door(x, y, map[x][y][3])
-			net_action(self.playernumber, "door|" .. x .. "|" .. y .. "|" .. map[x][y][3])
-			return
-		end
+
 		
 		--ice
 		self.ice = false
@@ -3705,9 +3733,9 @@ function mario:setquad(anim, s)
 			elseif set == "raccoon" and self.raccoonfly then
 				self:setquadframe(set,angleframe,"fly",self.raccoonflyframe)
 			elseif self.characterdata.fallframes > 0 and self.falling and self.speedy > 0 then
-				self:setquadframe(set,angleframe,"fall")
+				self:setquadframe(set,angleframe,"fall",self.fallframe)
 			else
-				self:setquadframe(set,angleframe,"jump")
+				self:setquadframe(set,angleframe,"jump",self.jumpframe)
 			end
 		elseif animationstate == "floating" and set == "raccoon" then
 			self:setquadframe(set,angleframe,"float",self.floatframe)
@@ -4016,11 +4044,12 @@ function mario:upkey()
 	if self.groundpounding and (not self.groundpoundcanceled) and self.groundpounding > groundpoundtime then
 		self:groundpound(false)
 	end
+	
 	--pdoor and keydoor
 	local x = math.floor(self.x+self.width/2)+1
 	local y = math.floor(self.y+self.height/2)+1
 
-	if inmap(x, y) and #map[x][y] > 1 and entityquads[map[x][y][2]] and (entityquads[map[x][y][2]].t == "pdoor" or entityquads[map[x][y][2]].t == "keydoor") and self.falling == false and self.jumping == false then
+	if inmap(x, y) and #map[x][y] > 1 and entityquads[map[x][y][2]] and (entityquads[map[x][y][2]].t == "door" or entityquads[map[x][y][2]].t == "pdoor" or entityquads[map[x][y][2]].t == "keydoor") and self.falling == false and self.jumping == false then
 		for j, w in pairs(objects["doorsprite"]) do
 			if w.cox == x and w.coy == y then
 				if not w.locked then
@@ -4038,6 +4067,7 @@ function mario:upkey()
 			end
 		end
 	end
+
 	--fence
 	if (not self.fence) and inmap(x, y) and tilequads[map[x][y][1]]:getproperty("fence", x, y) then
 		self:grabfence()
@@ -4962,6 +4992,9 @@ function mario:floorcollide(a, b)
 					return false
 				end
 			end
+			if fall then
+				animationsystem_playerlandtrigger(self.playernumber)
+			end
 		elseif b.removeonmariocontact and not b.removeonmariocontactcollide then
 			return false
 		elseif b.bouncy or b.bouncyontop then
@@ -5775,7 +5808,7 @@ function mario:rightcollide(a, b, passive)
 		end
 		
 		--check if box can even move
-		local out = checkrect(b.x+self.speedx*gdt, b.y, b.width, b.height, {"exclude", b}, true)
+		local out = checkrect(b.x+self.speedx*gdt, b.y, b.width, b.height, {"exclude", b}, true, "ignoreplatforms")
 		if #out == 0 then
 			b.speedx = self.speedx
 			return false
@@ -6155,7 +6188,7 @@ function mario:leftcollide(a, b)
 		end
 		
 		--check if box can even move
-		local out = checkrect(b.x+self.speedx*gdt, b.y, b.width, b.height, {"exclude", b}, true)
+		local out = checkrect(b.x+self.speedx*gdt, b.y, b.width, b.height, {"exclude", b}, true, "ignoreplatforms")
 		if #out == 0 then
 			b.speedx = self.speedx
 			return false
@@ -8707,18 +8740,21 @@ local function gettable(v, i)
 end
 
 function mario:button(b,name,conf)
-	print("EXECUTING BUTTON")
+	--print("EXECUTING BUTTON")
 	if noupdate or (not self.controlsenabled) then
 		return false
 	end
-	if not self.gravitydir == "down" and b == (gettable(f.button, i) or "reload") then
+
+	--[[if not self.gravitydir == "down" and b == (gettable(f.button, i) or "reload") then
 		self.gravitydir = "down"
-	end
+	end]]
+
 	--custom enemy fire bindings
 	if self.fireenemy or self.characterdata.fireenemy or name or conf then
-
 		local f = conf or self.fireenemy or self.characterdata.fireenemy
-		if f == conf and name then f.enemy = name end
+		if f == conf and name then
+			f.enemy = name
+		end
 		if f.enemy then
 			local checktable = {f.enemy}
 			if type(f.enemy) == "table" then
@@ -8772,6 +8808,9 @@ function mario:button(b,name,conf)
 						pass = false
 					end
 					if ((gettable(f.firewhennotonfence, i) or gettable(f.firewhennotclimbing, i)) and self.fence) then
+						pass = false
+					end
+					if ((gettable(f.firewhenducking, i)) and not self.ducking) or ((gettable(f.firewhennotducking, i)) and self.ducking) then
 						pass = false
 					end
 					if pass then
