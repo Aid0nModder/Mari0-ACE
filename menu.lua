@@ -1665,7 +1665,7 @@ function menu_draw()
 
 			love.graphics.setColor(255, 255, 255, 255)
 			properprint("aece " .. VERSIONSTRING, 23*scale, 196*scale)
-			properprint("base: a99e v13b", 23*scale, 206*scale)
+			properprint("base: a99e v13c", 23*scale, 206*scale)
 		end
 	end
 	love.graphics.translate(0, yoffset*scale)
