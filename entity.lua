@@ -2280,7 +2280,7 @@ rightclicktype["turretright"].default = "right|defective"
 
 rightclicktype["camerastop"] = {
 	name = "camerastop",
-	default = "1|1|0|0|false",
+	default = "1|1|0|0|false|false",
 	regionfunc = function(w,h,x,y) --setting region vars
 		rightclickvalues2[1] = w
 		rightclickvalues2[2] = h
@@ -2288,8 +2288,10 @@ rightclicktype["camerastop"] = {
 		rightclickvalues2[4] = y
 	end,
 	format = {
-		{"button", 1, {"select range", function(var, step) startrcregion(var, step) end, {1, 2}}},
+		{"button", 1, {"select range", function(var, step) startrcregion(var, step) end, {1, 1}}},
 		{"checkbox", 5, "force push", function(v) rightclickvalues2[5] = v; rightclickobjects[2].var = v end},
+		{"checkbox", 6, "ignore if", function(v) rightclickvalues2[6] = v; rightclickobjects[3].var = v end},
+		"off-screen",
 		{"button", 2, {"link off", startrclink}, {"x", resetrclink, textcolor = {255, 0, 0}}}
 	}
 }

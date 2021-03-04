@@ -157,6 +157,7 @@ function createdailychallenge()
 	marioscore = 0
 	underwater = false
 	realtime = false
+	itemreserve = false
 	
 	local randomobj = love.math.newRandomGenerator(math.floor((datet[1]*((datet[1]*datet[2])+datet[3]))*datet[3]/datet[2]))--come up with a seed
 	randomobj:random(1, 256)

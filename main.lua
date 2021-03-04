@@ -77,7 +77,8 @@ local debugconsole = false --debug
 if debugconsole then debuginputon = true; debuginput = "print()"; print("DEBUG ON") end
 
 VERSION = 13.0114
-VERSIONSTRING = "beta (edition 5)"
+VERSIONSTRING = "beta (edition 6)"
+BASEVERSION = "v13c"
 
 android = (love.system.getOS() == "Android" or love.system.getOS() == "iOS") --[DROID]
 androidtest = false --testing android on pc

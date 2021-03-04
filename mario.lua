@@ -284,6 +284,7 @@ function mario:init(x, y, i, animation, size, t, properties)
 	self.mariolevel = mariolevel --level where mario is from
 	self.groundpounding = false
 	self.groundpoundcanceled = false
+	self.itemreserveitem = 0
 	
 	self.animation = animation --pipedown, piperight, pipeupexit, pipeleft, flag, vine, intermission, pipeup, pipedownexit
 	self.animationx = nil
@@ -464,6 +465,10 @@ function mario:init(x, y, i, animation, size, t, properties)
 		--health
 		if properties.health and self.characterdata.health then
 			self.health = properties.health
+		end
+		--item reserver
+		if properties.itemreserveitem then
+			self.itemreserveitem = properties.itemreserveitem
 		end
 	end
 
@@ -774,7 +779,7 @@ function mario:update(dt)
 			end
 		end
 		
-		if self.yoshitoungewidth == yoshitoungemaxwidth then
+		if self.yoshitoungewidth == self.yoshi.toungemaxwidth then
 			self.yoshitoungespeed = -yoshitoungespeed
 		elseif self.yoshitoungewidth == 0 then
 			self.yoshitoungespeed = yoshitoungespeed
@@ -4152,7 +4157,8 @@ function mario:grow(update)
 	end
 
 	if self.characterdata.advancedchar and (self:checkrestrictions(update) == true) then
-        if not update then update = 2
+        if not update then 
+			update = 2
             if self.size < 2 then
                 --print("shroom")
                 self:setsize(update)
@@ -4166,6 +4172,16 @@ function mario:grow(update)
             return
         end
     end
+
+	if update then
+		self.itemreserveitem = self.size
+		updateplayerproperties()
+	else
+		if self.size > 1 then
+			self.itemreserveitem = self.size
+			updateplayerproperties()
+		end
+	end
 	
 	if mariomakerphysics and (not update) and self.size >= 2 then
 		--mushroom doesn't make big mario grow
@@ -4254,6 +4270,11 @@ function mario:shrink()
 	self.animationmisc = self.animationstate
 	
 	playsound(shrinksound)
+
+	if self.itemreserveitem ~= 0 then
+		itemreservedropitem()
+		updateplayerproperties()
+	end
 
 	if self.size == 2 or (self.size > 2 and (not mariomakerphysics)) then
 		if self.ducking then --stop small mario ducking
@@ -7216,7 +7237,7 @@ function hitblock(x, y, t, v)
 		end
 	end
 	
-	ttbounce = false
+	local ttbounce = false
 	for i, v in pairs(objects["tiletool"]) do
 		if string.find(v.func, "bump into ") then
 			for rx = v.regionX, v.regionX + v.regionwidth-1 do

@@ -331,6 +331,7 @@ function fireball:hitstuff(a, b)
 			end
 			b:shotted(self.animationdirection,"powblock")
 		end
+		return
 	end
 	if self.t == "iceball" then
 		if a == "tile" or a == "portalwall" or a == "spring" or a == "kingbill" or (a == "angrysun" and b.t == "sun") or a == "springgreen" or a == "thwomp" or a == "fishbone" or a == "muncher" or (a == "bigkoopa" and b.t == "bigbeetle") or a == "meteor" or a == "parabeetle" or a == "boo" or a == "torpedoted" then
@@ -364,6 +365,8 @@ function fireball:hitstuff(a, b)
 		if a ~= "bowser" and (a ~= "koopaling" or shot) then
 			addpoints(firepoints[a] or 200, self.x, self.y)
 		end
+		self:explode()
+
 	elseif a == "bomb" then
 		if not b.explosion then
 			local dir = "right"

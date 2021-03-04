@@ -14,7 +14,15 @@ function rouletteblock:init(x, y, r)
 	self.active = true
 	
 	self.category = 2
-	self.mask = {true}
+	self.mask = {true, 
+				false, false, false, false, false,
+				false, false, false, true, false,
+				false, false, true, false, false,
+				true, true, false, false, false,
+				false, true, true, false, false,
+				true, false, true, true, true,
+				false, true}
+
 	self.gravity = 0
 	self.portalable = false
 	self.autodelete = false
@@ -44,7 +52,7 @@ end
 
 function rouletteblock:update(dt)
 	self.timer = self.timer + dt
-	if self.timer > self.time then
+	while self.timer > self.time do
 		self.timer = self.timer - self.time
 		if self.random then
 			local last = self.curitem
@@ -102,8 +110,10 @@ function rouletteblock:hit()
 	elseif spriteset == 3 then
 		t = 117
 	else
-		tt = 113
+		t = 113
 	end
+
+	--finnaly fixed this bullshit
 	if self.tracked then
 		--welcome to downtown jank
 		local fx, fy = math.floor(self.x+1), math.floor(self.y+1)
@@ -114,42 +124,56 @@ function rouletteblock:hit()
 				v.b = obj
 			end
 		end
+
+		local i = self.item[self.curitem]
+		if i == "mushroom" then
+			i = 2
+		elseif i == "fireflower" then
+			i = 202
+		elseif i == "iceflower" then
+			i = 299
+		elseif i == "oneup" then
+			i = 3
+		elseif i == "star" then
+			i = 4
+		end
+		obj.item = i
+		obj:hit()
 	else
 		map[x][y][1] = t
 		if tilequads[map[x][y][1]].collision then
 			objects["tile"][tilemap(x, y)] = tile:new(x-1, y-1, 1, 1, true)
 		end
-		updatespritebatch()
 
 		local bounce = createblockbounce(x, y)
 		bounce.timer = 0.000000001
 		bounce.x = x
 		bounce.y = y
+		updatespritebatch()
+
+		local i = self.item[self.curitem]
+		if i == "coin" then
+			playsound(coinsound)
+			table.insert(coinblockanimations, coinblockanimation:new(self.x+1-0.5, self.y+1-1))
+			mariocoincount = mariocoincount + 1
+			if mariocoincount == 100 and (not nocoinlimit) then
+				if mariolivecount ~= false then
+					for i = 1, players do
+						mariolives[i] = mariolives[i] + 1
+						respawnplayers()
+					end
+				end
+				mariocoincount = 0
+				playsound(oneupsound)
+			end
+			addpoints(200)
+		else
+			bounce.content = i
+			bounce.content2 = 2
+			playsound(mushroomappearsound)
+		end
 	end
 
-	local t = self.item[self.curitem]
-	if t == "fireflower" or t == "iceflower" then
-		playsound("mushroomappear")
-		item(t, self.x+1, self.y+1, 2)
-	elseif t == "coin" then
-		playsound(coinsound)
-		table.insert(coinblockanimations, coinblockanimation:new(self.x+1-0.5, self.y+1-1))
-		mariocoincount = mariocoincount + 1
-		if mariocoincount == 100 and (not nocoinlimit) then
-			if mariolivecount ~= false then
-				for i = 1, players do
-					mariolives[i] = mariolives[i] + 1
-					respawnplayers()
-				end
-			end
-			mariocoincount = 0
-			playsound(oneupsound)
-		end
-		addpoints(200)
-	else
-		playsound("mushroomappear")
-		item(t, self.x+1, self.y+1)
-	end
 	blockedportaltiles[tilemap(self.cox, self.coy)] = nil
 	self.instantdelete = true
 end
@@ -176,8 +200,4 @@ function rouletteblock:floorcollide(a, b)
 	if a == "player" or a == "spikeball" then
 		self:hit()
 	end
-end
-
-function rouletteblock:globalcollide(a, b)
-
 end

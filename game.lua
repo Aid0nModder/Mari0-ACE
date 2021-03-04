@@ -44,6 +44,7 @@ function game_load(suspended)
 	camerasetting = 1
 	dropshadow = false
 	realtime = false
+	itemreserve = false
 	nocoinlimit = false
 	setphysics(1)
 	if love.filesystem.exists(mappackfolder .. "/" .. mappack .. "/settings.txt") and not dcplaying then
@@ -63,6 +64,8 @@ function game_load(suspended)
 				dropshadow = true
 			elseif s2[1] == "realtime" then
 				realtime = true
+			elseif s2[1] == "itemreserve" then
+				itemreserve = true
 			elseif s2[1] == "nocoinlimit" then
 				nocoinlimit = true
 			elseif s2[1] == "character" then
@@ -309,9 +312,24 @@ function game_update(dt)
 	coinanimation = coinanimation + dt*6.75
 	while coinanimation >= 6 do
 		coinanimation = coinanimation - 5
-	end	
+	end
 	
 	coinframe = math.max(1, math.floor(coinanimation))
+
+	if itemreserve and (not editormode) and gamestate == "game" then
+		itemreservetimer = itemreservetimer + dt
+		while itemreservetimer > staranimationdelay do
+			itemreserveframe = itemreserveframe + 1
+			if itemreserveframe > 4 then
+				itemreserveframe = 1
+			end
+			itemreservetimer = itemreservetimer - staranimationdelay
+		end
+
+		if reloadkey(1) and objects["player"][1].itemreserveitem ~= 0 then
+			itemreservedropitem()
+		end
+	end
 
 	--hud icon animation
 	for i = 1, #hudicondata do
@@ -4199,6 +4217,54 @@ function drawHUD()
 			if yoffset < 0 then
 				love.graphics.translate(0, yoffset*scale)
 			end
+
+			if itemreserve and gamestate == "game" then
+				love.graphics.setLineWidth(2*scale)
+				properprintfunc("item", love.graphics.getWidth()/2-string.len("item")*4*scale, 12*scale)
+				love.graphics.rectangle("line", love.graphics.getWidth()/2-(10*scale), 22*scale, 20*scale, 20*scale)
+
+				local img, quad
+				local itemreserveitem = objects["player"][1].itemreserveitem
+				if itemreserveitem == 2 then --mush
+					img, quad = itemsimg, itemsquad[spriteset][1]
+				elseif itemreserveitem == 3 then --flower
+					img, quad = flowerimg, flowerquad[spriteset][itemreserveframe]
+				elseif itemreserveitem == 4 then --hammer
+					img, quad = itemsimg, itemsquad[spriteset][14]
+				elseif itemreserveitem == 5 then --frog
+					img, quad = itemsimg, itemsquad[spriteset][15]
+				elseif itemreserveitem == 6 then --leaf
+					img, quad = itemsimg, itemsquad[spriteset][6]
+				elseif itemreserveitem == 7 then --iceflower
+					img, quad = iceflowerimg, flowerquad[spriteset][itemreserveframe]
+				elseif itemreserveitem == 8 then --big mush
+					img, quad = bigmushroomimg, bigmushroomquad
+				elseif itemreserveitem == 9 then --tannoki
+					img, quad = itemsimg, itemsquad[spriteset][10]
+				elseif itemreserveitem == 10 then --cake
+					img, quad = itemsimg, itemsquad[spriteset][11]
+				elseif itemreserveitem == 11 then --carrot
+					img, quad = itemsimg, itemsquad[spriteset][12]
+				elseif itemreserveitem == 12 then --skiny
+					img, quad = itemsimg, itemsquad[spriteset][13]
+				elseif itemreserveitem == 13 then --superball
+					img, quad = superballflowerimg, coinblockquads[spriteset][coinframe]
+				elseif itemreserveitem == 14 then --blueshell
+					img, quad = itemsimg, itemsquad[spriteset][16]
+				elseif itemreserveitem == 15 then --ok bommerang
+					img, quad = itemsimg, itemsquad[spriteset][17]
+				elseif itemreserveitem == 16 then --classic big mush (TO FIX)
+					img, quad = itemsimg, itemsquad[spriteset][1]
+				elseif itemreserveitem == -1 then -- /shrug
+					img, quad = itemsimg, itemsquad[spriteset][7]
+				else
+					img, quad = false, false
+				end
+				
+				if img and quad then
+					love.graphics.draw(img, quad, ((width*16*scale)/2)-(8*scale), 24*scale, 0, scale, scale)
+				end
+			end
 		
 			if hudsimple then
 				cy = 22
@@ -4801,6 +4867,9 @@ function startlevel(level, reason)
 	spriteset = 1
 	backgroundrgb = {0, 0, 0}
 	breakoutmode = nil
+	if itemreserve and players == 1 then
+		itemreservetimer, itemreserveframe = 0, 1
+	end
 	
 	--GLaDOS
 	neurotoxin = false
@@ -8849,6 +8918,9 @@ function updateplayerproperties(reset)
 					marioproperties[i].keepstatsonwin = objects["player"][i].characterdata.keepstatsonwin
 					--print(marioproperties[i].changestats, marioproperties[i].changedstats, marioproperties[i].keepstatsongrow, marioproperties[i].keepstatsonshrink, marioproperties[i].keepstatsonwin, "aaaaaaaaaaaaaaaaaaaaa")
 				end
+				if i == 1 and objects["player"][1].itemreserveitem ~= 0 then
+					marioproperties[1].itemreserveitem = objects["player"][1].itemreserveitem
+				end
 			end
 		end
 	end
@@ -9421,7 +9493,6 @@ function rendercustombackground(xscroll, yscroll, scrollfactor, scrollfactory)
 				end
 			end
 		end
-		end
 	end
 end
 
@@ -9479,7 +9550,7 @@ function rendercustomforeground(xscroll, yscroll, scrollfactor, scrollfactory)
 	end
 end
 
-function trackobject(x, y, obj, objtable) --grab entity onto track
+function trackobject(x, y, obj, objtable, tileobj) --grab entity onto track
 	local r = map[x][y]
 	if obj and r["track"] and ((not (r["track"].grab == "t" or r["track"].grab == "tr" or r["track"].grab == "tf" or r["track"].grab == "trf" or r["track"].grab == "")) or (objtable and objtable == "tilemoving")) then
 		local dir, fast = "forward", false
@@ -9967,5 +10038,98 @@ function nondt(dt)
 		ndt = dt
 	else
 		return tonumber(ndt)
+	end
+end
+
+function itemreservedropitem()
+	local i = objects["player"][1].itemreserveitem
+	objects["player"][1].itemreserveitem = 0
+
+	local x, y = xscroll+13, yscroll+3
+	local obj, objtable
+	if i == 2 then --mush
+		obj = mushroom:new(x-0.5, y-2/16)
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "mushroom"
+	elseif i == 3 then --flower
+		obj = flower:new(x-0.5, y-2/16)
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "flower"
+	elseif i == 4 then --hammer
+		obj = star:new(x-0.5, y-2/16, "hammersuit")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "hammersuit"
+	elseif i == 5 then --frog
+		obj = star:new(x-0.5, y-2/16, "frogsuit")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "frogsuit"
+	elseif i == 6 then --leaf
+		obj = leaf:new(x-0.5, y)
+		objtable = "leaf"
+	elseif i == 7 then --iceflower
+		obj = flower:new(x-0.5, y-2/16, "ice")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "flower"
+	elseif i == 8 then --big mush
+		obj = mushroom:new(x-0.5, y-2/16, "big")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "mushroom"
+	elseif i == 9 then --tannoki
+		obj = star:new(x-0.5, y-2/16, "tanookisuit")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "flower"
+	elseif i == 10 then --cake
+		obj = flower:new(x-0.5, y-2/16, "feather")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "flower"
+	elseif i == 11 then --carrot
+		obj = flower:new(x-0.5, y-2/16, "carrot")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "flower"
+	elseif i == 12 then --skiny
+		obj = mushroom:new(x-0.5, y-2/16, "weird")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "mushroom"
+	elseif i == 13 then --superball
+		obj = flower:new(x-0.5, y-2/16, "superball")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "flower"
+	elseif i == 14 then --blueshell
+		obj = flower:new(x-0.5, y-2/16, "blueshell")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "flower"
+	elseif i == 15 then --ok bommerang
+		obj = flower:new(x-0.5, y-2/16, "boomerang")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "flower"
+	elseif i == 16 then --classic big mush
+		obj = mushroom:new(x-0.5, y-2/16, "bigclassic")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "mushroom"
+	elseif i == -1 then -- /shrug
+		obj = mushroom:new(x-0.5, y+5/16, "mini")
+		obj.uptimer = mushroomtime+0.00001
+		objtable = "mushroom"
+	end
+
+	if obj and objtable then
+		obj.speedx = 0
+		obj.speedy = 2.5
+		obj.gravity = 0
+		obj.portalable = false
+
+		obj.static = false
+		obj.active = true
+
+		obj.drawable = true
+		obj.mask = {true,
+			true, false, true, true, true,
+			true, true, true, true, true,
+			true, true, true, true, true,
+			true, true, true, true, true,
+			true, true, true, true, true,
+			true, true, true, true, true}
+
+		table.insert(objects[objtable], obj)
 	end
 end
